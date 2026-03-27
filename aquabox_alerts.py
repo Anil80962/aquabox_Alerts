@@ -31,6 +31,7 @@ LOGIN_TYPE = "DEFAULT"
 LOGGED_IN = False
 CREDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_session.json")
 REFRESH_INTERVAL = 120  # seconds (2 minutes)
+OFFLINE_ANNOUNCE_INTERVAL = 3600  # 1 hour auto-announce offline  # seconds (2 minutes)
 TOKEN_REFRESH = 13800  # refresh token every 3hr 50min (10 min before 4hr expiry)
 AUTO_MARK_READ = True  # Auto mark alerts as read when displayed
 ANNOUNCED_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "announced_alerts.json")
@@ -280,7 +281,7 @@ window { background-color: #ffffff; }
 /* Optimized for 800x480 5-inch display */
 .header-bar {
     background: linear-gradient(to right, #1e3a5a, #1e40af);
-    padding: 9px 12px;
+    padding: 20px 14px;
     border-bottom: 2px solid #3b82f6;
 }
 .header-title {
@@ -295,13 +296,13 @@ window { background-color: #ffffff; }
 
 .stats-bar {
     background-color: #f0f4ff;
-    padding: 7px 10px;
+    padding: 10px 12px;
     border-bottom: 1px solid #e0e4ea;
 }
 .stat-box {
     background-color: #ffffff;
     border-radius: 7px;
-    padding: 7px 10px;
+    padding: 8px 10px;
     margin: 2px 4px;
     border: 1px solid #d0d5dd;
 }
@@ -324,8 +325,8 @@ window { background-color: #ffffff; }
 
 .alert-card {
     border-radius: 9px;
-    padding: 11px;
-    margin: 4px 8px;
+    padding: 12px;
+    margin: 5px 8px;
     border-left-width: 4px;
     border-left-style: solid;
 }
@@ -436,7 +437,7 @@ window { background-color: #ffffff; }
     color: #333333;
     font-size: 20px;
     font-weight: bold;
-    padding: 7px 10px 3px;
+    padding: 8px 12px 4px;
 }
 
 .refresh-bar {
@@ -851,7 +852,7 @@ class AlertsWindow(Gtk.Window):
         # Typing text label
         self.overlay_label = Gtk.Label(label="")
         self.overlay_label.set_line_wrap(True)
-        self.overlay_label.set_max_width_chars(50)
+        self.overlay_label.set_max_width_chars(80)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         self.overlay_label.modify_font(Pango.FontDescription("monospace bold 14"))
@@ -894,17 +895,7 @@ class AlertsWindow(Gtk.Window):
         self.refresh_btn.get_style_context().add_class("refresh-btn")
         right_box.pack_start(self.refresh_btn, False, False, 0)
 
-        # Logout button
-        logout_btn = Gtk.Button()
-        logout_btn.set_size_request(36, 36)
-        logout_icon = Gtk.Label(label="⏻")
-        logout_icon.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.4, 0.4, 0.9))
-        logout_icon.modify_font(Pango.FontDescription("Sans 18"))
-        logout_btn.add(logout_icon)
-        logout_btn.connect("clicked", self._on_logout)
-        logout_btn.get_style_context().add_class("refresh-btn")
-        logout_btn.set_tooltip_text("Logout")
-        right_box.pack_start(logout_btn, False, False, 0)
+
 
         # Separator
         sep = Gtk.Label(label="|")
@@ -923,6 +914,23 @@ class AlertsWindow(Gtk.Window):
         time_box.pack_start(self.date_label, False, False, 0)
         right_box.pack_start(time_box, False, False, 0)
 
+        # Separator before logout
+        sep2 = Gtk.Label(label="|")
+        sep2.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.25))
+        right_box.pack_start(sep2, False, False, 0)
+
+        # Logout button (arrow out of box symbol)
+        logout_btn = Gtk.Button()
+        logout_btn.set_size_request(36, 36)
+        logout_icon = Gtk.Label(label="→│")
+        logout_icon.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.4, 0.4, 0.9))
+        logout_icon.modify_font(Pango.FontDescription("Sans 14"))
+        logout_btn.add(logout_icon)
+        logout_btn.connect("clicked", self._on_logout)
+        logout_btn.get_style_context().add_class("refresh-btn")
+        logout_btn.set_tooltip_text("Logout")
+        right_box.pack_start(logout_btn, False, False, 0)
+
         header.pack_end(right_box, False, False, 0)
 
         self.main_box.pack_start(header, False, False, 0)
@@ -936,6 +944,10 @@ class AlertsWindow(Gtk.Window):
         self.stat_total = self._make_stat("0", "TOTAL", "stat-num-total")
         self.stat_offline = self._make_stat("0", "OFFLINE", "stat-num-unread")
 
+        self.stat_unread[0].connect("clicked", lambda b: self._scroll_to_section("unread"))
+        self.stat_read[0].connect("clicked", lambda b: self._scroll_to_section("read"))
+        self.stat_total[0].connect("clicked", lambda b: self._scroll_to_section("top"))
+        self.stat_offline[0].connect("clicked", lambda b: self._scroll_to_section("offline"))
         self.stats_box.pack_start(self.stat_unread[0], True, True, 0)
         self.stats_box.pack_start(self.stat_read[0], True, True, 0)
         self.stats_box.pack_start(self.stat_total[0], True, True, 0)
@@ -980,6 +992,9 @@ class AlertsWindow(Gtk.Window):
         self._typing_index = 0
         self._typing_timer = None
         self._hide_timer = None
+        self._typing_done = True
+        self._typing_speed = 100
+        self._batch_announcing = False
         self._last_refresh_time = ""
         self._countdown = REFRESH_INTERVAL
 
@@ -987,12 +1002,49 @@ class AlertsWindow(Gtk.Window):
         self.update_clock()
         GLib.timeout_add_seconds(1, self.update_clock)
         GLib.timeout_add_seconds(1, self._update_countdown)
+        self._all_today_alerts = []
+        self._all_offline_alerts = []
         GLib.timeout_add(500, self.first_fetch)
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
+        GLib.timeout_add_seconds(3600, self._auto_announce_offline_timer)
+
+    def _scroll_to_section(self, section):
+        """Scroll alerts list to a specific section."""
+        target = None
+        if section == "unread" and hasattr(self, '_section_unread'):
+            target = self._section_unread
+        elif section == "read" and hasattr(self, '_section_read'):
+            target = self._section_read
+        elif section == "offline" and hasattr(self, '_section_offline'):
+            target = self._section_offline
+        elif section == "top":
+            # Scroll to top
+            adj = self.alerts_container.get_parent().get_vadjustment()
+            adj.set_value(0)
+            return
+
+        if target:
+            def do_scroll():
+                alloc = target.get_allocation()
+                adj = self.alerts_container.get_parent().get_vadjustment()
+                adj.set_value(alloc.y)
+            GLib.idle_add(do_scroll)
+
+    def _update_counters(self, delta):
+        """Instantly update unread/read counters."""
+        try:
+            cur_unread = int(self.stat_unread[1].get_text())
+            cur_read = int(self.stat_read[1].get_text())
+            self.stat_unread[1].set_text(str(max(0, cur_unread - delta)))
+            self.stat_read[1].set_text(str(cur_read + delta))
+        except Exception:
+            pass
 
     def _make_stat(self, num, label, css_class):
+        btn = Gtk.Button()
+        btn.set_relief(Gtk.ReliefStyle.NONE)
+        btn.get_style_context().add_class("stat-box")
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        box.get_style_context().add_class("stat-box")
         num_label = Gtk.Label(label=num)
         num_label.get_style_context().add_class("stat-num")
         num_label.get_style_context().add_class(css_class)
@@ -1000,7 +1052,8 @@ class AlertsWindow(Gtk.Window):
         text_label.get_style_context().add_class("stat-label")
         box.pack_start(num_label, False, False, 0)
         box.pack_start(text_label, False, False, 0)
-        return (box, num_label)
+        btn.add(box)
+        return (btn, num_label)
 
     def update_clock(self):
         self.clock_label.set_text(datetime.now().strftime("%I:%M:%S %p"))
@@ -1059,7 +1112,14 @@ class AlertsWindow(Gtk.Window):
         threading.Thread(target=self._fetch_and_update, daemon=True).start()
         return True
 
+    _last_fetch_time_actual = 0
+
     def _fetch_and_update(self):
+        # Prevent fetching more than once every 30 seconds
+        now_ts = time.time()
+        if now_ts - self._last_fetch_time_actual < 30:
+            return
+        self._last_fetch_time_actual = now_ts
         data = fetch_alerts()
         # Pre-cache audio for instant playback
         if data:
@@ -1080,8 +1140,7 @@ class AlertsWindow(Gtk.Window):
             self.alerts_container.pack_start(lbl, True, True, 20)
             prev = f" | Last success: {self._last_refresh_time}" if self._last_refresh_time else ""
             self.refresh_label.set_text(f"Error | Quick retry in 10s{prev}")
-            # Quick retry after 10 seconds instead of waiting full interval
-            GLib.timeout_add_seconds(10, self._quick_retry)
+            # Will retry on next scheduled refresh
             self.alerts_container.show_all()
             return
 
@@ -1124,6 +1183,9 @@ class AlertsWindow(Gtk.Window):
             self.alerts_container.pack_start(btn_row, False, False, 0)
 
             # ---- UNREAD SECTION ----
+            self._section_unread = Gtk.Label(label="")
+            self._section_unread.set_size_request(-1, 0)
+            self.alerts_container.pack_start(self._section_unread, False, False, 0)
             unread_header = Gtk.Label(label=f"\u25CF  UNREAD ({len(unread_alerts)})")
             unread_header.get_style_context().add_class("section-header")
             unread_header.set_halign(Gtk.Align.START)
@@ -1134,6 +1196,8 @@ class AlertsWindow(Gtk.Window):
                 for alert in unread_alerts:
                     card = self._make_alert_card(alert)
                     self.alerts_container.pack_start(card, False, False, 0)
+                # Auto-announce unread alerts
+                threading.Thread(target=self._auto_announce_unread, args=(list(unread_alerts),), daemon=True).start()
             else:
                 no_unread = Gtk.Label(label="All caught up! No unread alerts.")
                 no_unread.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.26, 0.77, 0.37, 0.8))
@@ -1148,6 +1212,9 @@ class AlertsWindow(Gtk.Window):
             self.alerts_container.pack_start(sep, False, False, 6)
 
             # ---- READ SECTION ----
+            self._section_read = Gtk.Label(label="")
+            self._section_read.set_size_request(-1, 0)
+            self.alerts_container.pack_start(self._section_read, False, False, 0)
             read_header = Gtk.Label(label=f"\u25CF  READ ({len(read_alerts)})")
             read_header.get_style_context().add_class("section-header")
             read_header.set_halign(Gtk.Align.START)
@@ -1168,6 +1235,10 @@ class AlertsWindow(Gtk.Window):
 
         # Offline alerts
         offline_list = offline.get("alerts", {}).get("today", [])
+        self._all_offline_alerts = offline_list
+        self._section_offline = Gtk.Label(label="")
+        self._section_offline.set_size_request(-1, 0)
+        self.alerts_container.pack_start(self._section_offline, False, False, 0)
         if offline_list:
             # Announce Offline button
             off_btn_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -1296,6 +1367,92 @@ class AlertsWindow(Gtk.Window):
 
         return card
 
+    def _auto_announce_unread(self, alerts):
+        """Auto-announce unread alerts one by one."""
+        import subprocess
+        global _announce_stop
+        _announce_stop = False
+        time.sleep(3)
+
+        for i, alert in enumerate(alerts):
+            if _announce_stop:
+                break
+            title = alert.get("title", "")
+            body = alert.get("body", "")
+            desc = alert.get("description", {})
+            status = desc.get("status", "")
+            text = "Unread alert " + str(i+1) + " of " + str(len(alerts)) + ". " + title + ". " + body + ". " + status
+
+            try:
+                aid = alert.get("id", "")
+                wav_path = _audio_cache.get(aid)
+                if not wav_path or not os.path.exists(str(wav_path)):
+                    from gtts import gTTS
+                    mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
+                    wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
+                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts.save(mp3_path)
+                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
+
+                audio_dur = 0
+                try:
+                    audio_dur = os.path.getsize(wav_path) / (44100 * 2)
+                except:
+                    audio_dur = 5
+                GLib.idle_add(self._start_typing, text, audio_dur)
+                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                # Wait for typing to finish
+                for _ in range(200):
+                    if self._typing_done or _announce_stop:
+                        break
+                    time.sleep(0.02)
+                time.sleep(0.5)
+            except Exception as e:
+                print("[" + now() + "] Auto-announce unread error: " + str(e))
+
+            announce_and_mark_read(alert)
+            GLib.idle_add(self._update_counters, 1)
+            time.sleep(0.5)
+
+        print("[" + now() + "] Auto-announced " + str(len(alerts)) + " unread alerts")
+
+    def _auto_announce_offline_timer(self):
+        """Auto-announce offline alerts every 1 hour."""
+        if not self._all_offline_alerts:
+            return True
+        print("[" + now() + "] Auto-announcing " + str(len(self._all_offline_alerts)) + " offline alerts (hourly)")
+
+        def do_offline_auto():
+            import subprocess
+            global _announce_stop
+            _announce_stop = False
+            alerts = list(self._all_offline_alerts)
+
+            for i, alert in enumerate(alerts):
+                if _announce_stop:
+                    break
+                title = alert.get("title", "")
+                desc = alert.get("description", {})
+                status = desc.get("status", "")
+                text = "Offline unit " + str(i+1) + " of " + str(len(alerts)) + ". " + title + ". " + status
+
+                try:
+                    from gtts import gTTS
+                    mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
+                    wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
+                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts.save(mp3_path)
+                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
+                    GLib.idle_add(self._start_typing, text)
+                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                    time.sleep(1)
+                except Exception as e:
+                    print("[" + now() + "] Auto offline announce error: " + str(e))
+                time.sleep(0.5)
+
+        threading.Thread(target=do_offline_auto, daemon=True).start()
+        return True  # Keep timer running
+
     def _on_announce_offline(self, button):
         """Announce all offline units."""
         alerts = self._all_offline_alerts
@@ -1327,7 +1484,7 @@ class AlertsWindow(Gtk.Window):
                         tts.save(mp3_path)
                         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
                     GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:2,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
                     time.sleep(1)
                 except Exception as e:
                     print(f"[{now()}] Offline announce error: {e}")
@@ -1375,7 +1532,7 @@ class AlertsWindow(Gtk.Window):
                         tts.save(mp3_path)
                         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
                     GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:2,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing animation to catch up with audio
                     time.sleep(1)
                 except Exception as e:
@@ -1384,6 +1541,7 @@ class AlertsWindow(Gtk.Window):
                 announce_and_mark_read(alert)
                 time.sleep(0.5)
 
+            self._batch_announcing = False
             GLib.idle_add(self._after_announce_all, button)
 
         threading.Thread(target=do_all, daemon=True).start()
@@ -1437,8 +1595,13 @@ class AlertsWindow(Gtk.Window):
                     tts = gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
-                GLib.idle_add(self._start_typing, text)
-                subprocess.run(["aplay", "-D", "plughw:2,0", "-q", wav_path], capture_output=True, timeout=30)
+                audio_dur = 0
+                try:
+                    audio_dur = os.path.getsize(wav_path) / (44100 * 2)
+                except:
+                    audio_dur = 5
+                GLib.idle_add(self._start_typing, text, audio_dur)
+                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
             except Exception as e:
                 print(f"[{now()}] Announce TTS error: {e}")
 
@@ -1447,10 +1610,32 @@ class AlertsWindow(Gtk.Window):
             GLib.idle_add(self._after_announce, button)
         threading.Thread(target=do_announce, daemon=True).start()
 
-    def _start_typing(self, text):
-        """Start typing animation."""
+    def _start_typing(self, text, duration=0):
+        """Start typing animation. duration=estimated audio seconds."""
+        self._typing_done = False
+        # Cancel any pending hide timer from previous alert
+        if self._hide_timer:
+            try:
+                GLib.source_remove(self._hide_timer)
+            except Exception:
+                pass
+            self._hide_timer = None
+        # Cancel any running typing timer
+        if self._typing_timer:
+            try:
+                GLib.source_remove(self._typing_timer)
+            except Exception:
+                pass
+            self._typing_timer = None
         self._typing_text = "\U0001F50A ANNOUNCING: " + text
         self._typing_index = 0
+        # Calculate speed: text must finish in 'duration' seconds
+        # If no duration given, use 60 WPM default
+        total_chars = len(self._typing_text)
+        if duration > 0 and total_chars > 0:
+            self._typing_speed = max(10, int((duration * 1000 * 0.7) / total_chars))
+        else:
+            self._typing_speed = 100  # default 60 WPM
         self.overlay_label.set_text("")
         self.overlay_container.set_no_show_all(False)
         self.overlay_container.show_all()
@@ -1460,15 +1645,8 @@ class AlertsWindow(Gtk.Window):
         self.announce_label.show()
         self.announce_bar.set_visible(True)
 
-        if self._typing_timer:
-            try:
-                GLib.source_remove(self._typing_timer)
-            except Exception:
-                pass
-            self._typing_timer = None
-
         print(f"[{now()}] Typing started: {text[:50]}...")
-        self._typing_timer = GLib.timeout_add(40, self._typing_tick)
+        self._typing_timer = GLib.timeout_add(self._typing_speed, self._typing_tick)
 
     def _typing_tick(self):
         """Type one character per tick."""
@@ -1484,7 +1662,8 @@ class AlertsWindow(Gtk.Window):
             self.announce_label.set_text(done)
             self._typing_timer = None
             print(f"[{now()}] Typing complete")
-            self._hide_timer = GLib.timeout_add(4000, self._hide_announce_overlay)
+            if not self._batch_announcing:
+                self._hide_timer = GLib.timeout_add(4000, self._hide_announce_overlay)
             return False
 
     def _cancel_announce(self):
