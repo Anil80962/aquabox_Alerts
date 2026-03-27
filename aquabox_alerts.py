@@ -30,6 +30,9 @@ PASSWORD = ""
 LOGIN_TYPE = "DEFAULT"
 LOGGED_IN = False
 CREDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_session.json")
+ADMIN_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "admin_config.json")
+ADMIN_USER = "admin"
+ADMIN_PASS = "admin"
 REFRESH_INTERVAL = 120  # seconds (2 minutes)
 OFFLINE_ANNOUNCE_INTERVAL = 3600  # 1 hour auto-announce offline  # seconds (2 minutes)
 TOKEN_REFRESH = 13800  # refresh token every 3hr 50min (10 min before 4hr expiry)
@@ -43,9 +46,23 @@ alerts_data = {}
 fetch_lock = threading.Lock()
 announced_ids = set()  # Track announced alert IDs to avoid repeats
 _announce_stop = False  # Flag to stop announcing
+# No lock needed - _announce_stop handles cancellation
 _audio_cache = {}  # Pre-generated audio {alert_id: wav_path}
 _cache_lock = threading.Lock()
 
+
+def _start_announcing():
+    global _announce_stop
+    _announce_stop = True
+    import subprocess
+    subprocess.run(["killall", "aplay"], capture_output=True)
+    import time
+    time.sleep(0.3)
+    _announce_stop = False
+    return True
+
+def _stop_announcing():
+    pass  # No lock to release
 
 def precache_audio(alerts):
     """Pre-generate gTTS audio for all alerts in background."""
@@ -83,6 +100,27 @@ def save_session():
         with open(CREDS_FILE, "w") as f:
             json.dump({"username": USERNAME, "password": PASSWORD}, f)
     except: pass
+
+def load_admin_config():
+    global USERNAME, PASSWORD, LOGIN_TYPE
+    try:
+        if os.path.exists(ADMIN_CONFIG):
+            with open(ADMIN_CONFIG) as f:
+                d = json.load(f)
+                if d.get("api_username") and d.get("api_password"):
+                    USERNAME = d["api_username"]
+                    PASSWORD = d["api_password"]
+                    LOGIN_TYPE = d.get("login_type", "DEFAULT")
+                    return True
+    except: pass
+    return False
+
+def save_admin_config(api_user, api_pass, login_type="DEFAULT"):
+    try:
+        with open(ADMIN_CONFIG, "w") as f:
+            json.dump({"api_username": api_user, "api_password": api_pass, "login_type": login_type}, f)
+        return True
+    except: return False
 
 def load_session():
     global USERNAME, PASSWORD, LOGGED_IN
@@ -626,7 +664,12 @@ class LoginWindow(Gtk.Window):
         card.pack_start(self.password_entry, False, False, 4)
 
         # Error label
-        self.error_label = Gtk.Label(label="")
+        # Check if admin configured credentials
+        if not os.path.exists(ADMIN_CONFIG):
+            self.error_label = Gtk.Label(label="Admin setup required first")
+            self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.5, 0.1, 1))
+        else:
+            self.error_label = Gtk.Label(label="")
         self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 1))
         self.error_label.modify_font(Pango.FontDescription("Sans bold 11"))
         card.pack_start(self.error_label, False, False, 2)
@@ -651,6 +694,14 @@ class LoginWindow(Gtk.Window):
         kb_btn.set_margin_bottom(18)
         kb_btn.connect("clicked", self.toggle_keyboard)
         card.pack_start(kb_btn, False, False, 0)
+
+        admin_btn = Gtk.Button(label="⚙ Admin")
+        admin_btn.modify_font(Pango.FontDescription("Sans 8"))
+        admin_btn.set_margin_start(30)
+        admin_btn.set_margin_end(30)
+        admin_btn.set_margin_bottom(10)
+        admin_btn.connect("clicked", self._open_admin)
+        card.pack_start(admin_btn, False, False, 0)
 
         outer.pack_start(card, False, False, 0)
         overlay.add_overlay(outer)
@@ -761,6 +812,195 @@ class LoginWindow(Gtk.Window):
         self.password_entry.set_visibility(self._pass_visible)
         button.set_label("○" if self._pass_visible else "●")
 
+    def _open_admin(self, button):
+        """Open admin login dialog."""
+        dialog = Gtk.Dialog(title="Admin Login", parent=self, flags=0)
+        dialog.set_default_size(350, 200)
+        dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+
+        box = dialog.get_content_area()
+        box.set_spacing(8)
+        box.set_margin_start(20)
+        box.set_margin_end(20)
+        box.set_margin_top(10)
+
+        title = Gtk.Label(label="Admin Login")
+        title.modify_font(Pango.FontDescription("Sans bold 14"))
+        box.pack_start(title, False, False, 0)
+
+        al = Gtk.Label(label="Admin Username")
+        al.modify_font(Pango.FontDescription("Sans bold 10"))
+        al.set_halign(Gtk.Align.START)
+        box.pack_start(al, False, False, 0)
+        admin_user = Gtk.Entry()
+        admin_user.set_placeholder_text("Admin username")
+        box.pack_start(admin_user, False, False, 0)
+
+        pl = Gtk.Label(label="Admin Password")
+        pl.modify_font(Pango.FontDescription("Sans bold 10"))
+        pl.set_halign(Gtk.Align.START)
+        box.pack_start(pl, False, False, 0)
+        admin_pass = Gtk.Entry()
+        admin_pass.set_placeholder_text("Admin password")
+        admin_pass.set_visibility(False)
+        box.pack_start(admin_pass, False, False, 0)
+
+        err = Gtk.Label(label="")
+        err.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
+        box.pack_start(err, False, False, 0)
+
+        def on_admin_login(btn):
+            u = admin_user.get_text().strip()
+            p = admin_pass.get_text().strip()
+            print("[Admin] Entered: [" + u + "] [" + p + "] Expected: [" + ADMIN_USER + "] [" + ADMIN_PASS + "]")
+            if u == ADMIN_USER and p == ADMIN_PASS:
+                dialog.destroy()
+                self._show_admin_settings()
+            else:
+                err.set_text("Wrong admin credentials")
+
+        login_btn = Gtk.Button(label="Login")
+        login_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.69, 1))
+        login_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        login_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+        login_btn.connect("clicked", on_admin_login)
+        box.pack_start(login_btn, False, False, 5)
+
+        dialog.show_all()
+
+    def _set_api_creds(self, user, passwd, lt):
+        global USERNAME, PASSWORD, LOGIN_TYPE, token, token_time
+        USERNAME = user
+        PASSWORD = passwd
+        LOGIN_TYPE = lt
+        token = ""
+        token_time = 0
+
+    def _show_admin_settings(self):
+        """Show admin settings page to configure API credentials."""
+        dialog = Gtk.Dialog(title="Admin Settings", parent=self, flags=0)
+        dialog.set_default_size(400, 350)
+        dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+
+        box = dialog.get_content_area()
+        box.set_spacing(8)
+        box.set_margin_start(20)
+        box.set_margin_end(20)
+        box.set_margin_top(10)
+
+        title = Gtk.Label(label="API Configuration")
+        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
+        box.pack_start(title, False, False, 0)
+
+        sub = Gtk.Label(label="Configure the username and password for AquaGen API")
+        sub.modify_font(Pango.FontDescription("Sans 9"))
+        sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
+        box.pack_start(sub, False, False, 4)
+
+        sep = Gtk.Separator()
+        box.pack_start(sep, False, False, 6)
+
+        # API Username
+        ul = Gtk.Label(label="API Username")
+        ul.modify_font(Pango.FontDescription("Sans bold 11"))
+        ul.set_halign(Gtk.Align.START)
+        box.pack_start(ul, False, False, 0)
+        api_user_entry = Gtk.Entry()
+        api_user_entry.set_text(USERNAME)
+        api_user_entry.modify_font(Pango.FontDescription("Sans 12"))
+        box.pack_start(api_user_entry, False, False, 0)
+
+        # API Password
+        ppl = Gtk.Label(label="API Password")
+        ppl.modify_font(Pango.FontDescription("Sans bold 11"))
+        ppl.set_halign(Gtk.Align.START)
+        box.pack_start(ppl, False, False, 0)
+        api_pass_entry = Gtk.Entry()
+        api_pass_entry.set_text(PASSWORD)
+        api_pass_entry.modify_font(Pango.FontDescription("Sans 12"))
+        box.pack_start(api_pass_entry, False, False, 0)
+
+        # Login Type
+        ltl = Gtk.Label(label="Login Type")
+        ltl.modify_font(Pango.FontDescription("Sans bold 11"))
+        ltl.set_halign(Gtk.Align.START)
+        box.pack_start(ltl, False, False, 0)
+        lt_combo = Gtk.ComboBoxText()
+        lt_combo.append_text("DEFAULT")
+        lt_combo.append_text("EXTERNAL")
+        lt_combo.set_active(0 if LOGIN_TYPE == "DEFAULT" else 1)
+        box.pack_start(lt_combo, False, False, 0)
+
+        status = Gtk.Label(label="")
+        status.modify_font(Pango.FontDescription("Sans bold 11"))
+        box.pack_start(status, False, False, 4)
+
+        def on_save(btn):
+            new_user = api_user_entry.get_text().strip()
+            new_pass = api_pass_entry.get_text().strip()
+            new_lt = lt_combo.get_active_text()
+
+            if not new_user or not new_pass:
+                status.set_text("Enter both username and password")
+                status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
+                return
+
+            self._set_api_creds(new_user, new_pass, new_lt)
+
+            if save_admin_config(new_user, new_pass, new_lt):
+                save_session()
+                status.set_text("Saved! API credentials updated.")
+                status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
+            else:
+                status.set_text("Save failed!")
+                status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
+
+        def on_test(btn):
+            old_u, old_p, old_lt = USERNAME, PASSWORD, LOGIN_TYPE
+            self._set_api_creds(api_user_entry.get_text().strip(), api_pass_entry.get_text().strip(), lt_combo.get_active_text())
+
+            status.set_text("Testing...")
+            status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.3, 0.7, 1))
+
+            def do_test():
+                success = get_token()
+                def show_result(ok):
+                    if ok:
+                        status.set_text("Connection successful!")
+                        status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
+                    else:
+                        status.set_text("Connection failed! Check credentials.")
+                        status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
+                        pass
+                GLib.idle_add(show_result, success)
+            threading.Thread(target=do_test, daemon=True).start()
+
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+
+        test_btn = Gtk.Button(label="Test Connection")
+        test_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.8, 1))
+        test_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        test_btn.modify_font(Pango.FontDescription("Sans bold 11"))
+        test_btn.connect("clicked", on_test)
+        btn_box.pack_start(test_btn, True, True, 0)
+
+        save_btn = Gtk.Button(label="Save")
+        save_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
+        save_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        save_btn.modify_font(Pango.FontDescription("Sans bold 11"))
+        save_btn.connect("clicked", on_save)
+        btn_box.pack_start(save_btn, True, True, 0)
+
+        box.pack_start(btn_box, False, False, 5)
+
+        close_btn = Gtk.Button(label="Close")
+        close_btn.modify_font(Pango.FontDescription("Sans 10"))
+        close_btn.connect("clicked", lambda b: dialog.destroy())
+        box.pack_start(close_btn, False, False, 0)
+
+        dialog.show_all()
+
     def toggle_keyboard(self, button):
         import subprocess
         if self._kb_visible:
@@ -776,12 +1016,28 @@ class LoginWindow(Gtk.Window):
             self._kb_visible = True
 
     def on_login(self, widget):
-        global USERNAME, PASSWORD, LOGGED_IN
+        global USERNAME, PASSWORD, LOGGED_IN, LOGIN_TYPE
         u = self.username_entry.get_text().strip()
         p = self.password_entry.get_text().strip()
         if not u or not p:
             self.error_label.set_text("Enter username and password")
             return
+
+        # Check if admin has configured API credentials
+        if os.path.exists(ADMIN_CONFIG):
+            try:
+                with open(ADMIN_CONFIG) as f:
+                    cfg = json.load(f)
+                saved_user = cfg.get("api_username", "")
+                saved_pass = cfg.get("api_password", "")
+                if saved_user and saved_pass:
+                    # User must enter the same credentials admin set
+                    if u != saved_user or p != saved_pass:
+                        self.error_label.set_text("Invalid credentials")
+                        return
+            except:
+                pass
+
         USERNAME = u
         PASSWORD = p
         self.error_label.set_text("Logging in...")
@@ -792,9 +1048,10 @@ class LoginWindow(Gtk.Window):
 
     def _login_result(self, success):
         if success:
-            global LOGGED_IN
+            global LOGGED_IN, USERNAME, PASSWORD, LOGIN_TYPE
             LOGGED_IN = True
             save_session()
+            # Admin config already set by admin page
             # Kill keyboard if open
             import subprocess
             subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
@@ -804,9 +1061,9 @@ class LoginWindow(Gtk.Window):
             win.show_all()
         else:
             self.error_label.set_text("Login failed. Check username/password.")
-            global USERNAME, PASSWORD
-            USERNAME = ""
-            PASSWORD = ""
+            # credentials handled by _set_api_creds
+            pass  # handled by _set_api_creds
+            pass
 
 class AlertsWindow(Gtk.Window):
     def __init__(self):
@@ -993,7 +1250,7 @@ class AlertsWindow(Gtk.Window):
         self._typing_timer = None
         self._hide_timer = None
         self._typing_done = True
-        self._typing_speed = 100
+        self._typing_speed = 55
         self._batch_announcing = False
         self._last_refresh_time = ""
         self._countdown = REFRESH_INTERVAL
@@ -1006,7 +1263,7 @@ class AlertsWindow(Gtk.Window):
         self._all_offline_alerts = []
         GLib.timeout_add(500, self.first_fetch)
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
-        GLib.timeout_add_seconds(3600, self._auto_announce_offline_timer)
+        # Offline announced manually via button only
 
     def _scroll_to_section(self, section):
         """Scroll alerts list to a specific section."""
@@ -1370,8 +1627,7 @@ class AlertsWindow(Gtk.Window):
     def _auto_announce_unread(self, alerts):
         """Auto-announce unread alerts one by one."""
         import subprocess
-        global _announce_stop
-        _announce_stop = False
+        _start_announcing()
         time.sleep(3)
 
         for i, alert in enumerate(alerts):
@@ -1390,6 +1646,7 @@ class AlertsWindow(Gtk.Window):
                     from gtts import gTTS
                     mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
+                    if _announce_stop: break
                     tts = gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
@@ -1415,6 +1672,7 @@ class AlertsWindow(Gtk.Window):
             time.sleep(0.5)
 
         print("[" + now() + "] Auto-announced " + str(len(alerts)) + " unread alerts")
+        _stop_announcing()
 
     def _auto_announce_offline_timer(self):
         """Auto-announce offline alerts every 1 hour."""
@@ -1424,8 +1682,7 @@ class AlertsWindow(Gtk.Window):
 
         def do_offline_auto():
             import subprocess
-            global _announce_stop
-            _announce_stop = False
+            _start_announcing()
             alerts = list(self._all_offline_alerts)
 
             for i, alert in enumerate(alerts):
@@ -1440,6 +1697,7 @@ class AlertsWindow(Gtk.Window):
                     from gtts import gTTS
                     mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
+                    if _announce_stop: break
                     tts = gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
@@ -1451,7 +1709,7 @@ class AlertsWindow(Gtk.Window):
                 time.sleep(0.5)
 
         threading.Thread(target=do_offline_auto, daemon=True).start()
-        return True  # Keep timer running
+        return True  # Keep timer  # Keep timer running
 
     def _on_announce_offline(self, button):
         """Announce all offline units."""
@@ -1463,33 +1721,68 @@ class AlertsWindow(Gtk.Window):
 
         def do_offline():
             import subprocess
-            global _announce_stop
-            _announce_stop = False
+            _start_announcing()
+            self._batch_announcing = True
+            total = len(alerts)
+
+            # Pre-generate all audio
+            GLib.idle_add(button.set_label, "Generating audio...")
+            audio_files = []
+            texts = []
             for i, alert in enumerate(alerts):
                 if _announce_stop:
                     break
                 title = alert.get("title", "")
                 desc = alert.get("description", {})
                 status = desc.get("status", "")
-                text = f"Offline unit {i+1} of {len(alerts)}. {title}. {status}"
-
+                text = "Offline unit " + str(i+1) + " of " + str(total) + ". " + title + ". " + status
+                texts.append(text)
                 try:
-                    aid = alert.get("id", "")
-                    wav_path = _audio_cache.get(aid)
-                    if not wav_path or not os.path.exists(wav_path):
-                        from gtts import gTTS
-                        mp3_path = "/tmp/aquabox_offline_ann.mp3"
-                        wav_path = "/tmp/aquabox_offline_ann.wav"
-                        tts = gTTS(text=text, lang="en", tld="co.in")
-                        tts.save(mp3_path)
-                        subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
-                    GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
-                    time.sleep(1)
+                    from gtts import gTTS
+                    mp3_path = "/tmp/offline_" + str(i) + ".mp3"
+                    wav_path = "/tmp/offline_" + str(i) + ".wav"
+                    if _announce_stop: pass  # cancelled
+                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts.save(mp3_path)
+                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
+                    audio_files.append(wav_path)
                 except Exception as e:
-                    print(f"[{now()}] Offline announce error: {e}")
+                    audio_files.append(None)
+
+            # Play each with animation
+            GLib.idle_add(button.set_label, "Playing offline alerts...")
+            for i, alert in enumerate(alerts):
+                if _announce_stop:
+                    break
+                if i >= len(audio_files) or not audio_files[i]:
+                    continue
+
+                audio_duration = 0
+                try:
+                    audio_duration = os.path.getsize(audio_files[i]) / (44100 * 2)
+                except:
+                    audio_duration = 5
+
+                self._typing_done = False
+                GLib.idle_add(self._start_typing, texts[i], audio_duration)
+                time.sleep(0.3)
+
+                audio_proc = subprocess.Popen(["aplay", "-D", "plughw:0,0", "-q", audio_files[i]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                while audio_proc.poll() is None:
+                    if _announce_stop:
+                        audio_proc.kill()
+                        break
+                    time.sleep(0.1)
+
+                for _ in range(100):
+                    if self._typing_done or _announce_stop:
+                        break
+                    time.sleep(0.01)
+
                 time.sleep(0.5)
 
+            self._batch_announcing = False
+            _stop_announcing()
             GLib.idle_add(self._after_announce_offline, button)
 
         threading.Thread(target=do_offline, daemon=True).start()
@@ -1508,8 +1801,7 @@ class AlertsWindow(Gtk.Window):
 
         def do_all():
             import subprocess
-            global _announce_stop
-            _announce_stop = False
+            _start_announcing()
             for i, alert in enumerate(alerts):
                 if _announce_stop:
                     print(f"[{now()}] Announce all cancelled at alert {i+1}")
@@ -1528,6 +1820,7 @@ class AlertsWindow(Gtk.Window):
                         from gtts import gTTS
                         mp3_path = "/tmp/aquabox_announce_all.mp3"
                         wav_path = "/tmp/aquabox_announce_all.wav"
+                        if _announce_stop: break
                         tts = gTTS(text=text, lang="en", tld="co.in")
                         tts.save(mp3_path)
                         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
@@ -1542,6 +1835,7 @@ class AlertsWindow(Gtk.Window):
                 time.sleep(0.5)
 
             self._batch_announcing = False
+            _stop_announcing()
             GLib.idle_add(self._after_announce_all, button)
 
         threading.Thread(target=do_all, daemon=True).start()
@@ -1582,8 +1876,7 @@ class AlertsWindow(Gtk.Window):
         text = f"{title}. {body}. {status}"
 
         def do_announce():
-            global _announce_stop
-            _announce_stop = False
+            _start_announcing()
             try:
                 import subprocess
                 aid = alert.get("id", "")
@@ -1592,6 +1885,7 @@ class AlertsWindow(Gtk.Window):
                     from gtts import gTTS
                     mp3_path = "/tmp/aquabox_announce.mp3"
                     wav_path = "/tmp/aquabox_announce.wav"
+                    if _announce_stop: pass  # cancelled
                     tts = gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
@@ -1607,6 +1901,7 @@ class AlertsWindow(Gtk.Window):
 
             if not _announce_stop:
                 announce_and_mark_read(alert)
+            _stop_announcing()
             GLib.idle_add(self._after_announce, button)
         threading.Thread(target=do_announce, daemon=True).start()
 
@@ -1633,9 +1928,9 @@ class AlertsWindow(Gtk.Window):
         # If no duration given, use 60 WPM default
         total_chars = len(self._typing_text)
         if duration > 0 and total_chars > 0:
-            self._typing_speed = max(10, int((duration * 1000 * 0.7) / total_chars))
+            self._typing_speed = max(10, int((duration * 1000 * 0.85) / total_chars))
         else:
-            self._typing_speed = 100  # default 60 WPM
+            self._typing_speed = 55  # default
         self.overlay_label.set_text("")
         self.overlay_container.set_no_show_all(False)
         self.overlay_container.show_all()
@@ -1663,18 +1958,25 @@ class AlertsWindow(Gtk.Window):
             self._typing_timer = None
             print(f"[{now()}] Typing complete")
             if not self._batch_announcing:
-                self._hide_timer = GLib.timeout_add(4000, self._hide_announce_overlay)
+                self._hide_timer = GLib.timeout_add(5000, self._hide_announce_overlay)
             return False
 
     def _cancel_announce(self):
         """Cancel ongoing announcement."""
         global _announce_stop
         _announce_stop = True
-        # Kill any playing audio
+        self._typing_done = True
+        self._batch_announcing = False
         import subprocess
         subprocess.run(["killall", "aplay"], capture_output=True)
         self._hide_announce_overlay()
+        # Reset all announce buttons immediately
+        GLib.idle_add(self._reset_announce_buttons)
         print(f"[{now()}] Announcement cancelled")
+
+    def _reset_announce_buttons(self):
+        """Reset all announce buttons to clickable state."""
+        threading.Thread(target=self._fetch_and_update, daemon=True).start()
 
     def _hide_announce_overlay(self):
         """Hide overlay and bottom bar."""
@@ -1740,6 +2042,7 @@ def main():
     print(f"  Announced alerts tracked: {len(announced_ids)}")
     print("=" * 50)
 
+    load_admin_config()
     load_session()
 
     if LOGGED_IN:
