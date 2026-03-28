@@ -46,6 +46,9 @@ alerts_data = {}
 fetch_lock = threading.Lock()
 announced_ids = set()  # Track announced alert IDs to avoid repeats
 _announce_stop = False  # Flag to stop announcing
+_announced_ids = set()  # Track already-announced alert IDs
+_auto_announcing = False  # Prevent overlapping auto-announce
+_refresh_queued = False  # Queue refresh if announce is running
 # No lock needed - _announce_stop handles cancellation
 _audio_cache = {}  # Pre-generated audio {alert_id: wav_path}
 _cache_lock = threading.Lock()
@@ -1330,6 +1333,20 @@ class AlertsWindow(Gtk.Window):
         return True
 
     def _on_logout(self, button):
+        global _announce_stop, _auto_announcing
+        # If announce is running, stop it first then logout
+        if _auto_announcing:
+            # Let announce complete, then logout
+            def wait_and_logout():
+                while _auto_announcing:
+                    time.sleep(0.5)
+                GLib.idle_add(self._do_logout)
+            button.set_sensitive(False)
+            threading.Thread(target=wait_and_logout, daemon=True).start()
+            return
+        self._do_logout()
+
+    def _do_logout(self):
         global USERNAME, PASSWORD, LOGGED_IN
         USERNAME = ""
         PASSWORD = ""
@@ -1337,7 +1354,7 @@ class AlertsWindow(Gtk.Window):
         import subprocess
         subprocess.run(["rm", "-f", CREDS_FILE], capture_output=True)
         subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
-        # Show login first, then hide alerts window
+        subprocess.run(["killall", "aplay"], capture_output=True)
         login = LoginWindow()
         login.connect("destroy", lambda w: None if LOGGED_IN else Gtk.main_quit())
         login.show_all()
@@ -1372,6 +1389,12 @@ class AlertsWindow(Gtk.Window):
     _last_fetch_time_actual = 0
 
     def _fetch_and_update(self):
+        global _refresh_queued
+        # If announce is running, queue the refresh
+        if _auto_announcing:
+            _refresh_queued = True
+            print("[" + now() + "] Refresh queued - announce in progress")
+            return
         # Prevent fetching more than once every 30 seconds
         now_ts = time.time()
         if now_ts - self._last_fetch_time_actual < 30:
@@ -1453,8 +1476,10 @@ class AlertsWindow(Gtk.Window):
                 for alert in unread_alerts:
                     card = self._make_alert_card(alert)
                     self.alerts_container.pack_start(card, False, False, 0)
-                # Auto-announce unread alerts
-                threading.Thread(target=self._auto_announce_unread, args=(list(unread_alerts),), daemon=True).start()
+                # Auto-announce only NEW unread alerts (not already announced)
+                new_unread = [a for a in unread_alerts if a.get('id','') not in _announced_ids]
+                if new_unread and not _auto_announcing:
+                    threading.Thread(target=self._auto_announce_unread, args=(list(new_unread),), daemon=True).start()
             else:
                 no_unread = Gtk.Label(label="All caught up! No unread alerts.")
                 no_unread.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.26, 0.77, 0.37, 0.8))
@@ -1626,6 +1651,10 @@ class AlertsWindow(Gtk.Window):
 
     def _auto_announce_unread(self, alerts):
         """Auto-announce unread alerts one by one."""
+        global _auto_announcing, _announced_ids
+        if _auto_announcing:
+            return
+        _auto_announcing = True
         import subprocess
         _start_announcing()
         time.sleep(3)
@@ -1667,11 +1696,20 @@ class AlertsWindow(Gtk.Window):
             except Exception as e:
                 print("[" + now() + "] Auto-announce unread error: " + str(e))
 
+            _announced_ids.add(alert.get("id", ""))
             announce_and_mark_read(alert)
             GLib.idle_add(self._update_counters, 1)
             time.sleep(0.5)
 
+        _auto_announcing = False
         print("[" + now() + "] Auto-announced " + str(len(alerts)) + " unread alerts")
+        # Process queued refresh
+        global _refresh_queued
+        if _refresh_queued:
+            _refresh_queued = False
+            print("[" + now() + "] Processing queued refresh")
+            time.sleep(1)
+            GLib.idle_add(self.refresh_alerts)
         _stop_announcing()
 
     def _auto_announce_offline_timer(self):
@@ -1783,6 +1821,10 @@ class AlertsWindow(Gtk.Window):
 
             self._batch_announcing = False
             _stop_announcing()
+            if _refresh_queued:
+                _refresh_queued = False
+                time.sleep(1)
+                GLib.idle_add(self.refresh_alerts)
             GLib.idle_add(self._after_announce_offline, button)
 
         threading.Thread(target=do_offline, daemon=True).start()
@@ -1836,6 +1878,11 @@ class AlertsWindow(Gtk.Window):
 
             self._batch_announcing = False
             _stop_announcing()
+            # Process queued refresh
+            if _refresh_queued:
+                _refresh_queued = False
+                time.sleep(1)
+                GLib.idle_add(self.refresh_alerts)
             GLib.idle_add(self._after_announce_all, button)
 
         threading.Thread(target=do_all, daemon=True).start()
@@ -1963,8 +2010,9 @@ class AlertsWindow(Gtk.Window):
 
     def _cancel_announce(self):
         """Cancel ongoing announcement."""
-        global _announce_stop
+        global _announce_stop, _auto_announcing
         _announce_stop = True
+        _auto_announcing = False
         self._typing_done = True
         self._batch_announcing = False
         import subprocess
