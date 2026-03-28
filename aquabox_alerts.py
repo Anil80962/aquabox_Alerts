@@ -28,6 +28,7 @@ MARK_READ_URL = "https://prod-aquagen.azurewebsites.net/api/user/notification/up
 USERNAME = ""
 PASSWORD = ""
 LOGIN_TYPE = "DEFAULT"
+TTS_LANG = "en"  # en=English, te=Telugu, hi=Hindi, kn=Kannada, ta=Tamil
 LOGGED_IN = False
 CREDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_session.json")
 ADMIN_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "admin_config.json")
@@ -87,7 +88,7 @@ def precache_audio(alerts):
         try:
             mp3 = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.mp3"
             wav = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.wav"
-            tts = gTTS(text=text, lang="en", tld="co.in")
+            tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
             tts.save(mp3)
             subprocess.run(["ffmpeg", "-y", "-i", mp3, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav], capture_output=True, timeout=30)
             with _cache_lock:
@@ -105,7 +106,7 @@ def save_session():
     except: pass
 
 def load_admin_config():
-    global USERNAME, PASSWORD, LOGIN_TYPE
+    global USERNAME, PASSWORD, LOGIN_TYPE, TTS_LANG
     try:
         if os.path.exists(ADMIN_CONFIG):
             with open(ADMIN_CONFIG) as f:
@@ -114,14 +115,15 @@ def load_admin_config():
                     USERNAME = d["api_username"]
                     PASSWORD = d["api_password"]
                     LOGIN_TYPE = d.get("login_type", "DEFAULT")
+                    TTS_LANG = d.get("tts_lang", "en")
                     return True
     except: pass
     return False
 
-def save_admin_config(api_user, api_pass, login_type="DEFAULT"):
+def save_admin_config(api_user, api_pass, login_type="DEFAULT", tts_lang="en"):
     try:
         with open(ADMIN_CONFIG, "w") as f:
-            json.dump({"api_username": api_user, "api_password": api_pass, "login_type": login_type}, f)
+            json.dump({"api_username": api_user, "api_password": api_pass, "login_type": login_type, "tts_lang": tts_lang}, f)
         return True
     except: return False
 
@@ -872,7 +874,7 @@ class LoginWindow(Gtk.Window):
         dialog.show_all()
 
     def _set_api_creds(self, user, passwd, lt):
-        global USERNAME, PASSWORD, LOGIN_TYPE, token, token_time
+        global USERNAME, PASSWORD, LOGIN_TYPE, token, token_time, TTS_LANG
         USERNAME = user
         PASSWORD = passwd
         LOGIN_TYPE = lt
@@ -935,6 +937,21 @@ class LoginWindow(Gtk.Window):
         lt_combo.set_active(0 if LOGIN_TYPE == "DEFAULT" else 1)
         box.pack_start(lt_combo, False, False, 0)
 
+        # TTS Language
+        lang_l = Gtk.Label(label="Announcement Language")
+        lang_l.modify_font(Pango.FontDescription("Sans bold 11"))
+        lang_l.set_halign(Gtk.Align.START)
+        box.pack_start(lang_l, False, False, 0)
+        lang_combo = Gtk.ComboBoxText()
+        lang_combo.append_text("English (Indian)")
+        lang_combo.append_text("Telugu")
+        lang_combo.append_text("Hindi")
+        lang_combo.append_text("Kannada")
+        lang_combo.append_text("Tamil")
+        lang_map = {"en": 0, "te": 1, "hi": 2, "kn": 3, "ta": 4}
+        lang_combo.set_active(lang_map.get(TTS_LANG, 0))
+        box.pack_start(lang_combo, False, False, 0)
+
         status = Gtk.Label(label="")
         status.modify_font(Pango.FontDescription("Sans bold 11"))
         box.pack_start(status, False, False, 4)
@@ -951,7 +968,11 @@ class LoginWindow(Gtk.Window):
 
             self._set_api_creds(new_user, new_pass, new_lt)
 
-            if save_admin_config(new_user, new_pass, new_lt):
+            lang_options = ["en", "te", "hi", "kn", "ta"]
+            new_lang = lang_options[lang_combo.get_active()]
+            global TTS_LANG
+            TTS_LANG = new_lang
+            if save_admin_config(new_user, new_pass, new_lt, new_lang):
                 save_session()
                 status.set_text("Saved! API credentials updated.")
                 status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
@@ -1154,6 +1175,21 @@ class AlertsWindow(Gtk.Window):
         self.refresh_btn.connect("clicked", self.on_refresh_clicked)
         self.refresh_btn.get_style_context().add_class("refresh-btn")
         right_box.pack_start(self.refresh_btn, False, False, 0)
+
+        # Language toggle button
+        self._lang_list = ["en", "te", "kn", "ta"]
+        self._lang_labels = ["ENG", "TEL", "KAN", "TAM"]
+        self._lang_idx = 0
+        for i, l in enumerate(self._lang_list):
+            if l == TTS_LANG:
+                self._lang_idx = i
+                break
+        self.lang_btn = Gtk.Button(label=self._lang_labels[self._lang_idx])
+        self.lang_btn.modify_font(Pango.FontDescription("Sans bold 10"))
+        self.lang_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.9))
+        self.lang_btn.get_style_context().add_class("refresh-btn")
+        self.lang_btn.connect("clicked", self._toggle_lang)
+        right_box.pack_start(self.lang_btn, False, False, 0)
 
 
 
@@ -1360,6 +1396,24 @@ class AlertsWindow(Gtk.Window):
         login.show_all()
         self.hide()
         self.destroy()
+
+    def _toggle_lang(self, button):
+        global TTS_LANG
+        self._lang_idx = (self._lang_idx + 1) % len(self._lang_list)
+        TTS_LANG = self._lang_list[self._lang_idx]
+        button.set_label(self._lang_labels[self._lang_idx])
+        # Save to admin config
+        try:
+            import json
+            if os.path.exists(ADMIN_CONFIG):
+                with open(ADMIN_CONFIG) as f:
+                    cfg = json.load(f)
+                cfg["tts_lang"] = TTS_LANG
+                with open(ADMIN_CONFIG, "w") as f:
+                    json.dump(cfg, f)
+        except: pass
+        # Clear audio cache for new language
+        _audio_cache.clear()
 
     def on_refresh_clicked(self, button):
         global _announce_stop
@@ -1676,7 +1730,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
                     if _announce_stop: break
-                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
 
@@ -1736,7 +1790,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
                     if _announce_stop: break
-                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
                     GLib.idle_add(self._start_typing, text)
@@ -1780,7 +1834,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/offline_" + str(i) + ".wav"
                     if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
                     audio_files.append(wav_path)
@@ -1863,7 +1917,7 @@ class AlertsWindow(Gtk.Window):
                         mp3_path = "/tmp/aquabox_announce_all.mp3"
                         wav_path = "/tmp/aquabox_announce_all.wav"
                         if _announce_stop: break
-                        tts = gTTS(text=text, lang="en", tld="co.in")
+                        tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
                         tts.save(mp3_path)
                         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
                     GLib.idle_add(self._start_typing, text)
@@ -1933,7 +1987,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/aquabox_announce.mp3"
                     wav_path = "/tmp/aquabox_announce.wav"
                     if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
                 audio_dur = 0
