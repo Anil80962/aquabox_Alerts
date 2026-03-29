@@ -1569,7 +1569,7 @@ class AlertsWindow(Gtk.Window):
         self._panda_msg_idx = 0
         self._panda_msg_char = 0
         self._panda_messages = [
-            "Hi! I am AquaGPT",
+            "Hi! I am AquaBox",
             "Your water assistant!",
             "Monitoring your alerts",
             "Stay water positive!",
@@ -1696,7 +1696,7 @@ class AlertsWindow(Gtk.Window):
         header.set_size_request(-1, 45)
 
         # Logo in header
-        logo_path = "/home/aquabox/Desktop/Aquabox/aquagpt-logo.png"
+        logo_path = "/home/aquabox/Desktop/Aquabox/fluxgen-icon.jpg"
         if os.path.exists(logo_path):
             pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 30, 30, True)
             logo_img = Gtk.Image.new_from_pixbuf(pb)
@@ -1736,7 +1736,7 @@ class AlertsWindow(Gtk.Window):
         main_box.pack_start(scroll, True, True, 0)
 
         # Welcome message
-        self._add_bot_message("Hi! I am AquaGPT, your water assistant. Ask me anything!")
+        self._add_bot_message("Hi! I am AquaBox, your water assistant. Ask me anything!")
 
         # Input area
         input_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -1773,58 +1773,112 @@ class AlertsWindow(Gtk.Window):
         self._chat_window.add(main_box)
         self._chat_window.show_all()
 
-    def _add_bot_message(self, text):
+    def _add_bot_message(self, text, speak=False):
         msg_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         msg_box.set_margin_top(4)
+        msg_box.set_margin_start(5)
 
-        # Bot avatar
-        avatar = Gtk.Label(label="💧")
-        avatar.modify_font(Pango.FontDescription("Sans 16"))
+        # Bot avatar - Fluxgen icon
+        icon_path = "/home/aquabox/Desktop/Aquabox/fluxgen-icon.jpg"
+        if os.path.exists(icon_path):
+            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(icon_path, 24, 24, True)
+            avatar = Gtk.Image.new_from_pixbuf(pb)
+        else:
+            avatar = Gtk.Label(label="B")
         msg_box.pack_start(avatar, False, False, 0)
 
-        # Message bubble
-        label = Gtk.Label(label=text)
+        # Bubble
+        bubble = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        bubble.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.93, 0.95, 0.98, 1))
+        bubble.set_margin_end(40)
+
+        label = Gtk.Label(label="")
         label.set_line_wrap(True)
-        label.set_max_width_chars(45)
+        label.set_max_width_chars(50)
         label.set_halign(Gtk.Align.START)
-        label.modify_font(Pango.FontDescription("Noto Sans 12"))
-        label.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        label.modify_font(Pango.FontDescription("Noto Sans 11"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
-        label.set_margin_start(8)
-        label.set_margin_end(8)
-        label.set_margin_top(6)
-        label.set_margin_bottom(6)
-        msg_box.pack_start(label, False, False, 0)
+        label.set_margin_start(10)
+        label.set_margin_end(10)
+        label.set_margin_top(8)
+        label.set_margin_bottom(8)
+        bubble.pack_start(label, False, False, 0)
+        msg_box.pack_start(bubble, True, True, 0)
 
         self._chat_box.pack_start(msg_box, False, False, 0)
         msg_box.show_all()
-        # Scroll to bottom
-        GLib.idle_add(self._scroll_chat_bottom)
+        try:
+            adj = self._chat_box.get_parent().get_vadjustment()
+            adj.set_value(adj.get_upper())
+        except: pass
+
+        # Typing animation
+        self._chat_typing_text = text
+        self._chat_typing_idx = 0
+        self._chat_typing_label = label
+        GLib.timeout_add(25, self._chat_type_tick)
+
+        # Speak answer
+        if speak and text:
+            def do_speak():
+                try:
+                    import subprocess
+                    from gtts import gTTS
+                    if TTS_LANG != "en":
+                        tts = gTTS(text=text, lang=TTS_LANG)
+                    else:
+                        tts = gTTS(text=text, lang="en", tld="co.in")
+                    tts.save("/tmp/aquabox_chat.mp3")
+                    subprocess.run(["ffmpeg", "-y", "-i", "/tmp/aquabox_chat.mp3", "-ar", "44100", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=15)
+                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
+                except Exception as e:
+                    print("[AquaBox Chat] Speak error: " + str(e))
+            threading.Thread(target=do_speak, daemon=True).start()
+
+    def _chat_type_tick(self):
+        if self._chat_typing_idx <= len(self._chat_typing_text):
+            self._chat_typing_label.set_text(self._chat_typing_text[:self._chat_typing_idx])
+            self._chat_typing_idx += 1
+            try:
+                adj = self._chat_box.get_parent().get_vadjustment()
+                adj.set_value(adj.get_upper())
+            except: pass
+            return True
+        return False
+
 
     def _add_user_message(self, text):
         msg_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         msg_box.set_margin_top(4)
+        msg_box.set_margin_end(5)
+
+        # User bubble
+        bubble = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        bubble.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.35, 0.7, 1))
+        bubble.set_margin_start(80)
 
         label = Gtk.Label(label=text)
         label.set_line_wrap(True)
         label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.END)
-        label.modify_font(Pango.FontDescription("Noto Sans 12"))
-        label.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.4, 0.75, 1))
+        label.modify_font(Pango.FontDescription("Noto Sans 11"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        label.set_margin_start(8)
-        label.set_margin_end(8)
-        label.set_margin_top(6)
-        label.set_margin_bottom(6)
-        msg_box.pack_end(label, False, False, 0)
+        label.set_margin_start(10)
+        label.set_margin_end(10)
+        label.set_margin_top(8)
+        label.set_margin_bottom(8)
+        bubble.pack_start(label, False, False, 0)
 
+        msg_box.pack_end(bubble, True, True, 0)
         self._chat_box.pack_start(msg_box, False, False, 0)
         msg_box.show_all()
         GLib.idle_add(self._scroll_chat_bottom)
 
     def _scroll_chat_bottom(self):
-        adj = self._chat_box.get_parent().get_vadjustment()
-        adj.set_value(adj.get_upper())
+        try:
+            adj = self._chat_box.get_parent().get_vadjustment()
+            adj.set_value(adj.get_upper())
+        except: pass
         return False
 
     def _send_chat(self, widget):
@@ -1837,7 +1891,25 @@ class AlertsWindow(Gtk.Window):
         # Get answer in background
         def get_answer():
             answer = self._get_ai_answer(text)
-            GLib.idle_add(self._add_bot_message, answer)
+            # Pre-generate audio first
+            wav_path = None
+            try:
+                import subprocess
+                from gtts import gTTS
+                if TTS_LANG != "en":
+                    tts = gTTS(text=answer, lang=TTS_LANG)
+                else:
+                    tts = gTTS(text=answer, lang="en", tld="co.in")
+                tts.save("/tmp/aquabox_chat.mp3")
+                subprocess.run(["ffmpeg", "-y", "-i", "/tmp/aquabox_chat.mp3", "-ar", "44100", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=15)
+                wav_path = "/tmp/aquabox_chat.wav"
+            except: pass
+            # Show typing + play audio simultaneously
+            GLib.idle_add(lambda: self._add_bot_message(answer))
+            if wav_path:
+                import subprocess
+                time.sleep(0.3)
+                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
         threading.Thread(target=get_answer, daemon=True).start()
 
     def _draw_mic_icon(self, widget, cr):
@@ -1872,6 +1944,7 @@ class AlertsWindow(Gtk.Window):
         button.set_label("Mic")
 
     def _get_ai_answer(self, question):
+        from gtts import gTTS
         """Get answer using DuckDuckGo Instant Answer API."""
         try:
             q = question.lower()
@@ -1886,9 +1959,9 @@ class AlertsWindow(Gtk.Window):
                 "water positive": "Water positive means replenishing more water than you consume. Fluxgen helps organizations achieve water positivity through smart monitoring.",
                 "what is aquabox": "AquaBox is a water monitoring and alert system by Fluxgen Sustainable Technologies. It monitors water levels, flow rates, and sends real-time alerts.",
                 "what is fluxgen": "Fluxgen Sustainable Technologies builds IoT solutions for water management, helping organizations become water-positive.",
-                "who are you": "I am AquaGPT, your AI water assistant by Fluxgen Sustainable Technologies. I help monitor water usage and answer water-related questions.",
-                "hello": "Hello! I am AquaGPT. How can I help you with water management today?",
-                "hi": "Hi there! I am AquaGPT, your water assistant. Ask me anything about water!",
+                "who are you": "I am AquaBox, your AI water assistant by Fluxgen Sustainable Technologies. I help monitor water usage and answer water-related questions.",
+                "hello": "Hello! I am AquaBox. How can I help you with water management today?",
+                "hi": "Hi there! I am AquaBox, your water assistant. Ask me anything about water!",
             }
 
             for key, answer in water_qa.items():
