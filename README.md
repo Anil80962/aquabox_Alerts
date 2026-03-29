@@ -2,7 +2,7 @@
 
 A fullscreen alerts dashboard for Raspberry Pi with 5-inch HDMI display, built for **Fluxgen Sustainable Technologies**.
 
-Fetches real-time water management alerts from the AquaGen API and displays them on a touchscreen with text-to-speech announcement capability.
+Fetches real-time water management alerts from the AquaGen API and displays them on a touchscreen with multi-language text-to-speech announcement.
 
 ## Features
 
@@ -12,46 +12,37 @@ Fetches real-time water management alerts from the AquaGen API and displays them
 - Session persistence (auto-login on reboot until logout)
 - Logout waits for announce to complete before logging out
 - Animated login page with Fluxgen logo and water effects
-- Virtual on-screen keyboard (wvkbd) for touchscreen input
-- Password visibility toggle (eye icon)
+- Virtual on-screen keyboard (wvkbd)
+- Password visibility toggle
+
+### Multi-Language TTS
+- **6 Languages**: English, Telugu, Kannada, Tamil, Hindi, Malayalam
+- **Header dropdown** to switch language instantly
+- Location names stay in English, everything else in local language
+- Translated phrases: filled, stock upper/lower limit, daily limit, offline, etc.
+- Google TTS with proper Indic fonts (Noto Sans, Lohit)
 
 ### Alerts Dashboard
-- **Read / Unread sections** — alerts separated with visual indicators
-- **Clickable stat boxes** — tap UNREAD/READ/TOTAL/OFFLINE to scroll to section
-- **Color-coded cards** by importance (High=Red, Medium=Yellow, Low=Blue)
-- **Auto-refresh** every 2 minutes with live countdown timer
-- **Manual refresh** button
-- **Mark as Read** — tap alert → "Mark Read" button → calls API
-- **Real-time clock** with date display
+- **Read / Unread sections** with visual indicators
+- **Clickable stat boxes** — tap to scroll to section
+- **Smart auto-announce** — only NEW unread alerts announced (tracks IDs)
+- **Announce All Alerts** — pre-generates audio, plays sequentially
+- **Announce Offline Units** — with typing animation
+- **Cancel** button (✕) stops instantly
+- **Queue-based refresh** — refresh waits if announce is running
+- **No double voices** — single announce lock
+- **Dynamic typing speed** synced with audio duration
 - Instant counter updates on read/announce
 
-### Text-to-Speech Announcements
-- **Google TTS** — natural Indian English female voice (`co.in`)
-- **Smart auto-announce** — only NEW unread alerts announced (tracks IDs)
-- **Announce All Alerts** — pre-generates all audio, plays sequentially
-- **Announce Offline Units** — reads offline device alerts with animation
-- **Single announce** — tap ♪ on any alert card
-- **Cancel** button (✕) stops instantly
-- **Queue-based refresh** — if announce running, refresh waits in queue
-- **No double voices** — `_auto_announcing` flag prevents overlap
-- **Dynamic typing speed** — auto-calculated to match audio duration
-- **Synced animation** — typing text and voice play simultaneously
-- **Typing completion wait** — next alert starts only after current finishes
-- **Batch mode** — no overlay flicker between alerts
-- **Audio filters** — volume boost, highpass/lowpass for clear voice
-
-### Display
-- Optimized for **800x480** (5-inch HDMI display)
-- White background with 20px uniform font size
-- Scrollable alert list
-- Stats bar: Unread / Read / Total / Offline counts (clickable)
-- Bottom status bar with API refresh timestamp and countdown
+### Desktop App
+- **AquaBox-Alerts.desktop** shortcut on desktop
+- Click to reopen alerts if window closes
+- Auto-starts on boot via systemd
 
 ### Boot Experience
 - Auto-login (no greeter)
-- Black desktop background (no desktop flash)
+- Black desktop background
 - Clean transition to alerts app
-- Hidden console output
 
 ## Requirements
 
@@ -61,31 +52,27 @@ Fetches real-time water management alerts from the AquaGen API and displays them
 - Speaker via 3.5mm audio jack
 - Internet connection
 
-### Software
-```
-Python 3.x
-GTK 3.0 (gi)
-gTTS (Google Text-to-Speech)
-requests
-espeak-ng (fallback TTS)
-ffmpeg (audio conversion)
-wvkbd (virtual keyboard)
-cairo (graphics)
-```
-
-### Install Dependencies
+### Software & Fonts
 ```bash
+# Dependencies
 sudo apt-get install -y espeak-ng ffmpeg wvkbd
 pip3 install gTTS requests --break-system-packages
+
+# Indic language fonts
+sudo apt-get install -y fonts-noto-core fonts-noto-extra \
+    fonts-lohit-telu fonts-lohit-knda fonts-lohit-taml \
+    fonts-lohit-deva fonts-lohit-mlym
 ```
 
 ## Setup
 
-### 1. Copy to Raspberry Pi
+### 1. Copy files
 ```bash
 mkdir -p ~/Desktop/Aquabox
 cp aquabox_alerts.py ~/Desktop/Aquabox/
 cp Fluxgen-Logo.png ~/Desktop/Aquabox/
+cp AquaBox-Alerts.desktop ~/Desktop/
+chmod +x ~/Desktop/AquaBox-Alerts.desktop
 ```
 
 ### 2. Create systemd service
@@ -117,63 +104,52 @@ sudo systemctl enable aquabox-alerts.service
 sudo systemctl start aquabox-alerts.service
 ```
 
-### 3. Auto-login
-```bash
-sudo tee /etc/lightdm/lightdm.conf.d/50-autologin.conf << 'CONF'
-[Seat:*]
-autologin-user=aquabox
-autologin-session=rpd-labwc
-CONF
-```
+### 3. First Time Setup
+1. Tap **⚙ Admin** → `admin` / `admin`
+2. Set API username and password
+3. **Test Connection** → Save
+4. Login with same credentials
+5. Select language from header dropdown
 
-### 4. First Time Setup
-1. Tap **⚙ Admin** on login page
-2. Enter admin credentials: `admin` / `admin`
-3. Set API username and password
-4. Tap **Test Connection** to verify
-5. Tap **Save**
-6. Login with the same credentials
+## Supported Languages
+
+| Language | Code | Dropdown | Translations |
+|----------|------|----------|-------------|
+| English | en | ENG | Default |
+| Telugu | te | TEL | నిండింది, నీటి మట్టం పై పరిమితి... |
+| Kannada | kn | KAN | ತುಂಬಿದೆ, ನೀರಿನ ಮಟ್ಟ ಮೇಲಿನ ಮಿತಿ... |
+| Tamil | ta | TAM | நிரம்பியது, நீர் மட்டம் மேல் வரம்பை... |
+| Hindi | hi | HIN | भरा हुआ, जल स्तर ऊपरी सीमा... |
+| Malayalam | ml | MAL | നിറഞ്ഞു, ജല നിരപ്പ് ഉയർന്ന പരിധി... |
 
 ## Architecture
 
 ### Queue-Based Processing
 ```
-Announce running → API refresh triggers → QUEUED
-                                           ↓
-Announce finishes → Queue detected → Refresh runs → New unread? → Auto-announce
+Announce running → Refresh triggers → QUEUED → Announce done → Refresh runs
 ```
 
 ### Smart Auto-Announce
 ```
-Refresh 1: 5 unread → auto-reads all 5 → tracks IDs
-Refresh 2: same 5 (read) + 1 new → only reads the 1 new one
-Refresh 3: no new unread → nothing announced
-```
-
-### Logout Queue
-```
-Announce running → tap logout → waits for completion → then logs out
-No announce → tap logout → immediate logout
+Boot → marks all existing alerts as known → only NEW alerts get announced
 ```
 
 ## API Endpoints
 
 | API | Method | Purpose |
 |-----|--------|---------|
-| `/api/user/user/login` | GET | Authentication & token |
+| `/api/user/user/login` | GET | Authentication |
 | `/api/user/alerts` | GET | Fetch daily alerts |
-| `/api/user/notification/updateRead` | PATCH | Mark alerts as read |
+| `/api/user/notification/updateRead` | PATCH | Mark as read |
 
 ## Configuration
 
-| Setting | Value | Description |
-|---------|-------|-------------|
-| `REFRESH_INTERVAL` | 120s | Alert refresh interval |
-| `TOKEN_REFRESH` | 13800s | Token refresh (10 min before 4hr expiry) |
-| Audio device | `plughw:0,0` | 3.5mm headphone jack |
-| Typing speed | Dynamic (0.85x audio) | Synced with voice |
-| TTS voice | Google `en` `co.in` | Indian English female |
-| Admin credentials | `admin` / `admin` | For API settings page |
+| Setting | Value |
+|---------|-------|
+| Refresh interval | 120s |
+| Token refresh | 13800s (10 min before 4hr expiry) |
+| Audio device | plughw:0,0 |
+| Admin credentials | admin / admin |
 
 ---
 

@@ -29,6 +29,168 @@ USERNAME = ""
 PASSWORD = ""
 LOGIN_TYPE = "DEFAULT"
 TTS_LANG = "en"  # en=English, te=Telugu, hi=Hindi, kn=Kannada, ta=Tamil
+
+# Translations for TTS announcements
+TRANSLATIONS = {
+    "en": {
+        "alert": "Alert",
+        "of": "of",
+        "unread_alert": "Unread alert",
+        "offline_unit": "Offline unit",
+        "filled": "filled",
+        "stock_upper": "Stock Level Upper limit reached",
+        "stock_lower": "Stock Level Lower limit reached",
+        "daily_limit": "Daily Limit Reached",
+        "daily_limit_90": "90 percent of the Daily Limit Reached",
+        "abnormal": "Abnormal water usage detected",
+        "offline": "Device is offline",
+        "online": "Device is back online",
+        "at": "at",
+        "current_stock": "Current Stock",
+        "upper_limit": "Upper Limit",
+        "lower_limit": "Lower Limit",
+    },
+    "te": {
+        "alert": "హెచ్చరిక",
+        "of": "లో",
+        "unread_alert": "చదవని హెచ్చరిక",
+        "offline_unit": "ఆఫ్‌లైన్ యూనిట్",
+        "filled": "నిండింది",
+        "stock_upper": "నీటి మట్టం పై పరిమితి చేరుకుంది",
+        "stock_lower": "నీటి మట్టం కింది పరిమితి చేరుకుంది",
+        "daily_limit": "రోజువారీ పరిమితి చేరుకుంది",
+        "daily_limit_90": "రోజువారీ పరిమితిలో 90 శాతం చేరుకుంది",
+        "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
+        "offline": "పరికరం ఆఫ్‌లైన్‌లో ఉంది",
+        "online": "పరికరం తిరిగి ఆన్‌లైన్‌లో ఉంది",
+        "at": "సమయం",
+        "current_stock": "ప్రస్తుత నిల్వ",
+        "upper_limit": "పై పరిమితి",
+        "lower_limit": "కింది పరిమితి",
+    },
+    "hi": {
+        "alert": "चेतावनी",
+        "of": "में से",
+        "unread_alert": "अपठित चेतावनी",
+        "offline_unit": "ऑफलाइन यूनिट",
+        "filled": "भरा हुआ",
+        "stock_upper": "जल स्तर ऊपरी सीमा पर पहुंच गया",
+        "stock_lower": "जल स्तर निचली सीमा पर पहुंच गया",
+        "daily_limit": "दैनिक सीमा पूरी हो गई",
+        "daily_limit_90": "दैनिक सीमा का 90 प्रतिशत पूरा हो गया",
+        "abnormal": "असामान्य पानी का उपयोग पाया गया",
+        "offline": "डिवाइस ऑफलाइन है",
+        "online": "डिवाइस वापस ऑनलाइन है",
+        "at": "बजे",
+        "current_stock": "वर्तमान स्टॉक",
+        "upper_limit": "ऊपरी सीमा",
+        "lower_limit": "निचली सीमा",
+    },
+    "kn": {
+        "alert": "ಎಚ್ಚರಿಕೆ",
+        "of": "ರಲ್ಲಿ",
+        "unread_alert": "ಓದದ ಎಚ್ಚರಿಕೆ",
+        "offline_unit": "ಆಫ್‌ಲೈನ್ ಘಟಕ",
+        "filled": "ತುಂಬಿದೆ",
+        "stock_upper": "ನೀರಿನ ಮಟ್ಟ ಮೇಲಿನ ಮಿತಿ ತಲುಪಿದೆ",
+        "stock_lower": "ನೀರಿನ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
+        "daily_limit": "ದೈನಂದಿನ ಮಿತಿ ತಲುಪಿದೆ",
+        "daily_limit_90": "ದೈನಂದಿನ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
+        "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
+        "offline": "ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
+        "online": "ಸಾಧನ ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
+        "at": "ಸಮಯ",
+        "current_stock": "ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು",
+        "upper_limit": "ಮೇಲಿನ ಮಿತಿ",
+        "lower_limit": "ಕೆಳಗಿನ ಮಿತಿ",
+    },
+    "ml": {
+        "alert": "മുന്നറിയിപ്പ്",
+        "of": "ൽ",
+        "unread_alert": "വായിക്കാത്ത മുന്നറിയിപ്പ്",
+        "offline_unit": "ഓഫ്‌ലൈൻ യൂണിറ്റ്",
+        "filled": "നിറഞ്ഞു",
+        "stock_upper": "ജല നിരപ്പ് ഉയർന്ന പരിധി എത്തി",
+        "stock_lower": "ജല നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
+        "daily_limit": "ദൈനംദിന പരിധി എത്തി",
+        "daily_limit_90": "ദൈനംദിന പരിധിയുടെ 90 ശതമാനം എത്തി",
+        "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
+        "offline": "ഉപകരണം ഓഫ്‌ലൈനിലാണ്",
+        "online": "ഉപകരണം വീണ്ടും ഓൺലൈനിലാണ്",
+        "at": "സമയം",
+        "current_stock": "നിലവിലെ സ്റ്റോക്ക്",
+        "upper_limit": "ഉയർന്ന പരിധി",
+        "lower_limit": "താഴ്ന്ന പരിധി",
+    },
+    "ta": {
+        "alert": "எச்சரிக்கை",
+        "of": "இல்",
+        "unread_alert": "படிக்காத எச்சரிக்கை",
+        "offline_unit": "ஆஃப்லைன் அலகு",
+        "filled": "நிரம்பியது",
+        "stock_upper": "நீர் மட்டம் மேல் வரம்பை எட்டியது",
+        "stock_lower": "நீர் மட்டம் கீழ் வரம்பை எட்டியது",
+        "daily_limit": "தினசரி வரம்பு எட்டியது",
+        "daily_limit_90": "தினசரி வரம்பின் 90 சதவீதம் எட்டியது",
+        "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
+        "offline": "சாதனம் ஆஃப்லைனில் உள்ளது",
+        "online": "சாதனம் மீண்டும் ஆன்லைனில் உள்ளது",
+        "at": "நேரம்",
+        "current_stock": "தற்போதைய இருப்பு",
+        "upper_limit": "மேல் வரம்பு",
+        "lower_limit": "கீழ் வரம்பு",
+    },
+}
+
+
+def translate_alert_text(title, body, status, lang):
+    """Translate alert text to local language, keep location name in English."""
+    t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
+
+    # Body translations
+    translated_body = body
+    if "filled" in body.lower():
+        # Extract percentage e.g. "90.84% filled"
+        parts = body.split("%")
+        if len(parts) > 1:
+            translated_body = parts[0] + "% " + t["filled"]
+        else:
+            translated_body = body.replace("filled", t["filled"])
+    elif "Daily Limit Reached" in body:
+        translated_body = t["daily_limit"]
+    elif "90% of the Daily Limit" in body:
+        translated_body = t["daily_limit_90"]
+    elif "Abnormal" in body:
+        translated_body = t["abnormal"]
+    elif body.lower() == "offline":
+        translated_body = t["offline"]
+    elif body.lower() == "online":
+        translated_body = t["online"]
+
+    # Status translations
+    translated_status = status
+    if "Upper limit reached" in status:
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
+    elif "Lower limit reached" in status:
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["stock_lower"] + (" " + t["at"] + " " + time_part if time_part else "")
+    elif "daily consumption limit reached" in status.lower():
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["daily_limit"] + (" " + t["at"] + " " + time_part if time_part else "")
+    elif "90%" in status and "limit" in status.lower():
+        translated_status = t["daily_limit_90"]
+    elif "Abnormal" in status:
+        translated_status = t["abnormal"]
+    elif "offline" in status.lower():
+        translated_status = t["offline"]
+    elif "online" in status.lower():
+        translated_status = t["online"]
+
+    # Title stays in English (location name)
+    return title, translated_body, translated_status
+
+
 LOGGED_IN = False
 CREDS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_session.json")
 ADMIN_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "admin_config.json")
@@ -84,11 +246,13 @@ def precache_audio(alerts):
         body = alert.get("body", "")
         desc = alert.get("description", {})
         status = desc.get("status", "")
-        text = f"{title}. {body}. {status}"
+        t_single = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+        _, t_body_s, t_status_s = translate_alert_text(title, body, status, TTS_LANG)
+        text = title + ". " + t_body_s + ". " + t_status_s
         try:
             mp3 = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.mp3"
             wav = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.wav"
-            tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+            tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
             tts.save(mp3)
             subprocess.run(["ffmpeg", "-y", "-i", mp3, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav], capture_output=True, timeout=30)
             with _cache_lock:
@@ -529,6 +693,17 @@ window { background-color: #ffffff; }
     letter-spacing: 1px;
 }
 
+
+.header-lang {
+    background: #0d2b5e;
+    color: #93c5fd;
+    border: 1px solid #1e40af;
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 20px;
+    min-height: 24px;
+}
+
 .refresh-btn {
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.2);
@@ -937,20 +1112,7 @@ class LoginWindow(Gtk.Window):
         lt_combo.set_active(0 if LOGIN_TYPE == "DEFAULT" else 1)
         box.pack_start(lt_combo, False, False, 0)
 
-        # TTS Language
-        lang_l = Gtk.Label(label="Announcement Language")
-        lang_l.modify_font(Pango.FontDescription("Sans bold 11"))
-        lang_l.set_halign(Gtk.Align.START)
-        box.pack_start(lang_l, False, False, 0)
-        lang_combo = Gtk.ComboBoxText()
-        lang_combo.append_text("English (Indian)")
-        lang_combo.append_text("Telugu")
-        lang_combo.append_text("Hindi")
-        lang_combo.append_text("Kannada")
-        lang_combo.append_text("Tamil")
-        lang_map = {"en": 0, "te": 1, "hi": 2, "kn": 3, "ta": 4}
-        lang_combo.set_active(lang_map.get(TTS_LANG, 0))
-        box.pack_start(lang_combo, False, False, 0)
+        # Language selection moved to header bar dropdown
 
         status = Gtk.Label(label="")
         status.modify_font(Pango.FontDescription("Sans bold 11"))
@@ -968,11 +1130,7 @@ class LoginWindow(Gtk.Window):
 
             self._set_api_creds(new_user, new_pass, new_lt)
 
-            lang_options = ["en", "te", "hi", "kn", "ta"]
-            new_lang = lang_options[lang_combo.get_active()]
-            global TTS_LANG
-            TTS_LANG = new_lang
-            if save_admin_config(new_user, new_pass, new_lt, new_lang):
+            if save_admin_config(new_user, new_pass, new_lt, TTS_LANG):
                 save_session()
                 status.set_text("Saved! API credentials updated.")
                 status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
@@ -1136,7 +1294,7 @@ class AlertsWindow(Gtk.Window):
         self.overlay_label.set_max_width_chars(80)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        self.overlay_label.modify_font(Pango.FontDescription("monospace bold 14"))
+        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
         self.overlay_label.set_margin_start(30)
         self.overlay_label.set_margin_end(30)
         self.overlay_label.set_margin_top(10)
@@ -1176,20 +1334,25 @@ class AlertsWindow(Gtk.Window):
         self.refresh_btn.get_style_context().add_class("refresh-btn")
         right_box.pack_start(self.refresh_btn, False, False, 0)
 
-        # Language toggle button
-        self._lang_list = ["en", "te", "kn", "ta"]
-        self._lang_labels = ["ENG", "TEL", "KAN", "TAM"]
-        self._lang_idx = 0
+        # Language dropdown
+        self._lang_list = ["en", "te", "kn", "ta", "hi", "ml"]
+        self.lang_combo = Gtk.ComboBoxText()
+        self.lang_combo.append_text("ENG")
+        self.lang_combo.append_text("TEL")
+        self.lang_combo.append_text("KAN")
+        self.lang_combo.append_text("TAM")
+        self.lang_combo.append_text("HIN")
+        self.lang_combo.append_text("MAL")
+        lang_idx = 0
         for i, l in enumerate(self._lang_list):
             if l == TTS_LANG:
-                self._lang_idx = i
+                lang_idx = i
                 break
-        self.lang_btn = Gtk.Button(label=self._lang_labels[self._lang_idx])
-        self.lang_btn.modify_font(Pango.FontDescription("Sans bold 10"))
-        self.lang_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.9))
-        self.lang_btn.get_style_context().add_class("refresh-btn")
-        self.lang_btn.connect("clicked", self._toggle_lang)
-        right_box.pack_start(self.lang_btn, False, False, 0)
+        self.lang_combo.set_active(lang_idx)
+        self.lang_combo.get_style_context().add_class("header-lang")
+        self.lang_combo.set_size_request(-1, -1)
+        self.lang_combo.connect("changed", self._on_lang_changed)
+        right_box.pack_start(self.lang_combo, False, False, 0)
 
 
 
@@ -1267,6 +1430,7 @@ class AlertsWindow(Gtk.Window):
         self.announce_bar.get_style_context().add_class("announce-bar")
         self.announce_label = Gtk.Label(label="")
         self.announce_label.get_style_context().add_class("announce-text")
+        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 13"))
         self.announce_label.set_halign(Gtk.Align.START)
         self.announce_bar.pack_start(self.announce_label, True, True, 0)
         self.announce_bar.set_no_show_all(True)
@@ -1397,11 +1561,10 @@ class AlertsWindow(Gtk.Window):
         self.hide()
         self.destroy()
 
-    def _toggle_lang(self, button):
+    def _on_lang_changed(self, combo):
         global TTS_LANG
-        self._lang_idx = (self._lang_idx + 1) % len(self._lang_list)
-        TTS_LANG = self._lang_list[self._lang_idx]
-        button.set_label(self._lang_labels[self._lang_idx])
+        idx = combo.get_active()
+        TTS_LANG = self._lang_list[idx]
         # Save to admin config
         try:
             import json
@@ -1730,7 +1893,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
                     if _announce_stop: break
-                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
 
@@ -1790,7 +1953,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
                     if _announce_stop: break
-                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
                     GLib.idle_add(self._start_typing, text)
@@ -1827,14 +1990,16 @@ class AlertsWindow(Gtk.Window):
                 title = alert.get("title", "")
                 desc = alert.get("description", {})
                 status = desc.get("status", "")
-                text = "Offline unit " + str(i+1) + " of " + str(total) + ". " + title + ". " + status
+                t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+                _, _, t_status = translate_alert_text(title, "", status, TTS_LANG)
+                text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(total) + ". " + title + ". " + t_status
                 texts.append(text)
                 try:
                     from gtts import gTTS
                     mp3_path = "/tmp/offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/offline_" + str(i) + ".wav"
                     if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
                     audio_files.append(wav_path)
@@ -1906,7 +2071,9 @@ class AlertsWindow(Gtk.Window):
                 body = alert.get("body", "")
                 desc = alert.get("description", {})
                 status = desc.get("status", "")
-                text = f"Alert {i+1} of {len(alerts)}. {title}. {body}. {status}"
+                t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+                _, t_body, t_status = translate_alert_text(title, body, status, TTS_LANG)
+                text = t["alert"] + ". " + title + ". " + t_body + ". " + t_status
 
                 # Generate audio first
                 try:
@@ -1917,7 +2084,7 @@ class AlertsWindow(Gtk.Window):
                         mp3_path = "/tmp/aquabox_announce_all.mp3"
                         wav_path = "/tmp/aquabox_announce_all.wav"
                         if _announce_stop: break
-                        tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+                        tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
                         tts.save(mp3_path)
                         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
                     GLib.idle_add(self._start_typing, text)
@@ -1974,7 +2141,9 @@ class AlertsWindow(Gtk.Window):
         body = alert.get("body", "")
         desc = alert.get("description", {})
         status = desc.get("status", "")
-        text = f"{title}. {body}. {status}"
+        t_single = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+        _, t_body_s, t_status_s = translate_alert_text(title, body, status, TTS_LANG)
+        text = title + ". " + t_body_s + ". " + t_status_s
 
         def do_announce():
             _start_announcing()
@@ -1987,7 +2156,7 @@ class AlertsWindow(Gtk.Window):
                     mp3_path = "/tmp/aquabox_announce.mp3"
                     wav_path = "/tmp/aquabox_announce.wav"
                     if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang=TTS_LANG, tld="co.in")
+                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
                     tts.save(mp3_path)
                     subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
                 audio_dur = 0
