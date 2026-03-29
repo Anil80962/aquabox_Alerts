@@ -1458,6 +1458,40 @@ class AlertsWindow(Gtk.Window):
         self._last_refresh_time = ""
         self._countdown = REFRESH_INTERVAL
 
+
+        # AquaGPT Panda Mascot
+        self._panda_event = Gtk.EventBox()
+        self._panda_da = Gtk.DrawingArea()
+        self._panda_da.set_size_request(220, 150)
+
+        self._panda_da.connect("draw", self._draw_panda)
+        self._panda_event.add(self._panda_da)
+        self._panda_event.set_halign(Gtk.Align.END)
+        self._panda_event.set_valign(Gtk.Align.END)
+        self._panda_event.set_size_request(220, 150)
+        self._panda_event.set_margin_end(10)
+        self._panda_event.set_margin_bottom(30)
+        self._panda_event.connect("button-press-event", self._open_chat)
+        overlay.add_overlay(self._panda_event)
+
+        self._panda_phase = 0
+        self._panda_visible = True
+        self._panda_alpha = 1.0
+        self._panda_msg_idx = 0
+        self._panda_msg_char = 0
+        self._panda_messages = [
+            "Hi! I am AquaGPT",
+            "Your water assistant!",
+            "Monitoring your alerts",
+            "Stay water positive!",
+            "Need help? I am here!",
+        ]
+        self._panda_current_msg = self._panda_messages[0]
+
+        # Show panda every 60 seconds
+        GLib.timeout_add_seconds(10, self._change_panda_msg)
+        GLib.timeout_add(50, self._animate_panda)
+
         # Start fetching
         self.update_clock()
         GLib.timeout_add_seconds(1, self.update_clock)
@@ -1467,6 +1501,335 @@ class AlertsWindow(Gtk.Window):
         GLib.timeout_add(500, self.first_fetch)
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
         # Offline announced manually via button only
+
+
+    def _change_panda_msg(self):
+        """Change message every 10 seconds."""
+        self._panda_msg_idx += 1
+        self._panda_msg_char = 0
+        self._panda_current_msg = self._panda_messages[self._panda_msg_idx % len(self._panda_messages)]
+        return True
+
+    def _show_panda(self):
+        """Show panda mascot popup."""
+        if _auto_announcing:
+            return True  # Skip during announce
+        self._panda_visible = True
+        self._panda_alpha = 1.0
+        self._panda_msg_char = 0
+        self._panda_current_msg = self._panda_messages[self._panda_msg_idx % len(self._panda_messages)]
+        self._panda_msg_idx += 1
+        self._panda_da.set_visible(True)
+        self._panda_da.show()
+        pass
+        return True  # Keep timer
+
+    def _hide_panda(self):
+        self._panda_visible = True
+        GLib.timeout_add(50, self._fade_panda_out)
+        return False
+
+    def _fade_panda_out(self):
+        return False
+
+    def _animate_panda(self):
+        if self._panda_visible:
+            self._panda_phase += 0.08
+            self._panda_alpha = 1.0
+            if self._panda_msg_char < len(self._panda_current_msg):
+                self._panda_msg_char += 1
+            self._panda_da.queue_draw()
+        return True
+
+    def _draw_panda(self, widget, cr):
+        if self._panda_alpha <= 0:
+            return
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        a = self._panda_alpha
+
+        # Water drop logo with bounce
+        bounce = _math.sin(self._panda_phase * 2) * 3
+        logo_path = "/home/aquabox/Desktop/Aquabox/aquagpt-logo.png"
+        if os.path.exists(logo_path) and not hasattr(self, "_aquagpt_pixbuf"):
+            self._aquagpt_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 40, 40, True)
+        if hasattr(self, "_aquagpt_pixbuf"):
+            lx = w - 50
+            ly = h - 90 + bounce
+            cr.save()
+            Gdk.cairo_set_source_pixbuf(cr, self._aquagpt_pixbuf, lx, ly)
+            cr.paint_with_alpha(a)
+            cr.restore()
+
+        # Message text with typing - no box, just floating text
+        msg = self._panda_current_msg[:self._panda_msg_char]
+        if msg:
+            cr.save()
+            cr.select_font_face("Noto Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+            cr.set_font_size(11)
+            ext = cr.text_extents(msg)
+            tx = w - ext.width - 15
+            ty = h - 45
+
+            # Text shadow
+            cr.set_source_rgba(0, 0, 0, a * 0.15)
+            cr.move_to(tx + 1, ty + 1)
+            cr.show_text(msg)
+
+            # Text
+            cr.set_source_rgba(0.08, 0.3, 0.65, a * 0.8)
+            cr.move_to(tx, ty)
+            cr.show_text(msg)
+
+            # AquaGPT label
+            cr.set_source_rgba(0.1, 0.4, 0.8, a * 0.5)
+            cr.set_font_size(8)
+            cr.move_to(w - 55, h - 30)
+            cr.show_text("AquaGPT")
+            cr.restore()
+
+
+    def _open_chat(self, widget, event):
+        """Open AquaGPT chat interface."""
+        if hasattr(self, '_chat_window') and self._chat_window and self._chat_window.get_visible():
+            self._chat_window.present()
+            return
+
+        self._chat_window = Gtk.Window(title="AquaGPT")
+        self._chat_window.set_default_size(800, 480)
+        self._chat_window.fullscreen()
+
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+
+        # Header
+        header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        header.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.55, 1))
+        header.set_size_request(-1, 45)
+
+        # Logo in header
+        logo_path = "/home/aquabox/Desktop/Aquabox/aquagpt-logo.png"
+        if os.path.exists(logo_path):
+            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 30, 30, True)
+            logo_img = Gtk.Image.new_from_pixbuf(pb)
+            logo_img.set_margin_start(10)
+            header.pack_start(logo_img, False, False, 0)
+
+        title = Gtk.Label(label="AquaGPT")
+        title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        header.pack_start(title, False, False, 0)
+
+        subtitle = Gtk.Label(label="Your Water Assistant")
+        subtitle.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.85, 1, 0.8))
+        subtitle.modify_font(Pango.FontDescription("Sans 10"))
+        header.pack_start(subtitle, False, False, 0)
+
+        close_btn = Gtk.Button(label="✕")
+        close_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.5, 0.5, 1))
+        close_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
+        close_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        close_btn.set_relief(Gtk.ReliefStyle.NONE)
+        close_btn.connect("clicked", lambda b: self._chat_window.hide())
+        header.pack_end(close_btn, False, False, 5)
+
+        main_box.pack_start(header, False, False, 0)
+
+        # Chat messages area
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.96, 0.97, 0.98, 1))
+
+        self._chat_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self._chat_box.set_margin_start(10)
+        self._chat_box.set_margin_end(10)
+        self._chat_box.set_margin_top(10)
+        scroll.add(self._chat_box)
+        main_box.pack_start(scroll, True, True, 0)
+
+        # Welcome message
+        self._add_bot_message("Hi! I am AquaGPT, your water assistant. Ask me anything!")
+
+        # Input area
+        input_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        input_box.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        input_box.set_margin_start(8)
+        input_box.set_margin_end(8)
+        input_box.set_margin_top(6)
+        input_box.set_margin_bottom(8)
+
+        self._chat_entry = Gtk.Entry()
+        self._chat_entry.set_placeholder_text("Type your question...")
+        self._chat_entry.modify_font(Pango.FontDescription("Sans 13"))
+        self._chat_entry.connect("activate", self._send_chat)
+        input_box.pack_start(self._chat_entry, True, True, 0)
+
+        # Mic button with image
+        mic_btn = Gtk.Button()
+        mic_pb = GdkPixbuf.Pixbuf.new_from_file_at_scale("/home/aquabox/Desktop/Aquabox/mic.jpg", 28, 28, True)
+        mic_img = Gtk.Image.new_from_pixbuf(mic_pb)
+        mic_btn.add(mic_img)
+        mic_btn.set_tooltip_text("Voice input")
+        mic_btn.connect("clicked", self._voice_input)
+        input_box.pack_start(mic_btn, False, False, 0)
+
+        send_btn = Gtk.Button(label="Send")
+        send_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.4, 0.75, 1))
+        send_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        send_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+        send_btn.connect("clicked", self._send_chat)
+        input_box.pack_start(send_btn, False, False, 0)
+
+        main_box.pack_start(input_box, False, False, 0)
+
+        self._chat_window.add(main_box)
+        self._chat_window.show_all()
+
+    def _add_bot_message(self, text):
+        msg_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        msg_box.set_margin_top(4)
+
+        # Bot avatar
+        avatar = Gtk.Label(label="💧")
+        avatar.modify_font(Pango.FontDescription("Sans 16"))
+        msg_box.pack_start(avatar, False, False, 0)
+
+        # Message bubble
+        label = Gtk.Label(label=text)
+        label.set_line_wrap(True)
+        label.set_max_width_chars(45)
+        label.set_halign(Gtk.Align.START)
+        label.modify_font(Pango.FontDescription("Noto Sans 12"))
+        label.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
+        label.set_margin_start(8)
+        label.set_margin_end(8)
+        label.set_margin_top(6)
+        label.set_margin_bottom(6)
+        msg_box.pack_start(label, False, False, 0)
+
+        self._chat_box.pack_start(msg_box, False, False, 0)
+        msg_box.show_all()
+        # Scroll to bottom
+        GLib.idle_add(self._scroll_chat_bottom)
+
+    def _add_user_message(self, text):
+        msg_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        msg_box.set_margin_top(4)
+
+        label = Gtk.Label(label=text)
+        label.set_line_wrap(True)
+        label.set_max_width_chars(40)
+        label.set_halign(Gtk.Align.END)
+        label.modify_font(Pango.FontDescription("Noto Sans 12"))
+        label.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.4, 0.75, 1))
+        label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        label.set_margin_start(8)
+        label.set_margin_end(8)
+        label.set_margin_top(6)
+        label.set_margin_bottom(6)
+        msg_box.pack_end(label, False, False, 0)
+
+        self._chat_box.pack_start(msg_box, False, False, 0)
+        msg_box.show_all()
+        GLib.idle_add(self._scroll_chat_bottom)
+
+    def _scroll_chat_bottom(self):
+        adj = self._chat_box.get_parent().get_vadjustment()
+        adj.set_value(adj.get_upper())
+        return False
+
+    def _send_chat(self, widget):
+        text = self._chat_entry.get_text().strip()
+        if not text:
+            return
+        self._add_user_message(text)
+        self._chat_entry.set_text("")
+
+        # Get answer in background
+        def get_answer():
+            answer = self._get_ai_answer(text)
+            GLib.idle_add(self._add_bot_message, answer)
+        threading.Thread(target=get_answer, daemon=True).start()
+
+    def _draw_mic_icon(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        cx, cy = w / 2, h / 2
+        # Mic body
+        cr.set_source_rgba(1, 1, 1, 1)
+        cr.move_to(cx - 4, cy - 8)
+        cr.line_to(cx - 4, cy + 2)
+        cr.arc(cx, cy + 2, 4, _math.pi, 0)
+        cr.line_to(cx + 4, cy - 8)
+        cr.arc(cx, cy - 8, 4, 0, _math.pi)
+        cr.fill()
+        # Stand arc
+        cr.set_line_width(1.5)
+        cr.arc(cx, cy + 2, 7, _math.pi * 0.15, _math.pi * 0.85)
+        cr.stroke()
+        # Stand line
+        cr.move_to(cx, cy + 9)
+        cr.line_to(cx, cy + 12)
+        cr.stroke()
+        # Base
+        cr.move_to(cx - 4, cy + 12)
+        cr.line_to(cx + 4, cy + 12)
+        cr.stroke()
+
+    def _voice_input(self, button):
+        """Record voice and convert to text."""
+        button.set_label("...")
+        self._add_bot_message("Listening... (Voice input coming soon)")
+        button.set_label("Mic")
+
+    def _get_ai_answer(self, question):
+        """Get answer using DuckDuckGo Instant Answer API."""
+        try:
+            q = question.lower()
+
+            # Water-related built-in answers
+            water_qa = {
+                "what is water": "Water (H2O) is a transparent, tasteless, odorless substance that is essential for all known forms of life.",
+                "save water": "Tips to save water: Fix leaks, use low-flow fixtures, collect rainwater, reuse greywater, and water plants in early morning.",
+                "water quality": "Water quality is measured by pH, turbidity, dissolved oxygen, TDS, and presence of contaminants like bacteria or heavy metals.",
+                "what is tds": "TDS (Total Dissolved Solids) measures the total amount of dissolved substances in water. Safe drinking water should have TDS below 500 mg/L.",
+                "what is ph": "pH measures how acidic or basic water is on a scale of 0-14. Pure water has a pH of 7. Drinking water should be between 6.5-8.5.",
+                "water positive": "Water positive means replenishing more water than you consume. Fluxgen helps organizations achieve water positivity through smart monitoring.",
+                "what is aquabox": "AquaBox is a water monitoring and alert system by Fluxgen Sustainable Technologies. It monitors water levels, flow rates, and sends real-time alerts.",
+                "what is fluxgen": "Fluxgen Sustainable Technologies builds IoT solutions for water management, helping organizations become water-positive.",
+                "who are you": "I am AquaGPT, your AI water assistant by Fluxgen Sustainable Technologies. I help monitor water usage and answer water-related questions.",
+                "hello": "Hello! I am AquaGPT. How can I help you with water management today?",
+                "hi": "Hi there! I am AquaGPT, your water assistant. Ask me anything about water!",
+            }
+
+            for key, answer in water_qa.items():
+                if key in q:
+                    return answer
+
+            # Try DuckDuckGo API
+            resp = requests.get(
+                "https://api.duckduckgo.com/",
+                params={"q": question, "format": "json", "no_html": "1"},
+                timeout=10
+            )
+            data = resp.json()
+
+            # Check for instant answer
+            if data.get("AbstractText"):
+                return data["AbstractText"][:300]
+            if data.get("Answer"):
+                return data["Answer"]
+            if data.get("Definition"):
+                return data["Definition"]
+            if data.get("RelatedTopics") and len(data["RelatedTopics"]) > 0:
+                topic = data["RelatedTopics"][0]
+                if isinstance(topic, dict) and topic.get("Text"):
+                    return topic["Text"][:300]
+
+            return "I am still learning! For now, I can answer water-related questions. Try asking about water quality, TDS, pH, or water saving tips."
+
+        except Exception as e:
+            return "Sorry, I could not find an answer right now. Please try again later."
 
     def _scroll_to_section(self, section):
         """Scroll alerts list to a specific section."""
