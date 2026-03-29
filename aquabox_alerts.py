@@ -230,6 +230,14 @@ def _start_announcing():
 def _stop_announcing():
     pass  # No lock to release
 
+def set_api_credentials(user, passwd, lt):
+    global USERNAME, PASSWORD, LOGIN_TYPE, token, token_time
+    USERNAME = user
+    PASSWORD = passwd
+    LOGIN_TYPE = lt
+    token = ""
+    token_time = 0
+
 def precache_audio(alerts):
     """Pre-generate gTTS audio for all alerts in background."""
     global _audio_cache
@@ -772,21 +780,21 @@ class LoginWindow(Gtk.Window):
         # Card with rounded feel
         card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         card.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1.0))
-        card.set_size_request(420, -1)
+        card.set_size_request(360, -1)
 
         # Logo
         logo_path = "/home/aquabox/Desktop/Aquabox/Fluxgen-Logo.png"
         if os.path.exists(logo_path):
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 320, 100, True)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 220, 65, True)
             logo = Gtk.Image.new_from_pixbuf(pixbuf)
-            logo.set_margin_top(20)
+            logo.set_margin_top(8)
             card.pack_start(logo, False, False, 0)
 
         # Tagline below logo
         tag = Gtk.Label(label="Build a Water-Positive Future")
         tag.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.3, 0.55, 0.8, 0.6))
         tag.modify_font(Pango.FontDescription("Sans italic 8"))
-        tag.set_margin_bottom(4)
+        tag.set_margin_bottom(2)
         card.pack_start(tag, False, False, 2)
 
         # Divider
@@ -794,15 +802,15 @@ class LoginWindow(Gtk.Window):
         div.set_size_request(-1, 2)
         div.set_margin_start(30)
         div.set_margin_end(30)
-        div.set_margin_top(10)
-        div.set_margin_bottom(8)
+        div.set_margin_top(4)
+        div.set_margin_bottom(4)
         div.connect("draw", self._draw_divider)
         card.pack_start(div, False, False, 0)
 
         # Sign In label
         signin = Gtk.Label(label="Sign In")
         signin.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.05, 0.15, 0.4, 1))
-        signin.modify_font(Pango.FontDescription("Sans bold 13"))
+        signin.modify_font(Pango.FontDescription("Sans bold 11"))
         signin.set_halign(Gtk.Align.START)
         signin.set_margin_start(30)
         card.pack_start(signin, False, False, 0)
@@ -813,7 +821,7 @@ class LoginWindow(Gtk.Window):
         ulabel.modify_font(Pango.FontDescription("Sans bold 10"))
         ulabel.set_halign(Gtk.Align.START)
         ulabel.set_margin_start(30)
-        ulabel.set_margin_top(8)
+        ulabel.set_margin_top(4)
         card.pack_start(ulabel, False, False, 0)
 
         self.username_entry = Gtk.Entry()
@@ -830,7 +838,7 @@ class LoginWindow(Gtk.Window):
         plabel.modify_font(Pango.FontDescription("Sans bold 10"))
         plabel.set_halign(Gtk.Align.START)
         plabel.set_margin_start(30)
-        plabel.set_margin_top(6)
+        plabel.set_margin_top(3)
         card.pack_start(plabel, False, False, 0)
 
         self.password_entry = Gtk.Entry()
@@ -861,7 +869,7 @@ class LoginWindow(Gtk.Window):
         btn.modify_font(Pango.FontDescription("Sans bold 13"))
         btn.set_margin_start(30)
         btn.set_margin_end(30)
-        btn.set_margin_top(6)
+        btn.set_margin_top(3)
         btn.connect("clicked", self.on_login)
         card.pack_start(btn, False, False, 0)
 
@@ -870,8 +878,8 @@ class LoginWindow(Gtk.Window):
         kb_btn.modify_font(Pango.FontDescription("Sans 11"))
         kb_btn.set_margin_start(30)
         kb_btn.set_margin_end(30)
-        kb_btn.set_margin_top(6)
-        kb_btn.set_margin_bottom(18)
+        kb_btn.set_margin_top(3)
+        kb_btn.set_margin_bottom(4)
         kb_btn.connect("clicked", self.toggle_keyboard)
         card.pack_start(kb_btn, False, False, 0)
 
@@ -879,7 +887,7 @@ class LoginWindow(Gtk.Window):
         admin_btn.modify_font(Pango.FontDescription("Sans 8"))
         admin_btn.set_margin_start(30)
         admin_btn.set_margin_end(30)
-        admin_btn.set_margin_bottom(10)
+        admin_btn.set_margin_bottom(6)
         admin_btn.connect("clicked", self._open_admin)
         card.pack_start(admin_btn, False, False, 0)
 
@@ -993,80 +1001,161 @@ class LoginWindow(Gtk.Window):
         button.set_label("○" if self._pass_visible else "●")
 
     def _open_admin(self, button):
-        """Open admin login dialog."""
-        dialog = Gtk.Dialog(title="Admin Login", parent=self, flags=0)
-        dialog.set_default_size(350, 200)
-        dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+        """Open admin login - fullscreen with animation."""
+        self._admin_win = Gtk.Window(title="Admin")
+        self._admin_win.set_default_size(800, 480)
+        self._admin_win.fullscreen()
+        self._admin_win.set_app_paintable(True)
 
-        box = dialog.get_content_area()
-        box.set_spacing(8)
-        box.set_margin_start(20)
-        box.set_margin_end(20)
-        box.set_margin_top(10)
+        da = Gtk.DrawingArea()
+        da.connect("draw", self._draw_admin_bg)
+        overlay = Gtk.Overlay()
+        overlay.add(da)
+        self._admin_bg_phase = 0
+        GLib.timeout_add(50, self._animate_admin_bg, da)
 
-        title = Gtk.Label(label="Admin Login")
-        title.modify_font(Pango.FontDescription("Sans bold 14"))
-        box.pack_start(title, False, False, 0)
+        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        outer.set_valign(Gtk.Align.CENTER)
+        outer.set_halign(Gtk.Align.CENTER)
 
-        al = Gtk.Label(label="Admin Username")
-        al.modify_font(Pango.FontDescription("Sans bold 10"))
-        al.set_halign(Gtk.Align.START)
-        box.pack_start(al, False, False, 0)
+        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        card.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+        card.set_size_request(350, -1)
+
+        title = Gtk.Label(label="Admin Settings")
+        title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
+        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title.set_margin_top(15)
+        card.pack_start(title, False, False, 0)
+
+        sub = Gtk.Label(label="Enter admin credentials")
+        sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
+        sub.modify_font(Pango.FontDescription("Sans 9"))
+        card.pack_start(sub, False, False, 0)
+
+        sep = Gtk.Separator()
+        sep.set_margin_start(25)
+        sep.set_margin_end(25)
+        sep.set_margin_top(6)
+        card.pack_start(sep, False, False, 0)
+
+        ul = Gtk.Label(label="Admin Username")
+        ul.modify_font(Pango.FontDescription("Sans bold 10"))
+        ul.set_halign(Gtk.Align.START)
+        ul.set_margin_start(25)
+        ul.set_margin_top(6)
+        card.pack_start(ul, False, False, 0)
         admin_user = Gtk.Entry()
-        admin_user.set_placeholder_text("Admin username")
-        box.pack_start(admin_user, False, False, 0)
+        admin_user.set_placeholder_text("Enter admin username")
+        admin_user.modify_font(Pango.FontDescription("Sans 11"))
+        admin_user.set_margin_start(25)
+        admin_user.set_margin_end(25)
+        card.pack_start(admin_user, False, False, 0)
 
         pl = Gtk.Label(label="Admin Password")
         pl.modify_font(Pango.FontDescription("Sans bold 10"))
         pl.set_halign(Gtk.Align.START)
-        box.pack_start(pl, False, False, 0)
+        pl.set_margin_start(25)
+        pl.set_margin_top(4)
+        card.pack_start(pl, False, False, 0)
         admin_pass = Gtk.Entry()
-        admin_pass.set_placeholder_text("Admin password")
+        admin_pass.set_placeholder_text("Enter admin password")
         admin_pass.set_visibility(False)
-        box.pack_start(admin_pass, False, False, 0)
+        admin_pass.modify_font(Pango.FontDescription("Sans 11"))
+        admin_pass.set_margin_start(25)
+        admin_pass.set_margin_end(25)
+        card.pack_start(admin_pass, False, False, 0)
 
         err = Gtk.Label(label="")
         err.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
-        box.pack_start(err, False, False, 0)
+        err.modify_font(Pango.FontDescription("Sans bold 9"))
+        card.pack_start(err, False, False, 0)
 
-        def on_admin_login(btn):
-            u = admin_user.get_text().strip()
-            p = admin_pass.get_text().strip()
-            print("[Admin] Entered: [" + u + "] [" + p + "] Expected: [" + ADMIN_USER + "] [" + ADMIN_PASS + "]")
-            if u == ADMIN_USER and p == ADMIN_PASS:
-                dialog.destroy()
-                self._show_admin_settings()
-            else:
-                err.set_text("Wrong admin credentials")
+        btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        btn_box.set_margin_start(25)
+        btn_box.set_margin_end(25)
+        btn_box.set_margin_bottom(15)
 
         login_btn = Gtk.Button(label="Login")
         login_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.69, 1))
         login_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         login_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+
+        back_btn = Gtk.Button(label="Back")
+        back_btn.modify_font(Pango.FontDescription("Sans 10"))
+        back_btn.connect("clicked", lambda b: self._admin_win.destroy())
+
+        def on_admin_login(btn):
+            u = admin_user.get_text().strip()
+            p = admin_pass.get_text().strip()
+            if u == ADMIN_USER and p == ADMIN_PASS:
+                self._admin_win.destroy()
+                self._show_admin_settings()
+            else:
+                err.set_text("Wrong admin credentials")
+
         login_btn.connect("clicked", on_admin_login)
-        box.pack_start(login_btn, False, False, 5)
+        admin_pass.connect("activate", on_admin_login)
+        btn_box.pack_start(login_btn, True, True, 0)
+        btn_box.pack_start(back_btn, True, True, 0)
+        card.pack_start(btn_box, False, False, 4)
 
-        dialog.show_all()
+        outer.pack_start(card, False, False, 0)
+        overlay.add_overlay(outer)
+        self._admin_win.add(overlay)
+        self._admin_win.show_all()
 
-    def _set_api_creds(self, user, passwd, lt):
-        global USERNAME, PASSWORD, LOGIN_TYPE, token, token_time, TTS_LANG
-        USERNAME = user
-        PASSWORD = passwd
-        LOGIN_TYPE = lt
-        token = ""
-        token_time = 0
+    def _animate_admin_bg(self, da):
+        self._admin_bg_phase += 0.04
+        da.queue_draw()
+        if hasattr(self, "_admin_win"):
+            try:
+                return self._admin_win.get_visible()
+            except:
+                return False
+        return False
+
+    def _draw_admin_bg(self, widget, cr):
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        t = self._admin_bg_phase
+        pat = cairo.LinearGradient(0, 0, 0, h)
+        pat.add_color_stop_rgb(0, 0.05, 0.12, 0.28)
+        pat.add_color_stop_rgb(0.5, 0.08, 0.18, 0.38)
+        pat.add_color_stop_rgb(1, 0.04, 0.1, 0.22)
+        cr.set_source(pat)
+        cr.paint()
+        for i, (amp, freq, spd, a) in enumerate([
+            (10, 0.02, 1.2, 0.15), (7, 0.025, -0.9, 0.1), (5, 0.03, 1.5, 0.08)
+        ]):
+            cr.move_to(0, h)
+            base_y = h * 0.78 + i * 12
+            for x in range(0, w + 2, 3):
+                y = base_y + amp * _math.sin(x * freq + t * spd)
+                cr.line_to(x, y)
+            cr.line_to(w, h)
+            cr.close_path()
+            cr.set_source_rgba(0.2, 0.5, 0.8, a)
+            cr.fill()
 
     def _show_admin_settings(self):
         """Show admin settings page to configure API credentials."""
-        dialog = Gtk.Dialog(title="Admin Settings", parent=self, flags=0)
-        dialog.set_default_size(400, 350)
+        dialog = Gtk.Window(title="Admin Settings")
+        dialog.set_default_size(800, 480)
+        dialog.fullscreen()
+        # Make scrollable
+        scroll_admin = Gtk.ScrolledWindow()
+        scroll_admin.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
 
-        box = dialog.get_content_area()
-        box.set_spacing(8)
-        box.set_margin_start(20)
-        box.set_margin_end(20)
-        box.set_margin_top(10)
+        scroll_admin = Gtk.ScrolledWindow()
+        scroll_admin.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        scroll_admin.add(box)
+        dialog.add(scroll_admin)
+        box.set_margin_start(15)
+        box.set_margin_end(15)
+        box.set_margin_top(5)
 
         title = Gtk.Label(label="API Configuration")
         title.modify_font(Pango.FontDescription("Sans bold 16"))
@@ -1128,7 +1217,7 @@ class LoginWindow(Gtk.Window):
                 status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
                 return
 
-            self._set_api_creds(new_user, new_pass, new_lt)
+            set_api_credentials(new_user, new_pass, new_lt)
 
             if save_admin_config(new_user, new_pass, new_lt, TTS_LANG):
                 save_session()
@@ -1140,7 +1229,7 @@ class LoginWindow(Gtk.Window):
 
         def on_test(btn):
             old_u, old_p, old_lt = USERNAME, PASSWORD, LOGIN_TYPE
-            self._set_api_creds(api_user_entry.get_text().strip(), api_pass_entry.get_text().strip(), lt_combo.get_active_text())
+            set_api_credentials(api_user_entry.get_text().strip(), api_pass_entry.get_text().strip(), lt_combo.get_active_text())
 
             status.set_text("Testing...")
             status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.3, 0.7, 1))
