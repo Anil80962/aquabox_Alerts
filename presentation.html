@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaBox Alerts - Product Presentation</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+body { font-family: 'Inter', sans-serif; background: #0a0e1a; color: #fff; overflow-x: hidden; }
+
+/* ===== NAVIGATION ===== */
+nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10,14,26,0.95); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(59,130,246,0.2);
+    padding: 12px 40px; display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.3s; }
+.nav-links a:hover { color: #3b82f6; }
+
+/* ===== HERO ===== */
+.hero {
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 120px 40px 80px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
+    position: relative;
+}
+.hero::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+.hero-badge { display: inline-block; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; color: #60a5fa; font-weight: 600; margin-bottom: 24px; letter-spacing: 1px; }
+.hero h1 { font-size: 64px; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+.hero h1 span { background: linear-gradient(135deg, #3b82f6, #06b6d4, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p { font-size: 20px; color: #94a3b8; max-width: 600px; line-height: 1.6; margin-bottom: 40px; }
+.hero-buttons { display: flex; gap: 16px; }
+.btn-primary { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; padding: 14px 32px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; transition: 0.3s; border: none; cursor: pointer; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.4); }
+.btn-secondary { background: rgba(255,255,255,0.05); color: #fff; padding: 14px 32px; border-radius: 12px; font-size: 15px; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+/* ===== DEVICE MOCKUP ===== */
+.device-section { padding: 40px; text-align: center; }
+.device-frame {
+    width: 800px; height: 480px; margin: 0 auto; border-radius: 16px;
+    background: #000; border: 3px solid #333; overflow: hidden; position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(59,130,246,0.1);
+}
+
+/* ===== PI SCREEN SIMULATION ===== */
+.pi-screen { width: 100%; height: 100%; background: #fff; position: relative; overflow: hidden; }
+.pi-header {
+    background: linear-gradient(to right, #1e3a5a, #1e40af);
+    padding: 14px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 2px solid #3b82f6;
+}
+.pi-header-left h2 { color: #fff; font-size: 16px; font-weight: 700; }
+.pi-header-left p { color: #93c5fd; font-size: 11px; }
+.pi-header-right { display: flex; align-items: center; gap: 12px; }
+.pi-clock { color: #fff; font-size: 13px; font-weight: 700; }
+.pi-date { color: #93c5fd; font-size: 10px; }
+.pi-lang { background: #0d2b5e; color: #93c5fd; border: 1px solid #1e40af; border-radius: 4px; padding: 2px 8px; font-size: 10px; }
+
+.pi-stats {
+    background: #f0f4ff; padding: 8px 12px; display: flex; gap: 8px;
+    border-bottom: 1px solid #e0e4ea;
+}
+.pi-stat {
+    flex: 1; background: #fff; border-radius: 6px; padding: 6px 8px; text-align: center;
+    border: 1px solid #d0d5dd; cursor: pointer; transition: 0.2s;
+}
+.pi-stat:hover { border-color: #3b82f6; }
+.pi-stat .num { font-size: 18px; font-weight: 700; }
+.pi-stat .lbl { font-size: 9px; color: #555; }
+.num-unread { color: #f87171; }
+.num-read { color: #4ade80; }
+.num-total { color: #60a5fa; }
+.num-offline { color: #f59e0b; }
+
+.pi-alerts { padding: 6px 8px; overflow-y: auto; height: 260px; }
+.pi-section-hdr { font-size: 11px; font-weight: 700; padding: 4px 0; }
+.pi-section-hdr.unread { color: #ef4444; }
+.pi-section-hdr.read { color: #22c55e; }
+
+.pi-alert-card {
+    border-radius: 8px; padding: 8px 10px; margin: 4px 0; border-left: 4px solid;
+    transition: 0.3s; cursor: pointer;
+}
+.pi-alert-card:hover { transform: translateX(4px); }
+.pi-alert-card.high { background: #fee2e2; border-color: #ef4444; }
+.pi-alert-card.medium { background: #fef3c7; border-color: #f59e0b; }
+.pi-alert-card.low { background: #dbeafe; border-color: #3b82f6; }
+.pi-alert-card .a-title { font-size: 11px; font-weight: 700; color: #1e293b; }
+.pi-alert-card .a-body { font-size: 10px; color: #475569; margin-top: 2px; }
+.pi-alert-card .a-time { font-size: 9px; color: #94a3b8; margin-top: 2px; }
+.pi-alert-card .a-actions { display: flex; gap: 6px; margin-top: 4px; }
+.pi-alert-card .a-btn {
+    font-size: 9px; padding: 2px 8px; border-radius: 4px; border: none; cursor: pointer;
+    font-weight: 600; transition: 0.2s;
+}
+.a-btn.mark-read { background: #dcfce7; color: #166534; }
+.a-btn.announce { background: #dbeafe; color: #1e40af; }
+.a-btn.announce:hover { background: #bfdbfe; }
+.a-btn.announce.speaking { background: #fef3c7; color: #92400e; animation: pulse 1s infinite; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+.pi-bottom-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: #1565c0; padding: 6px 10px; display: flex; align-items: center; gap: 8px;
+    border-top: 1px solid #1255a0;
+}
+.pi-wifi-icon, .pi-speaker-icon {
+    width: 24px; height: 24px; cursor: pointer; transition: 0.3s; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+}
+.pi-wifi-icon:hover, .pi-speaker-icon:hover { background: rgba(255,255,255,0.2); }
+.pi-wifi-icon svg, .pi-speaker-icon svg { width: 16px; height: 16px; }
+.pi-refresh-text { color: #fff; font-size: 10px; flex: 1; text-align: center; }
+
+/* ===== WIFI PANEL ===== */
+.wifi-panel {
+    position: absolute; bottom: 36px; left: 4px; width: 260px;
+    background: rgba(14,30,55,0.97); border-radius: 10px; border: 1px solid rgba(59,130,246,0.3);
+    padding: 10px; display: none; z-index: 10;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.wifi-panel.active { display: block; animation: slideUp 0.25s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.wifi-panel h4 { color: #fff; font-size: 12px; margin-bottom: 6px; }
+.wifi-panel .wifi-current { color: #4ade80; font-size: 10px; margin-bottom: 8px; }
+.wifi-net-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 8px; border-radius: 6px; margin: 2px 0; cursor: pointer;
+    background: rgba(255,255,255,0.05); transition: 0.2s;
+}
+.wifi-net-item:hover { background: rgba(255,255,255,0.12); }
+.wifi-net-item .name { color: #fff; font-size: 10px; font-weight: 600; }
+.wifi-net-item .name.connected { color: #4ade80; }
+.wifi-net-item .signal { color: #93c5fd; font-size: 9px; }
+
+/* WiFi Connect Page */
+.wifi-connect-page { display: none; }
+.wifi-connect-page.active { display: block; }
+.wifi-connect-page label { color: #93c5fd; font-size: 10px; display: block; margin: 6px 0 2px; }
+.wifi-connect-page input {
+    width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 4px; padding: 6px 8px; color: #fff; font-size: 11px; outline: none;
+}
+.wifi-connect-page input:focus { border-color: #3b82f6; }
+.wifi-connect-page input[readonly] { opacity: 0.7; }
+.wifi-save-btn {
+    width: 100%; margin-top: 10px; background: #16a34a; color: #fff; border: none;
+    padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer;
+    transition: 0.2s;
+}
+.wifi-save-btn:hover { background: #22c55e; }
+.wifi-back-btn {
+    background: none; border: 1px solid rgba(255,255,255,0.2); color: #93c5fd;
+    padding: 3px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; margin-bottom: 6px;
+}
+.wifi-status-msg { font-size: 10px; margin-top: 6px; text-align: center; }
+
+/* ===== VOLUME PANEL ===== */
+.volume-panel {
+    position: absolute; bottom: 36px; left: 36px; width: 200px;
+    background: rgba(14,30,55,0.97); border-radius: 10px; border: 1px solid rgba(59,130,246,0.3);
+    padding: 12px; display: none; z-index: 10;
+}
+.volume-panel.active { display: block; animation: slideUp 0.25s ease; }
+.volume-panel h4 { color: #fff; font-size: 12px; margin-bottom: 8px; }
+.volume-slider { width: 100%; accent-color: #3b82f6; cursor: pointer; }
+.volume-val { color: #93c5fd; font-size: 11px; text-align: center; margin-top: 4px; }
+
+/* ===== TYPING OVERLAY ===== */
+.typing-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: rgba(0,0,0,0.88); border-radius: 16px; padding: 20px 24px;
+    border: 1px solid rgba(59,130,246,0.3); text-align: center;
+    display: none; z-index: 20; min-width: 320px;
+}
+.typing-overlay.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; scale: 0.95; } to { opacity: 1; scale: 1; } }
+.typing-overlay .t-title { color: #94a3b8; font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+.typing-overlay .t-text { color: #fff; font-size: 13px; font-weight: 600; font-family: monospace; min-height: 40px; }
+.typing-overlay .t-close { position: absolute; top: 8px; right: 12px; color: #f87171; cursor: pointer; font-size: 14px; background: none; border: none; }
+
+/* ===== AQUAGPT ===== */
+.aquagpt-mascot {
+    position: absolute; bottom: 44px; right: 10px; display: flex; align-items: center; gap: 6px;
+    cursor: pointer; z-index: 5;
+}
+.aquagpt-drop { font-size: 24px; animation: bob 2s ease-in-out infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.aquagpt-msg { color: #3b82f6; font-size: 9px; font-weight: 600; max-width: 100px; }
+
+/* ===== SECTIONS ===== */
+section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+.section-tag { color: #3b82f6; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+.section-title { font-size: 40px; font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
+.section-desc { color: #94a3b8; font-size: 16px; max-width: 600px; line-height: 1.7; margin-bottom: 40px; }
+
+/* ===== FEATURE GRID ===== */
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.feature-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px; padding: 28px; transition: 0.3s; cursor: default;
+}
+.feature-card:hover { border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.05); transform: translateY(-4px); }
+.feature-icon { font-size: 32px; margin-bottom: 16px; }
+.feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.feature-card p { color: #94a3b8; font-size: 13px; line-height: 1.6; }
+
+/* ===== FLOW DIAGRAM ===== */
+.flow-section { text-align: center; }
+.flow-steps { display: flex; justify-content: center; gap: 0; margin-top: 40px; flex-wrap: wrap; }
+.flow-step {
+    display: flex; flex-direction: column; align-items: center; width: 160px; position: relative;
+}
+.flow-step::after {
+    content: ''; position: absolute; top: 28px; right: -32px; width: 64px; height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4); display: block;
+}
+.flow-step:last-child::after { display: none; }
+.flow-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #1e40af, #3b82f6); display: flex; align-items: center;
+    justify-content: center; font-size: 22px; font-weight: 800; margin-bottom: 12px;
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+}
+.flow-step h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.flow-step p { font-size: 11px; color: #94a3b8; line-height: 1.4; }
+
+/* ===== LANGUAGES ===== */
+.lang-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.lang-card {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 20px; text-align: center; transition: 0.3s;
+}
+.lang-card:hover { border-color: #3b82f6; }
+.lang-card .flag { font-size: 28px; margin-bottom: 8px; }
+.lang-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.lang-card .sample { color: #93c5fd; font-size: 12px; }
+
+/* ===== TECH STACK ===== */
+.tech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.tech-item {
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 16px; text-align: center; transition: 0.3s;
+}
+.tech-item:hover { border-color: #3b82f6; }
+.tech-item .t-icon { font-size: 28px; margin-bottom: 8px; }
+.tech-item h4 { font-size: 12px; font-weight: 700; }
+.tech-item p { font-size: 10px; color: #94a3b8; }
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center; padding: 40px; border-top: 1px solid rgba(255,255,255,0.06);
+    color: #64748b; font-size: 13px;
+}
+footer span { background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+
+/* ===== WIFI RED ANIMATION ===== */
+.wifi-disconnected svg path { stroke: #ef4444 !important; }
+.wifi-disconnected svg circle { fill: #ef4444 !important; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+    .hero h1 { font-size: 36px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .device-frame { width: 100%; height: auto; aspect-ratio: 800/480; }
+    .flow-steps { flex-direction: column; align-items: center; }
+    .flow-step::after { display: none; }
+    .lang-grid, .tech-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">AquaBox</div>
+    <div class="nav-links">
+        <a href="#demo">Live Demo</a>
+        <a href="#features">Features</a>
+        <a href="#wifi">WiFi Manager</a>
+        <a href="#tts">TTS</a>
+        <a href="#flow">How It Works</a>
+        <a href="#tech">Tech Stack</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge">FLUXGEN SUSTAINABLE TECHNOLOGIES</div>
+    <h1>Meet <span>AquaBox</span><br>Alerts System</h1>
+    <p>Real-time water monitoring alerts on a Raspberry Pi 4 touchscreen. Multi-language TTS, WiFi management, AI assistant — all in one compact device.</p>
+    <div class="hero-buttons">
+        <a href="#demo" class="btn-primary">See Live Demo</a>
+        <a href="#features" class="btn-secondary">Explore Features</a>
+    </div>
+</section>
+
+<!-- LIVE DEMO -->
+<section id="demo" class="device-section">
+    <div class="section-tag">Interactive Demo</div>
+    <h2 class="section-title" style="text-align:center; margin-bottom: 12px;">5-Inch Touchscreen Display</h2>
+    <p class="section-desc" style="text-align:center; margin: 0 auto 30px;">Click on elements to interact — WiFi icon, speaker, alert cards, announce buttons</p>
+
+    <div class="device-frame">
+        <div class="pi-screen">
+            <!-- Header -->
+            <div class="pi-header">
+                <div class="pi-header-left">
+                    <h2>AquaBox Alerts</h2>
+                    <p>Fluxgen Sustainable Technologies</p>
+                </div>
+                <div class="pi-header-right">
+                    <select class="pi-lang" id="langSelect" onchange="changeLang(this.value)">
+                        <option value="en">ENG</option>
+                        <option value="te">TEL</option>
+                        <option value="hi">HIN</option>
+                        <option value="kn">KAN</option>
+                        <option value="ta">TAM</option>
+                    </select>
+                    <div>
+                        <div class="pi-clock" id="piClock">12:30:00 PM</div>
+                        <div class="pi-date" id="piDate">31 Mar 2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="pi-stats">
+                <div class="pi-stat"><div class="num num-unread" id="unreadCount">3</div><div class="lbl">Unread</div></div>
+                <div class="pi-stat"><div class="num num-read" id="readCount">4</div><div class="lbl">Read</div></div>
+                <div class="pi-stat"><div class="num num-total">7</div><div class="lbl">Total</div></div>
+                <div class="pi-stat"><div class="num num-offline">2</div><div class="lbl">Offline</div></div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="pi-alerts" id="alertsContainer">
+                <div class="pi-section-hdr unread">&#9679; UNREAD (3)</div>
+
+                <div class="pi-alert-card high" id="alert1">
+                    <div class="a-title">BIOSTAT 600KG BOILER TANK</div>
+                    <div class="a-body">Stock Level: 92% — Upper limit reached</div>
+                    <div class="a-time">06:40 AM | High Priority</div>
+                    <div class="a-actions">
+                        <button class="a-btn mark-read" onclick="markRead(this, 'alert1')">&#9679; Mark Read</button>
+                        <button class="a-btn announce" onclick="announceAlert(this, 'BIOSTAT 600KG BOILER TANK. Stock Level 92 percent. Upper limit reached.')">&#9834; Announce</button>
+                    </div>
+                </div>
+
+                <div class="pi-alert-card medium" id="alert2">
+                    <div class="a-title">FLUSHING STORAGE TANK-02</div>
+                    <div class="a-body">Daily consumption limit — 90% reached</div>
+                    <div class="a-time">05:15 AM | Medium Priority</div>
+                    <div class="a-actions">
+                        <button class="a-btn mark-read" onclick="markRead(this, 'alert2')">&#9679; Mark Read</button>
+                        <button class="a-btn announce" onclick="announceAlert(this, 'FLUSHING STORAGE TANK-02. Daily consumption limit. 90 percent reached.')">&#9834; Announce</button>
+                    </div>
+                </div>
+
+                <div class="pi-alert-card high" id="alert3">
+                    <div class="a-title">Old Fire Sump (Process)</div>
+                    <div class="a-body">Abnormal water usage detected</div>
+                    <div class="a-time">04:30 AM | High Priority</div>
+                    <div class="a-actions">
+                        <button class="a-btn mark-read" onclick="markRead(this, 'alert3')">&#9679; Mark Read</button>
+                        <button class="a-btn announce" onclick="announceAlert(this, 'Old Fire Sump Process. Abnormal water usage detected.')">&#9834; Announce</button>
+                    </div>
+                </div>
+
+                <div class="pi-section-hdr read">&#9679; READ (4)</div>
+
+                <div class="pi-alert-card low">
+                    <div class="a-title">DM STORAGE TANK BOILER-01</div>
+                    <div class="a-body">Stock Level Lower limit reached</div>
+                    <div class="a-time">03:20 AM | Low Priority</div>
+                    <div class="a-actions">
+                        <button class="a-btn announce" onclick="announceAlert(this, 'DM STORAGE TANK BOILER-01. Stock Level Lower limit reached.')">&#9834; Announce</button>
+                    </div>
+                </div>
+
+                <div class="pi-alert-card low">
+                    <div class="a-title">RO PRODUCT TANK</div>
+                    <div class="a-body">Device is back online</div>
+                    <div class="a-time">02:50 AM | Info</div>
+                    <div class="a-actions">
+                        <button class="a-btn announce" onclick="announceAlert(this, 'RO PRODUCT TANK. Device is back online.')">&#9834; Announce</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Overlay -->
+            <div class="typing-overlay" id="typingOverlay">
+                <button class="t-close" onclick="cancelAnnounce()">&#10005;</button>
+                <div class="t-title">&#128266; ANNOUNCING</div>
+                <div class="t-text" id="typingText"></div>
+            </div>
+
+            <!-- WiFi Panel -->
+            <div class="wifi-panel" id="wifiPanel">
+                <!-- Page 1: List -->
+                <div id="wifiListPage">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h4>&#128246; WiFi Settings</h4>
+                        <button style="background:none; border:none; color:#f87171; cursor:pointer; font-size:14px;" onclick="toggleWifi()">&#10005;</button>
+                    </div>
+                    <div class="wifi-current">&#10004; FLUXGEN-2 (100% Excellent)</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin: 6px 0;">
+                        <span style="color:#fff; font-size:11px; font-weight:600;">Available Networks</span>
+                        <button style="background:#1e40af; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:9px; cursor:pointer;" onclick="scanWifi()">&#8635; Scan</button>
+                    </div>
+                    <div id="wifiList">
+                        <div class="wifi-net-item" onclick="selectWifi('FLUXGEN-2', true)"><span class="name connected">&#128274; FLUXGEN-2 &#10004;</span><span class="signal">&#9604;&#9606;&#9608;&#9610; 100%</span></div>
+                        <div class="wifi-net-item" onclick="selectWifi('SURGE', true)"><span class="name">&#128274; SURGE</span><span class="signal">&#9604;&#9606;&#9608; 87%</span></div>
+                        <div class="wifi-net-item" onclick="selectWifi('IoT Network', true)"><span class="name">&#128274; IoT Network</span><span class="signal">&#9604;&#9606;&#9608; 87%</span></div>
+                        <div class="wifi-net-item" onclick="selectWifi('bsnlftth9444', true)"><span class="name">&#128274; bsnlftth9444</span><span class="signal">&#9604;&#9606; 82%</span></div>
+                        <div class="wifi-net-item" onclick="selectWifi('FluxGen', true)"><span class="name">&#128274; FluxGen</span><span class="signal">&#9604;&#9606; 62%</span></div>
+                        <div class="wifi-net-item" onclick="selectWifi('HP-Printer', false)"><span class="name">HP-Print-9E</span><span class="signal">&#9604;&#9606;&#9608; 87%</span></div>
+                    </div>
+                    <div class="wifi-status-msg" id="wifiListStatus" style="color:#60a5fa;"></div>
+                </div>
+                <!-- Page 2: Connect -->
+                <div class="wifi-connect-page" id="wifiConnectPage">
+                    <button class="wifi-back-btn" onclick="wifiGoBack()">&#8592; Back</button>
+                    <h4 style="color:#fff; font-size:12px;">Connect to WiFi</h4>
+                    <label>WiFi Name</label>
+                    <input type="text" id="wifiSsidInput" readonly>
+                    <label>Password</label>
+                    <input type="password" id="wifiPassInput" placeholder="Enter password">
+                    <button class="wifi-save-btn" onclick="wifiSaveConnect()">&#10004; Save & Connect</button>
+                    <div class="wifi-status-msg" id="wifiConnStatus"></div>
+                </div>
+            </div>
+
+            <!-- Volume Panel -->
+            <div class="volume-panel" id="volumePanel">
+                <h4>&#128266; Volume</h4>
+                <input type="range" class="volume-slider" min="0" max="100" value="70" oninput="updateVol(this.value)">
+                <div class="volume-val" id="volVal">70%</div>
+            </div>
+
+            <!-- AquaGPT Mascot -->
+            <div class="aquagpt-mascot" onclick="openChat()">
+                <span class="aquagpt-drop">&#128167;</span>
+                <span class="aquagpt-msg" id="mascotMsg">Hi! I am AquaGPT</span>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="pi-bottom-bar">
+                <div class="pi-wifi-icon" id="wifiIcon" onclick="toggleWifi()" title="WiFi Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                        <path d="M5 12.55a11 11 0 0114 0"/>
+                        <path d="M8.53 16.11a6 6 0 016.95 0"/>
+                        <circle cx="12" cy="20" r="1" fill="white" stroke="none"/>
+                    </svg>
+                </div>
+                <div class="pi-speaker-icon" onclick="toggleVolume()" title="Volume">
+                    <svg viewBox="0 0 24 24" fill="white" stroke="none">
+                        <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+                        <path d="M16.5 12A4.5 4.5 0 0014 8v8a4.47 4.47 0 002.5-4z" opacity="0.6"/>
+                    </svg>
+                </div>
+                <div class="pi-refresh-text" id="refreshText">API Refreshed: 12:28:00 PM | Next: 45s | 31 Mar 2026</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title">Everything You Need</h2>
+    <p class="section-desc">A complete water monitoring dashboard packed into a 5-inch touchscreen device.</p>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">&#128680;</div>
+            <h3>Real-Time Alerts</h3>
+            <p>Color-coded alert cards (High/Medium/Low) with auto-refresh every 2 minutes. Unread and read sections with live counters.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128266;</div>
+            <h3>TTS Announcements</h3>
+            <p>Text-to-Speech in 6 languages with typing animation synced to audio. Auto-announces new unread alerts.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128246;</div>
+            <h3>WiFi Manager</h3>
+            <p>Scan, select, and connect to WiFi networks. Auto-reconnects on drop. Red icon when disconnected.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128265;</div>
+            <h3>Volume Control</h3>
+            <p>Speaker icon with volume slider. Adjusts system audio in real-time via amixer.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#129302;</div>
+            <h3>AquaGPT Chat</h3>
+            <p>AI water assistant with typing animation, voice answers, and built-in water knowledge base.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#127760;</div>
+            <h3>Multi-Language</h3>
+            <p>English, Telugu, Hindi, Kannada, Tamil, Malayalam. Switch language from header dropdown instantly.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128274;</div>
+            <h3>Admin & Login</h3>
+            <p>Secure admin panel for API credentials. Session persistence with auto-login on reboot.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128225;</div>
+            <h3>Bluetooth Audio</h3>
+            <p>Connect to BT speakers for announcements. Scan and pair from the device.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#9889;</div>
+            <h3>Auto Recovery</h3>
+            <p>Systemd service auto-restarts on crash. WiFi auto-reconnects and refreshes API on recovery.</p>
+        </div>
+    </div>
+</section>
+
+<!-- WIFI SECTION -->
+<section id="wifi">
+    <div class="section-tag">WiFi Manager</div>
+    <h2 class="section-title">Smart Connectivity</h2>
+    <p class="section-desc">Built-in WiFi management right from the alert screen. No need for a separate app or SSH access.</p>
+
+    <div class="feature-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="feature-card">
+            <h3>&#9899; Live Status Monitoring</h3>
+            <p>WiFi icon checks connection every 5 seconds. White = connected. Red with X = disconnected. Auto-reconnects using wpa_cli.</p>
+        </div>
+        <div class="feature-card">
+            <h3>&#128246; Network Scanner</h3>
+            <p>Uses nmcli to scan available networks. Shows signal strength bars, lock icons for secured networks, and current connection indicator.</p>
+        </div>
+        <div class="feature-card">
+            <h3>&#9000; On-Screen Keyboard</h3>
+            <p>wvkbd virtual keyboard for password entry on the touchscreen. Opens automatically when password field is shown.</p>
+        </div>
+        <div class="feature-card">
+            <h3>&#128260; Auto API Refresh</h3>
+            <p>When WiFi reconnects after a drop, the system automatically refreshes API alerts — no manual intervention needed.</p>
+        </div>
+    </div>
+</section>
+
+<!-- TTS / LANGUAGES -->
+<section id="tts">
+    <div class="section-tag">Multi-Language TTS</div>
+    <h2 class="section-title">Speaks Your Language</h2>
+    <p class="section-desc">Announcements and typing animation in 6 Indian languages using Google TTS.</p>
+
+    <div class="lang-grid">
+        <div class="lang-card"><div class="flag">&#127468;&#127463;</div><h4>English</h4><div class="sample">"Unread alert 1 of 3"</div></div>
+        <div class="lang-card"><div class="flag">&#127470;&#127475;</div><h4>Telugu</h4><div class="sample">"చదవని హెచ్చరిక 1 లో 3"</div></div>
+        <div class="lang-card"><div class="flag">&#127470;&#127475;</div><h4>Hindi</h4><div class="sample">"अपठित चेतावनी 1 में से 3"</div></div>
+        <div class="lang-card"><div class="flag">&#127470;&#127475;</div><h4>Kannada</h4><div class="sample">"ಓದದ ಎಚ್ಚರಿಕೆ 1 ರಲ್ಲಿ 3"</div></div>
+        <div class="lang-card"><div class="flag">&#127470;&#127475;</div><h4>Tamil</h4><div class="sample">"படிக்காத எச்சரிக்கை 1 / 3"</div></div>
+        <div class="lang-card"><div class="flag">&#127470;&#127475;</div><h4>Malayalam</h4><div class="sample">"വായിക്കാത്ത മുന്നറിയിപ്പ് 1 / 3"</div></div>
+    </div>
+</section>
+
+<!-- FLOW -->
+<section id="flow" class="flow-section">
+    <div class="section-tag">How It Works</div>
+    <h2 class="section-title">From Boot to Alert</h2>
+
+    <div class="flow-steps">
+        <div class="flow-step">
+            <div class="flow-num">1</div>
+            <h4>Boot</h4>
+            <p>Pi boots, systemd starts aquabox-alerts service</p>
+        </div>
+        <div class="flow-step">
+            <div class="flow-num">2</div>
+            <h4>Login</h4>
+            <p>Auto-login with saved session or enter credentials</p>
+        </div>
+        <div class="flow-step">
+            <div class="flow-num">3</div>
+            <h4>Fetch</h4>
+            <p>API call to AquaGen for today's alerts</p>
+        </div>
+        <div class="flow-step">
+            <div class="flow-num">4</div>
+            <h4>Display</h4>
+            <p>Color-coded cards with unread/read sections</p>
+        </div>
+        <div class="flow-step">
+            <div class="flow-num">5</div>
+            <h4>Announce</h4>
+            <p>Auto TTS for new unread alerts in selected language</p>
+        </div>
+        <div class="flow-step">
+            <div class="flow-num">6</div>
+            <h4>Refresh</h4>
+            <p>Repeats every 2 min. WiFi auto-recovery built in.</p>
+        </div>
+    </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+    <div class="section-tag">Technology</div>
+    <h2 class="section-title">Built With</h2>
+    <p class="section-desc">Production-grade stack running on a Raspberry Pi 4.</p>
+
+    <div class="tech-grid">
+        <div class="tech-item"><div class="t-icon">&#129292;</div><h4>Raspberry Pi 4</h4><p>4GB RAM, ARM64</p></div>
+        <div class="tech-item"><div class="t-icon">&#128013;</div><h4>Python 3 + GTK 3</h4><p>Fullscreen UI</p></div>
+        <div class="tech-item"><div class="t-icon">&#128266;</div><h4>Google TTS</h4><p>6 languages</p></div>
+        <div class="tech-item"><div class="t-icon">&#128161;</div><h4>Cairo Graphics</h4><p>Custom icons</p></div>
+        <div class="tech-item"><div class="t-icon">&#128246;</div><h4>NetworkManager</h4><p>nmcli WiFi</p></div>
+        <div class="tech-item"><div class="t-icon">&#128225;</div><h4>Bluetooth</h4><p>Speaker pairing</p></div>
+        <div class="tech-item"><div class="t-icon">&#127760;</div><h4>AquaGen API</h4><p>Azure REST API</p></div>
+        <div class="tech-item"><div class="t-icon">&#128737;</div><h4>Tailscale</h4><p>Remote SSH access</p></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>Built by <span>Fluxgen Sustainable Technologies</span> — Build a Water-Positive Future</p>
+    <p style="margin-top: 8px; font-size: 11px;">AquaBox Alerts v2.0 | Raspberry Pi 4 | 2026</p>
+</footer>
+
+<script>
+// ===== CLOCK =====
+function updateClock() {
+    const now = new Date();
+    document.getElementById('piClock').textContent = now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    document.getElementById('piDate').textContent = now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ===== COUNTDOWN =====
+let countdown = 120;
+setInterval(() => {
+    countdown = countdown > 0 ? countdown - 1 : 120;
+    const now = new Date();
+    document.getElementById('refreshText').textContent =
+        `API Refreshed: ${now.toLocaleTimeString('en-US')} | Next: ${countdown}s | ${now.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}`;
+}, 1000);
+
+// ===== WIFI =====
+let wifiOpen = false;
+function toggleWifi() {
+    wifiOpen = !wifiOpen;
+    document.getElementById('wifiPanel').classList.toggle('active', wifiOpen);
+    document.getElementById('volumePanel').classList.remove('active');
+    if (wifiOpen) { wifiGoBack(); }
+}
+function scanWifi() {
+    document.getElementById('wifiListStatus').textContent = 'Scanning...';
+    setTimeout(() => { document.getElementById('wifiListStatus').textContent = 'Found 6 networks - tap to connect'; }, 1500);
+}
+function selectWifi(ssid, locked) {
+    document.getElementById('wifiListPage').style.display = 'none';
+    document.getElementById('wifiConnectPage').classList.add('active');
+    document.getElementById('wifiSsidInput').value = ssid;
+    document.getElementById('wifiPassInput').value = '';
+    document.getElementById('wifiConnStatus').textContent = '';
+    document.getElementById('wifiPassInput').disabled = !locked;
+    document.getElementById('wifiPassInput').placeholder = locked ? 'Enter password' : 'No password needed';
+}
+function wifiGoBack() {
+    document.getElementById('wifiListPage').style.display = 'block';
+    document.getElementById('wifiConnectPage').classList.remove('active');
+}
+function wifiSaveConnect() {
+    const ssid = document.getElementById('wifiSsidInput').value;
+    const status = document.getElementById('wifiConnStatus');
+    status.textContent = `Connecting to ${ssid}...`;
+    status.style.color = '#60a5fa';
+    setTimeout(() => {
+        status.textContent = `Connected to ${ssid}!`;
+        status.style.color = '#4ade80';
+    }, 2000);
+}
+
+// ===== VOLUME =====
+function toggleVolume() {
+    document.getElementById('volumePanel').classList.toggle('active');
+    document.getElementById('wifiPanel').classList.remove('active');
+    wifiOpen = false;
+}
+function updateVol(v) { document.getElementById('volVal').textContent = v + '%'; }
+
+// ===== ANNOUNCE =====
+let typingTimer = null; let typingIdx = 0; let typingStr = '';
+function announceAlert(btn, text) {
+    btn.textContent = 'Speaking...';
+    btn.classList.add('speaking');
+    btn.disabled = true;
+    typingStr = text;
+    typingIdx = 0;
+    document.getElementById('typingOverlay').classList.add('active');
+    document.getElementById('typingText').textContent = '';
+    typingTimer = setInterval(() => {
+        if (typingIdx <= typingStr.length) {
+            document.getElementById('typingText').textContent = typingStr.slice(0, typingIdx) + '█';
+            typingIdx++;
+        } else {
+            clearInterval(typingTimer);
+            document.getElementById('typingText').textContent = typingStr + '  ✓';
+            setTimeout(() => {
+                document.getElementById('typingOverlay').classList.remove('active');
+                btn.textContent = '♪ Announce';
+                btn.classList.remove('speaking');
+                btn.disabled = false;
+            }, 1500);
+        }
+    }, 50);
+}
+function cancelAnnounce() {
+    clearInterval(typingTimer);
+    document.getElementById('typingOverlay').classList.remove('active');
+    // Reset all speaking buttons
+    document.querySelectorAll('.a-btn.speaking').forEach(b => {
+        b.textContent = '♪ Announce'; b.classList.remove('speaking'); b.disabled = false;
+    });
+}
+
+// ===== MARK READ =====
+function markRead(btn, cardId) {
+    btn.textContent = '● Done';
+    btn.style.background = '#d1d5db';
+    btn.disabled = true;
+    document.getElementById(cardId).style.opacity = '0.5';
+    let uc = parseInt(document.getElementById('unreadCount').textContent);
+    let rc = parseInt(document.getElementById('readCount').textContent);
+    document.getElementById('unreadCount').textContent = Math.max(0, uc - 1);
+    document.getElementById('readCount').textContent = rc + 1;
+}
+
+// ===== LANGUAGE =====
+function changeLang(lang) {
+    const msgs = {
+        en: 'Hi! I am AquaGPT', te: 'హాయ్! నేను AquaGPT', hi: 'नमस्ते! मैं AquaGPT हूं',
+        kn: 'ಹಾಯ್! ನಾನು AquaGPT', ta: 'வணக்கம்! நான் AquaGPT'
+    };
+    document.getElementById('mascotMsg').textContent = msgs[lang] || msgs.en;
+}
+
+// ===== MASCOT MESSAGES =====
+const mascotMsgs = ['Hi! I am AquaGPT', 'Your water assistant!', 'Monitoring alerts', 'Stay water positive!'];
+let mIdx = 0;
+setInterval(() => { mIdx = (mIdx + 1) % mascotMsgs.length; document.getElementById('mascotMsg').textContent = mascotMsgs[mIdx]; }, 4000);
+
+// ===== CHAT =====
+function openChat() { alert('AquaGPT Chat — AI water assistant with voice answers, typing animation, and water knowledge base. (Full chat UI opens on the Pi device)'); }
+
+// ===== WIFI DISCONNECT DEMO =====
+let wifiConnected = true;
+document.getElementById('wifiIcon').addEventListener('dblclick', function(e) {
+    e.stopPropagation();
+    wifiConnected = !wifiConnected;
+    this.classList.toggle('wifi-disconnected', !wifiConnected);
+    if (!wifiConnected) {
+        this.title = 'WiFi Disconnected!';
+        document.getElementById('refreshText').textContent = 'WiFi disconnected — attempting reconnect...';
+        setTimeout(() => {
+            wifiConnected = true;
+            document.getElementById('wifiIcon').classList.remove('wifi-disconnected');
+            document.getElementById('wifiIcon').title = 'WiFi Settings';
+            document.getElementById('refreshText').textContent = 'WiFi reconnected — Refreshing alerts...';
+        }, 3000);
+    }
+});
+</script>
+</body>
+</html>
