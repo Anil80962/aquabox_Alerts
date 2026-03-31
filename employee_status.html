@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxgen - Operations Team Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+        }
+        .login-page {
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+        }
+        .login-box {
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px; width: 100%; max-width: 400px; text-align: center;
+        }
+        .login-box .logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #00695c, #00897b);
+            border-radius: 50%; margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 30px; font-weight: 700; letter-spacing: 1px;
+        }
+        .login-box h2 { color: #1a1a2e; margin-bottom: 6px; }
+        .login-box p { color: #888; font-size: 13px; margin-bottom: 24px; }
+        .login-box input {
+            width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 14px; margin-bottom: 14px; outline: none;
+        }
+        .login-box input:focus { border-color: #2c5364; }
+        .login-error { color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none; }
+        .btn {
+            padding: 12px 24px; background: linear-gradient(135deg, #203a43, #2c5364);
+            color: #fff; border: none; border-radius: 8px; font-size: 15px;
+            font-weight: 600; cursor: pointer; width: 100%;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .dashboard { display: none; }
+        .topbar {
+            background: rgba(255,255,255,0.07); backdrop-filter: blur(10px);
+            padding: 14px 30px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .topbar h2 { color: #fff; font-size: 18px; }
+        .topbar .user-info { display: flex; align-items: center; gap: 12px; color: #ccc; font-size: 14px; }
+        .topbar .role-badge {
+            background: rgba(255,255,255,0.15); padding: 3px 10px;
+            border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+        }
+        .topbar .logout-btn {
+            background: rgba(255,255,255,0.15); border: none; color: #fff;
+            padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+        }
+        .topbar .logout-btn:hover { background: rgba(255,255,255,0.25); }
+        .tabs { display: flex; gap: 0; padding: 0 30px; margin-top: 20px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 10px 24px; background: rgba(255,255,255,0.08); border: none;
+            color: #aaa; cursor: pointer; font-size: 14px; font-weight: 600;
+            border-radius: 8px 8px 0 0; transition: all 0.3s;
+        }
+        .tab-btn.active { background: #fff; color: #1a1a2e; }
+        .tab-content { background: #f5f7fa; min-height: calc(100vh - 120px); padding: 30px; }
+        .section-title { font-size: 20px; color: #1a1a2e; margin-bottom: 20px; font-weight: 700; }
+        .employee-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px; margin-bottom: 30px;
+        }
+        .emp-card {
+            background: #fff; border: 2px solid #e0e0e0; border-radius: 10px;
+            padding: 14px 16px; cursor: pointer; transition: all 0.3s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .emp-card:hover { border-color: #2c5364; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .emp-card.selected { border-color: #2c5364; background: #eaf4f8; }
+        .emp-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #203a43, #2c5364);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .emp-card .emp-details { flex: 1; }
+        .emp-card .emp-name { font-weight: 600; color: #1a1a2e; font-size: 14px; }
+        .emp-card .emp-role { color: #888; font-size: 12px; }
+        .emp-card .check-icon {
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ccc;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; transition: all 0.3s;
+        }
+        .emp-card.selected .check-icon { background: #27ae60; border-color: #27ae60; color: #fff; }
+        .status-form {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06); display: none;
+        }
+        .status-form.visible { display: block; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; font-size: 14px; }
+        .form-group label .req { color: #e74c3c; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 11px 14px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 14px; font-family: inherit; outline: none;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #2c5364; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        .selected-emp-tag {
+            display: inline-block; background: #eaf4f8; border: 1px solid #2c5364;
+            color: #2c5364; padding: 4px 10px; border-radius: 20px; font-size: 12px; margin: 2px 4px 2px 0;
+        }
+        .toast {
+            position: fixed; top: 20px; right: 20px; padding: 14px 24px;
+            border-radius: 10px; color: #fff; font-weight: 600; font-size: 14px;
+            z-index: 1000; transform: translateX(400px); transition: transform 0.4s ease;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #e74c3c; }
+        .overview-section { max-width: 1100px; margin: 0 auto; }
+        .update-section { max-width: 900px; margin: 0 auto; }
+        .manage-section { max-width: 800px; margin: 0 auto; }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #fff; border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06); text-align: center;
+        }
+        .stat-card .stat-num { font-size: 36px; font-weight: 800; color: #2c5364; }
+        .stat-card .stat-label { font-size: 13px; color: #888; margin-top: 4px; }
+        .overview-table {
+            background: #fff; border-radius: 12px; overflow-x: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .overview-table table { width: 100%; border-collapse: collapse; }
+        .overview-table th {
+            background: linear-gradient(135deg, #203a43, #2c5364);
+            color: #fff; padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600;
+        }
+        .overview-table td { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; }
+        .overview-table tr:hover td { background: #f9fbfc; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .badge-project { background: #dbeafe; color: #1d4ed8; }
+        .badge-service { background: #fef3c7; color: #b45309; }
+        .badge-office { background: #e0e7ff; color: #4338ca; }
+        .no-data { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid #fff5; border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 8px; }
+        .spinner-dark { border: 3px solid #ddd; border-top-color: #2c5364; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .refresh-btn {
+            background: rgba(44,83,100,0.1); border: none; padding: 8px 16px;
+            border-radius: 6px; cursor: pointer; color: #2c5364; font-weight: 600; font-size: 13px;
+        }
+        .refresh-btn:hover { background: rgba(44,83,100,0.2); }
+        .overview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+        .add-emp-form {
+            background: #fff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 24px;
+        }
+        .add-emp-form h3 { font-size: 16px; color: #1a1a2e; margin-bottom: 16px; }
+        .emp-list-table { background: #fff; border-radius: 12px; overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        .emp-list-table table { width: 100%; border-collapse: collapse; }
+        .emp-list-table th { background: linear-gradient(135deg, #203a43, #2c5364); color: #fff; padding: 14px 16px; text-align: left; font-size: 13px; }
+        .emp-list-table td { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; font-size: 13px; color: #333; }
+        .delete-btn {
+            background: linear-gradient(135deg, #c0392b, #e74c3c); color: #fff; border: none;
+            padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
+        }
+        .add-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; border: none;
+            padding: 10px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+        }
+        .emp-count-badge { background: rgba(44,83,100,0.1); color: #2c5364; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 900; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: #fff; border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; text-align: center; }
+        .modal-box h3 { margin-bottom: 10px; color: #1a1a2e; }
+        .modal-box p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal-actions button { padding: 10px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .modal-cancel { background: #e0e0e0; color: #333; }
+        .modal-confirm { background: #e74c3c; color: #fff; }
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.85); z-index: 999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .loading-overlay .spinner-big {
+            width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: #2c5364;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
+        }
+        .loading-overlay p { color: #333; font-weight: 600; }
+        @media (max-width: 600px) {
+            .form-row { flex-direction: column; gap: 0; }
+            .tabs { padding: 0 10px; }
+            .tab-btn { padding: 8px 14px; font-size: 12px; }
+            .tab-content { padding: 20px 15px; }
+            .topbar { padding: 12px 15px; }
+            .topbar h2 { font-size: 14px; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .overview-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div class="login-page" id="loginPage">
+        <div class="login-box">
+            <div class="logo">FG</div>
+            <h2>Fluxgen Portal</h2>
+            <p>Operations Team - Employee Status Management</p>
+            <input type="text" id="username" placeholder="Username" autocomplete="off">
+            <input type="password" id="password" placeholder="Password" autocomplete="off">
+            <div class="login-error" id="loginError">Invalid username or password</div>
+            <button class="btn" onclick="handleLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        <div class="topbar">
+            <h2>Fluxgen - Operations Team</h2>
+            <div class="user-info">
+                <span id="displayUser">Admin</span>
+                <span class="role-badge" id="displayRole">ADMIN</span>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="tabs" id="tabsContainer">
+            <button class="tab-btn active" onclick="switchTab('update')">Update Status</button>
+            <button class="tab-btn" onclick="switchTab('overview')">Team Overview</button>
+            <button class="tab-btn" id="downloadTab" onclick="switchTab('download')" style="display:none;">Download Report</button>
+            <button class="tab-btn" id="manageTab" onclick="switchTab('manage')" style="display:none;">Manage Employees</button>
+            <button class="tab-btn" id="usersTab" onclick="switchTab('users')" style="display:none;">Manage Users</button>
+        </div>
+
+        <!-- UPDATE TAB -->
+        <div class="tab-content" id="tabUpdate">
+            <div class="update-section">
+                <div class="section-title">Select Employee(s)</div>
+                <div class="employee-grid" id="employeeGrid"></div>
+                <div class="status-form" id="statusForm">
+                    <div class="section-title">Status Details</div>
+                    <div id="selectedNames" style="margin-bottom: 16px;"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Site Name <span class="req">*</span></label>
+                            <input type="text" id="siteName" placeholder="Enter site name">
+                        </div>
+                        <div class="form-group">
+                            <label>Type of Work <span class="req">*</span></label>
+                            <select id="workType">
+                                <option value="">Select Type</option>
+                                <option value="Project">Project</option>
+                                <option value="Service">Service</option>
+                                <option value="Office Work">Office Work</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Scope of Work <span class="req">*</span></label>
+                        <textarea id="scopeOfWork" placeholder="Describe the scope of work..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date <span class="req">*</span></label>
+                            <input type="date" id="statusDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="empStatus">
+                                <option value="On Site">On Site</option>
+                                <option value="In Office">In Office</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Work From Home">Work From Home</option>
+                                <option value="Holiday">Holiday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" id="submitBtn" onclick="submitStatus()">Submit Status Update</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content" id="tabOverview" style="display:none;">
+            <div class="overview-section">
+                <div class="overview-header">
+                    <div class="section-title" style="margin:0;">Team Overview</div>
+                    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <label style="font-weight:600; color:#1a1a2e; font-size:14px;">Select Date:</label>
+                        <input type="date" id="overviewDate" onchange="loadOverview()" style="padding:8px 12px; border:2px solid #2c5364; border-radius:8px; font-size:14px; font-weight:600; color:#2c5364; outline:none;">
+                        <button class="refresh-btn" onclick="loadOverview()">Refresh</button>
+                    </div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total Employees</div></div>
+                    <div class="stat-card"><div class="stat-num" id="statOnSite">0</div><div class="stat-label">On Site</div></div>
+                    <div class="stat-card"><div class="stat-num" id="statProject">0</div><div class="stat-label">Projects</div></div>
+                    <div class="stat-card"><div class="stat-num" id="statService">0</div><div class="stat-label">Service</div></div>
+                </div>
+                <div class="overview-table">
+                    <table>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th></tr></thead>
+                        <tbody id="overviewBody"><tr><td colspan="6" class="no-data">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+
+                <!-- TEAM EFFICIENCY -->
+                <div style="margin-top:30px;">
+                    <div class="overview-header">
+                        <div class="section-title" style="margin:0;">Team Efficiency</div>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <label style="font-weight:600; color:#1a1a2e; font-size:13px;">From:</label>
+                            <input type="date" id="effFromDate" style="padding:6px 10px; border:2px solid #2c5364; border-radius:8px; font-size:13px; font-weight:600; color:#2c5364; outline:none;">
+                            <label style="font-weight:600; color:#1a1a2e; font-size:13px;">To:</label>
+                            <input type="date" id="effToDate" style="padding:6px 10px; border:2px solid #2c5364; border-radius:8px; font-size:13px; font-weight:600; color:#2c5364; outline:none;">
+                            <button class="refresh-btn" onclick="loadEfficiency()">Calculate</button>
+                            <button class="add-btn" onclick="downloadEfficiency()" style="padding:8px 18px; font-size:13px;">Download</button>
+                        </div>
+                    </div>
+                    <div class="stats-row" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-num" id="effDeployed" style="color:#27ae60;">0%</div>
+                            <div class="stat-label">Avg Deployment Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="effOnSite" style="color:#2c5364;">0%</div>
+                            <div class="stat-label">Avg On Site Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="effLeave" style="color:#e74c3c;">0%</div>
+                            <div class="stat-label">Avg On Leave</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="effUtilization" style="color:#f39c12;">0%</div>
+                            <div class="stat-label">Avg Utilization</div>
+                        </div>
+                    </div>
+                    <!-- Efficiency Bar -->
+                    <div style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 4px 15px rgba(0,0,0,0.06);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                            <span style="font-weight:600; color:#333; font-size:14px;">Overall Team Efficiency</span>
+                            <span style="font-weight:700; color:#2c5364; font-size:14px;" id="effBarPercent">0%</span>
+                        </div>
+                        <div style="background:#e0e0e0; border-radius:10px; height:24px; overflow:hidden;">
+                            <div id="effBar" style="height:100%; border-radius:10px; transition:width 0.8s ease; width:0%; background:linear-gradient(90deg, #e74c3c, #f39c12, #27ae60);"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:12px; color:#888;">
+                            <span>Low (0-40%)</span><span>Medium (40-70%)</span><span>High (70-100%)</span>
+                        </div>
+                    </div>
+                    <!-- Per Employee Efficiency -->
+                    <div class="overview-table" style="margin-top:20px;">
+                        <table>
+                            <thead><tr><th>#</th><th>Employee</th><th>Days Worked</th><th>On Site</th><th>On Leave</th><th>Weekend Worked</th><th>Avg Efficiency</th></tr></thead>
+                            <tbody id="effBody"><tr><td colspan="7" class="no-data">Select date range and click Calculate</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD REPORT TAB -->
+        <div class="tab-content" id="tabDownload" style="display:none;">
+            <div class="manage-section">
+                <div class="section-title">Download Employee Report</div>
+                <div class="add-emp-form">
+                    <h3>Select Employee & Date Range</h3>
+                    <div class="form-group">
+                        <label>Employee <span class="req">*</span></label>
+                        <select id="dlEmployee"><option value="">-- Select Employee --</option><option value="ALL">All Employees</option></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>From Date <span class="req">*</span></label><input type="date" id="dlFromDate"></div>
+                        <div class="form-group"><label>To Date <span class="req">*</span></label><input type="date" id="dlToDate"></div>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn" onclick="previewReport()" style="flex:1;">Preview</button>
+                        <button class="add-btn" onclick="downloadCSV()" style="flex:1; padding:12px 24px; font-size:15px;">Download CSV</button>
+                    </div>
+                </div>
+                <div class="overview-table" id="dlPreviewBox" style="margin-top:24px; display:none;">
+                    <table>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <tbody id="dlPreviewBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MANAGE EMPLOYEES TAB -->
+        <div class="tab-content" id="tabManage" style="display:none;">
+            <div class="manage-section">
+                <div class="overview-header">
+                    <div class="section-title" style="margin:0;">Manage Employees</div>
+                    <span class="emp-count-badge" id="empCountBadge">0 employees</span>
+                </div>
+                <div class="add-emp-form">
+                    <h3>Add New Employee</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>Employee ID <span class="req">*</span></label><input type="text" id="newEmpId" placeholder="e.g., EMP016"></div>
+                        <div class="form-group"><label>Employee Name <span class="req">*</span></label><input type="text" id="newEmpName" placeholder="Full name"></div>
+                        <div class="form-group"><label>Role <span class="req">*</span></label><input type="text" id="newEmpRole" placeholder="e.g., Technician"></div>
+                    </div>
+                    <button class="add-btn" onclick="addEmployee()">+ Add Employee</button>
+                </div>
+                <div class="emp-list-table">
+                    <table>
+                        <thead><tr><th>#</th><th>Employee ID</th><th>Name</th><th>Role</th><th>Action</th></tr></thead>
+                        <tbody id="empListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- MANAGE USERS TAB (Super Admin Only) -->
+        <div class="tab-content" id="tabUsers" style="display:none;">
+            <div class="manage-section">
+                <div class="overview-header">
+                    <div class="section-title" style="margin:0;">Manage Users</div>
+                    <span class="emp-count-badge" id="userCountBadge">0 users</span>
+                </div>
+                <div class="add-emp-form">
+                    <h3>Create New User</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Username <span class="req">*</span></label>
+                            <input type="text" id="newUsername" placeholder="e.g., john">
+                        </div>
+                        <div class="form-group">
+                            <label>Password <span class="req">*</span></label>
+                            <input type="text" id="newPassword" placeholder="e.g., john#456">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Display Name <span class="req">*</span></label>
+                            <input type="text" id="newDisplayName" placeholder="e.g., John">
+                        </div>
+                        <div class="form-group">
+                            <label>Role <span class="req">*</span></label>
+                            <select id="newUserRole">
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="add-btn" onclick="addUser()">+ Create User</button>
+                </div>
+                <div class="emp-list-table">
+                    <table>
+                        <thead><tr><th>#</th><th>Username</th><th>Display Name</th><th>Role</th><th>Action</th></tr></thead>
+                        <tbody id="userListBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <h3>Delete Employee</h3>
+            <p id="deleteModalText">Are you sure?</p>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="modal-confirm" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+        <div class="spinner-big"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- HIDDEN IFRAME -->
+    <iframe name="hiddenFrame" id="hiddenFrame" style="display:none;"></iframe>
+
+    <script>
+        // ===== CONFIG =====
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYKlfZEG42ZUg6p25nMZ4dpWEAP-FDLLbAdhYGQ2mHp01e36FXWuQKQzAxt98cpc2E6g/exec";
+
+        // Super Admin (cannot be deleted)
+        const SUPER_ADMIN = "anil";
+        const DEFAULT_USERS = {
+            anil: { password: "anil@022", role: "admin", displayName: "Anil" }
+        };
+
+        function loadUsers() {
+            const saved = localStorage.getItem("zm_users");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Always keep super admin
+                parsed[SUPER_ADMIN] = DEFAULT_USERS[SUPER_ADMIN];
+                return parsed;
+            }
+            return { ...DEFAULT_USERS };
+        }
+
+        function saveUsers() {
+            localStorage.setItem("zm_users", JSON.stringify(USERS));
+        }
+
+        let USERS = loadUsers();
+        let currentUser = null;
+        let employees = [];
+        let selectedEmployees = new Set();
+        let deleteTargetId = null;
+        let reportData = [];
+
+        function getTodayStr() {
+            const d = new Date();
+            return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+        }
+
+        // ===== FETCH DATA FROM GOOGLE SHEET =====
+        async function sheetFetch(params) {
+            const url = SCRIPT_URL + "?" + params;
+
+            // Try fetch first
+            try {
+                const resp = await fetch(url, { redirect: "follow" });
+                if (resp.ok) {
+                    return await resp.json();
+                }
+            } catch (e) { /* fetch failed, try JSONP */ }
+
+            // Fallback: JSONP
+            return new Promise((resolve, reject) => {
+                const cbName = "_cb_" + Date.now() + "_" + Math.random().toString(36).substr(2);
+                window[cbName] = function(data) {
+                    resolve(data);
+                    delete window[cbName];
+                    document.getElementById("s_" + cbName)?.remove();
+                };
+                const script = document.createElement("script");
+                script.id = "s_" + cbName;
+                script.src = url + "&callback=" + cbName;
+                script.onerror = () => { reject(new Error("Failed")); delete window[cbName]; script.remove(); };
+                document.body.appendChild(script);
+                setTimeout(() => { if (window[cbName]) { reject(new Error("Timeout")); delete window[cbName]; script.remove(); } }, 15000);
+            });
+        }
+
+        // ===== FORM POST (writes to Google Sheet) =====
+        function formPost(data) {
+            return new Promise((resolve) => {
+                // Send action as URL param so it survives redirects
+                const actionParam = data.action ? "?action=" + encodeURIComponent(data.action) : "";
+                const form = document.createElement("form");
+                form.method = "POST";
+                form.action = SCRIPT_URL + actionParam;
+                form.target = "hiddenFrame";
+                form.style.display = "none";
+                Object.keys(data).forEach(key => {
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = key;
+                    input.value = data[key];
+                    form.appendChild(input);
+                });
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+                setTimeout(resolve, 2500);
+            });
+        }
+
+        // ===== LOADING =====
+        function showLoading(text) {
+            document.getElementById("loadingText").textContent = text || "Loading...";
+            document.getElementById("loadingOverlay").style.display = "flex";
+        }
+        function hideLoading() {
+            document.getElementById("loadingOverlay").style.display = "none";
+        }
+
+        // ===== FETCH EMPLOYEES FROM SHEET =====
+        async function fetchEmployees() {
+            try {
+                const result = await sheetFetch("action=getEmployees");
+                if (result.status === "success") {
+                    employees = result.employees || [];
+                } else {
+                    showToast("Error: " + (result.message || "Unknown"), "error");
+                }
+            } catch (err) {
+                console.error("Failed to fetch employees:", err);
+                showToast("Failed to load employees: " + err.message, "error");
+            }
+        }
+
+        // ===== LOGIN =====
+        async function handleLogin() {
+            const user = document.getElementById("username").value.trim().toLowerCase();
+            const pass = document.getElementById("password").value.trim();
+
+            if (USERS[user] && USERS[user].password === pass) {
+                currentUser = { ...USERS[user], username: user };
+
+                showLoading("Loading employees...");
+
+                await fetchEmployees();
+
+                hideLoading();
+
+                document.getElementById("loginPage").style.display = "none";
+                document.getElementById("dashboard").style.display = "block";
+                document.getElementById("displayUser").textContent = currentUser.displayName;
+                document.getElementById("displayRole").textContent = currentUser.role.toUpperCase();
+
+                const isAdmin = currentUser.role === "admin";
+                const isSuperAdmin = currentUser.username === SUPER_ADMIN;
+                document.getElementById("manageTab").style.display = isAdmin ? "inline-block" : "none";
+                document.getElementById("downloadTab").style.display = isAdmin ? "inline-block" : "none";
+                document.getElementById("usersTab").style.display = isSuperAdmin ? "inline-block" : "none";
+
+                document.getElementById("statusDate").valueAsDate = new Date();
+                document.getElementById("overviewDate").value = getTodayStr();
+                switchTab("update");
+            } else {
+                document.getElementById("loginError").style.display = "block";
+            }
+        }
+
+        document.getElementById("password").addEventListener("keydown", e => { if (e.key === "Enter") handleLogin(); });
+        document.getElementById("username").addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("password").focus(); });
+
+        function handleLogout() {
+            currentUser = null;
+            selectedEmployees.clear();
+            document.getElementById("loginPage").style.display = "flex";
+            document.getElementById("dashboard").style.display = "none";
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("loginError").style.display = "none";
+        }
+
+        // ===== TABS =====
+        function switchTab(tab) {
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            ["tabUpdate","tabOverview","tabDownload","tabManage","tabUsers"].forEach(id => document.getElementById(id).style.display = "none");
+
+            if (tab === "update") {
+                document.querySelectorAll(".tab-btn")[0].classList.add("active");
+                document.getElementById("tabUpdate").style.display = "block";
+                renderEmployees();
+            } else if (tab === "overview") {
+                document.querySelectorAll(".tab-btn")[1].classList.add("active");
+                document.getElementById("tabOverview").style.display = "block";
+                loadOverview();
+            } else if (tab === "download") {
+                document.getElementById("downloadTab").classList.add("active");
+                document.getElementById("tabDownload").style.display = "block";
+                populateDownloadEmployees();
+                document.getElementById("dlToDate").value = getTodayStr();
+            } else if (tab === "manage") {
+                document.getElementById("manageTab").classList.add("active");
+                document.getElementById("tabManage").style.display = "block";
+                renderEmployeeList();
+            } else if (tab === "users") {
+                document.getElementById("usersTab").classList.add("active");
+                document.getElementById("tabUsers").style.display = "block";
+                renderUserList();
+            }
+        }
+
+        // ===== RENDER EMPLOYEE CARDS =====
+        function renderEmployees() {
+            const grid = document.getElementById("employeeGrid");
+            grid.innerHTML = "";
+            if (employees.length === 0) {
+                grid.innerHTML = '<p style="color:#888; grid-column:1/-1; text-align:center;">No employees found. Admin can add employees in "Manage Employees" tab.</p>';
+                return;
+            }
+            employees.forEach(emp => {
+                const initials = emp.name.split(" ").map(n => n[0]).join("").substring(0,2);
+                const card = document.createElement("div");
+                card.className = "emp-card" + (selectedEmployees.has(emp.id) ? " selected" : "");
+                card.innerHTML = `
+                    <div class="emp-avatar">${initials}</div>
+                    <div class="emp-details">
+                        <div class="emp-name">${emp.name}</div>
+                        <div class="emp-role">${emp.role}</div>
+                    </div>
+                    <div class="check-icon">${selectedEmployees.has(emp.id) ? "&#10003;" : ""}</div>
+                `;
+                card.onclick = () => toggleEmployee(emp.id);
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleEmployee(id) {
+            selectedEmployees.has(id) ? selectedEmployees.delete(id) : selectedEmployees.add(id);
+            renderEmployees();
+            updateFormVisibility();
+        }
+
+        function updateFormVisibility() {
+            const form = document.getElementById("statusForm");
+            const namesDiv = document.getElementById("selectedNames");
+            if (selectedEmployees.size > 0) {
+                form.classList.add("visible");
+                namesDiv.innerHTML = [...selectedEmployees].map(id => {
+                    const emp = employees.find(e => e.id === id);
+                    return emp ? `<span class="selected-emp-tag">${emp.name}</span>` : "";
+                }).join("");
+            } else {
+                form.classList.remove("visible");
+            }
+        }
+
+        // ===== SUBMIT STATUS =====
+        async function submitStatus() {
+            const siteName = document.getElementById("siteName").value.trim();
+            const workType = document.getElementById("workType").value;
+            const scope = document.getElementById("scopeOfWork").value.trim();
+            const date = document.getElementById("statusDate").value;
+            const status = document.getElementById("empStatus").value;
+
+            if (!siteName || !workType || !scope || !date) { showToast("Please fill all required fields.", "error"); return; }
+            if (selectedEmployees.size === 0) { showToast("Please select at least one employee.", "error"); return; }
+
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Submitting...';
+
+            const rows = [...selectedEmployees].map(id => {
+                const emp = employees.find(e => e.id === id);
+                return { action: "submitStatus", empId: emp.id, empName: emp.name, role: emp.role, siteName, workType, scopeOfWork: scope, status, date };
+            });
+
+            try {
+                for (const row of rows) { await formPost(row); }
+                showToast(`Status updated for ${rows.length} employee(s)!`, "success");
+                selectedEmployees.clear();
+                renderEmployees();
+                updateFormVisibility();
+                document.getElementById("siteName").value = "";
+                document.getElementById("workType").value = "";
+                document.getElementById("scopeOfWork").value = "";
+                document.getElementById("empStatus").value = "On Site";
+            } catch (err) {
+                showToast("Failed to submit.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = "Submit Status Update";
+            }
+        }
+
+        // ===== OVERVIEW (fetches from Google Sheet) =====
+        async function loadOverview() {
+            const date = document.getElementById("overviewDate").value;
+            const body = document.getElementById("overviewBody");
+            body.innerHTML = '<tr><td colspan="6" class="no-data"><span class="spinner spinner-dark"></span> Loading from Google Sheet...</td></tr>';
+
+            try {
+                const result = await sheetFetch("action=getStatus&date=" + encodeURIComponent(date));
+                const data = result.data || [];
+
+                if (data.length === 0) {
+                    body.innerHTML = '<tr><td colspan="6" class="no-data">No status updates for this date.</td></tr>';
+                } else {
+                    body.innerHTML = data.map((r, i) => `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td><strong>${r.empName}</strong><br><span style="color:#888;font-size:11px;">${r.role}</span></td>
+                            <td>${r.siteName}</td>
+                            <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
+                            <td>${r.scopeOfWork}</td>
+                            <td>${r.status}</td>
+                        </tr>
+                    `).join("");
+                }
+
+                document.getElementById("statTotal").textContent = employees.length;
+                document.getElementById("statOnSite").textContent = data.filter(r => r.status === "On Site").length;
+                document.getElementById("statProject").textContent = data.filter(r => r.workType === "Project").length;
+                document.getElementById("statService").textContent = data.filter(r => r.workType === "Service").length;
+
+                // Calculate efficiency
+                calculateEfficiency(data);
+
+            } catch (err) {
+                body.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load: ' + err.message + '</td></tr>';
+                showToast("Overview error: " + err.message, "error");
+            }
+        }
+
+        // ===== TEAM EFFICIENCY =====
+        let lastEfficiencyData = [];
+        let lastEffSummary = {};
+
+        function getEmpEfficiency(status, workType) {
+            if (status === "On Leave") return 0;
+            if (status === "Holiday") return -1; // Excluded from calculation
+            if (status === "On Site" && workType === "Project") return 100;
+            if (status === "On Site" && workType === "Service") return 90;
+            if (status === "On Site" && workType === "Office Work") return 85;
+            if (status === "In Office" && workType === "Project") return 80;
+            if (status === "In Office" && workType === "Service") return 75;
+            if (status === "In Office" && workType === "Office Work") return 75;
+            if (status === "Work From Home" && workType === "Project") return 70;
+            if (status === "Work From Home" && workType === "Service") return 65;
+            if (status === "Work From Home" && workType === "Office Work") return 60;
+            return 50;
+        }
+
+        function getEffColor(pct) {
+            if (pct >= 80) return "#27ae60";
+            if (pct >= 60) return "#f39c12";
+            return "#e74c3c";
+        }
+
+        // Set default efficiency dates on overview load
+        function calculateEfficiency(data) {
+            const today = document.getElementById("overviewDate").value || getTodayStr();
+            document.getElementById("effFromDate").value = today;
+            document.getElementById("effToDate").value = today;
+            processEfficiency(data, today, today);
+        }
+
+        async function loadEfficiency() {
+            const from = document.getElementById("effFromDate").value;
+            const to = document.getElementById("effToDate").value;
+            if (!from || !to) { showToast("Select From and To dates.", "error"); return; }
+            if (from > to) { showToast("From date cannot be after To date.", "error"); return; }
+
+            const effBody = document.getElementById("effBody");
+            effBody.innerHTML = '<tr><td colspan="6" class="no-data"><span class="spinner spinner-dark"></span> Calculating efficiency...</td></tr>';
+
+            try {
+                const result = await sheetFetch("action=getStatusRange&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to) + "&empId=ALL");
+                processEfficiency(result.data || [], from, to);
+            } catch (err) {
+                effBody.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load: ' + err.message + '</td></tr>';
+            }
+        }
+
+        function processEfficiency(allData, from, to) {
+            const total = employees.length;
+
+            // Collect all holiday dates (any employee marked Holiday on a date = holiday for all)
+            const holidayDates = new Set();
+            allData.forEach(r => {
+                if (r.status === "Holiday") holidayDates.add(r.date);
+            });
+
+            // Count weekdays (Mon-Fri) excluding holidays
+            const fromD = new Date(from);
+            const toD = new Date(to);
+            let totalWorkingDays = 0;
+            const weekendDates = new Set();
+            for (let d = new Date(fromD); d <= toD; d.setDate(d.getDate() + 1)) {
+                const day = d.getDay();
+                const ds = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+                if (day === 0 || day === 6) {
+                    weekendDates.add(ds); // Sat & Sun
+                } else if (!holidayDates.has(ds)) {
+                    totalWorkingDays++;
+                }
+            }
+            if (totalWorkingDays === 0) totalWorkingDays = 1;
+
+            // Filter out Holiday entries from efficiency calculation
+            const workData = allData.filter(r => r.status !== "Holiday");
+
+            // Group data by employee
+            const empMap = {};
+            workData.forEach(r => {
+                if (!empMap[r.empId]) {
+                    empMap[r.empId] = { empId: r.empId, empName: r.empName, role: r.role, entries: [] };
+                }
+                empMap[r.empId].entries.push(r);
+            });
+
+            // Calculate per employee
+            let totalDeployed = 0, totalOnSite = 0, totalOnLeave = 0, totalWorking = 0;
+
+            lastEfficiencyData = [];
+            const empResults = employees.map(emp => {
+                const empData = empMap[emp.id];
+                if (!empData) {
+                    return { empId: emp.id, empName: emp.name, role: emp.role, daysWorked: 0, onSiteDays: 0, leaveDays: 0, weekendWorked: 0, avgEff: 0, totalDays: totalWorkingDays };
+                }
+
+                const entries = empData.entries;
+                // Separate weekday vs weekend entries
+                const weekdayEntries = entries.filter(e => !weekendDates.has(e.date));
+                const weekendEntries = entries.filter(e => weekendDates.has(e.date));
+
+                const daysWorked = weekdayEntries.filter(e => e.status !== "On Leave").length;
+                const onSiteDays = entries.filter(e => e.status === "On Site").length;
+                const leaveDays = weekdayEntries.filter(e => e.status === "On Leave").length;
+                const weekendWorked = weekendEntries.length;
+
+                // Efficiency based on weekday entries only (weekend work is bonus)
+                let effSum = 0;
+                weekdayEntries.forEach(e => { effSum += getEmpEfficiency(e.status, e.workType); });
+                // Weekend work adds bonus
+                weekendEntries.forEach(e => { effSum += getEmpEfficiency(e.status, e.workType); });
+                const totalEntries = weekdayEntries.length + weekendEntries.length;
+                const avgEff = totalEntries > 0 ? Math.min(100, Math.round(effSum / totalEntries)) : 0;
+
+                totalDeployed += weekdayEntries.length;
+                totalOnSite += onSiteDays;
+                totalOnLeave += leaveDays;
+                totalWorking += daysWorked;
+
+                // Store for download
+                entries.forEach(e => { lastEfficiencyData.push({ ...e, efficiency: getEmpEfficiency(e.status, e.workType) }); });
+
+                return { empId: emp.id, empName: emp.name, role: emp.role, daysWorked, onSiteDays, leaveDays, weekendWorked, avgEff, totalDays: totalWorkingDays };
+            });
+
+            // Stats
+            const maxEntries = total * totalWorkingDays;
+            const deployRate = maxEntries > 0 ? Math.round((totalDeployed / maxEntries) * 100) : 0;
+            const onSiteRate = maxEntries > 0 ? Math.round((totalOnSite / maxEntries) * 100) : 0;
+            const leaveRate = maxEntries > 0 ? Math.round((totalOnLeave / maxEntries) * 100) : 0;
+            const utilRate = maxEntries > 0 ? Math.round((totalWorking / maxEntries) * 100) : 0;
+
+            document.getElementById("effDeployed").textContent = deployRate + "%";
+            document.getElementById("effOnSite").textContent = onSiteRate + "%";
+            document.getElementById("effLeave").textContent = leaveRate + "%";
+            document.getElementById("effUtilization").textContent = utilRate + "%";
+
+            // Per employee table
+            const effBody = document.getElementById("effBody");
+            if (empResults.length === 0) {
+                effBody.innerHTML = '<tr><td colspan="7" class="no-data">No data.</td></tr>';
+                document.getElementById("effBar").style.width = "0%";
+                document.getElementById("effBarPercent").textContent = "0%";
+                return;
+            }
+
+            let grandTotalEff = 0, countWithData = 0;
+            effBody.innerHTML = empResults.map((r, i) => {
+                const color = getEffColor(r.avgEff);
+                if (r.daysWorked > 0 || r.leaveDays > 0) { grandTotalEff += r.avgEff; countWithData++; }
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${r.empName}</strong><br><span style="color:#888;font-size:11px;">${r.role}</span></td>
+                    <td>${r.daysWorked} / ${r.totalDays}</td>
+                    <td>${r.onSiteDays}</td>
+                    <td>${r.leaveDays}</td>
+                    <td>${r.weekendWorked > 0 ? '<span style="color:#27ae60;font-weight:700;">'+r.weekendWorked+'</span>' : '0'}</td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="flex:1;background:#e0e0e0;border-radius:6px;height:10px;overflow:hidden;">
+                                <div style="width:${r.avgEff}%;height:100%;background:${color};border-radius:6px;"></div>
+                            </div>
+                            <span style="font-weight:700;color:${color};font-size:13px;min-width:40px;">${r.avgEff}%</span>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join("");
+
+            // Overall bar
+            const avgEff = countWithData > 0 ? Math.round(grandTotalEff / countWithData) : 0;
+            const barColor = avgEff >= 70 ? "linear-gradient(90deg, #27ae60, #2ecc71)" :
+                             avgEff >= 40 ? "linear-gradient(90deg, #f39c12, #f1c40f)" :
+                             "linear-gradient(90deg, #e74c3c, #c0392b)";
+            document.getElementById("effBar").style.width = avgEff + "%";
+            document.getElementById("effBar").style.background = barColor;
+            document.getElementById("effBarPercent").textContent = avgEff + "%";
+
+            lastEffSummary = { deployRate, onSiteRate, leaveRate, utilRate, avgEff, totalDays: totalWorkingDays, from, to, empResults };
+        }
+
+        function downloadEfficiency() {
+            if (lastEfficiencyData.length === 0 && (!lastEffSummary.empResults || lastEffSummary.empResults.length === 0)) {
+                showToast("No efficiency data. Click Calculate first.", "error");
+                return;
+            }
+
+            const from = document.getElementById("effFromDate").value;
+            const to = document.getElementById("effToDate").value;
+            const s = lastEffSummary;
+
+            // Detailed entries
+            const headers = ["Employee ID","Employee Name","Role","Site Name","Type of Work","Scope of Work","Status","Efficiency (%)","Date"];
+            const csvRows = [headers.join(",")];
+
+            lastEfficiencyData.forEach(r => {
+                csvRows.push([
+                    r.empId,
+                    '"'+r.empName.replace(/"/g,'""')+'"',
+                    '"'+r.role.replace(/"/g,'""')+'"',
+                    '"'+r.siteName.replace(/"/g,'""')+'"',
+                    r.workType,
+                    '"'+r.scopeOfWork.replace(/"/g,'""')+'"',
+                    r.status,
+                    r.efficiency,
+                    r.date
+                ].join(","));
+            });
+
+            // Summary section
+            csvRows.push("");
+            csvRows.push("TEAM EFFICIENCY SUMMARY");
+            csvRows.push("Date Range," + from + " to " + to);
+            csvRows.push("Working Days," + (s.totalDays || 0));
+            csvRows.push("Total Employees," + employees.length);
+            csvRows.push("Avg Deployment Rate," + (s.deployRate || 0) + "%");
+            csvRows.push("Avg On Site Rate," + (s.onSiteRate || 0) + "%");
+            csvRows.push("Avg On Leave Rate," + (s.leaveRate || 0) + "%");
+            csvRows.push("Avg Utilization Rate," + (s.utilRate || 0) + "%");
+            csvRows.push("Overall Efficiency," + (s.avgEff || 0) + "%");
+
+            // Per employee summary
+            csvRows.push("");
+            csvRows.push("EMPLOYEE SUMMARY");
+            csvRows.push("Employee,Role,Days Worked,On Site Days,Leave Days,Avg Efficiency");
+            if (s.empResults) {
+                s.empResults.forEach(r => {
+                    csvRows.push('"'+r.empName+'","'+r.role+'",'+r.daysWorked+','+r.onSiteDays+','+r.leaveDays+','+r.avgEff+'%');
+                });
+            }
+
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Team_Efficiency_${from}_to_${to}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("Efficiency report downloaded!", "success");
+        }
+
+        // ===== MANAGE EMPLOYEES =====
+        function renderEmployeeList() {
+            const body = document.getElementById("empListBody");
+            document.getElementById("empCountBadge").textContent = employees.length + " employees";
+            if (employees.length === 0) {
+                body.innerHTML = '<tr><td colspan="5" class="no-data">No employees added yet.</td></tr>';
+                return;
+            }
+            body.innerHTML = employees.map((emp, i) => `
+                <tr>
+                    <td>${i+1}</td>
+                    <td><strong>${emp.id}</strong></td>
+                    <td>${emp.name}</td>
+                    <td>${emp.role}</td>
+                    <td><button class="delete-btn" onclick="openDeleteModal('${emp.id}','${emp.name.replace(/'/g,"\\'")}')">Delete</button></td>
+                </tr>
+            `).join("");
+        }
+
+        async function addEmployee() {
+            const id = document.getElementById("newEmpId").value.trim();
+            const name = document.getElementById("newEmpName").value.trim();
+            const role = document.getElementById("newEmpRole").value.trim();
+            if (!id || !name || !role) { showToast("Please fill all fields.", "error"); return; }
+            if (employees.find(e => e.id === id)) { showToast("Employee ID already exists.", "error"); return; }
+
+            showLoading("Adding employee...");
+            await formPost({ action: "addEmployee", empId: id, empName: name, role: role });
+            // Re-fetch employees from sheet to stay in sync
+            await fetchEmployees();
+            hideLoading();
+            renderEmployeeList();
+            renderEmployees();
+            document.getElementById("newEmpId").value = "";
+            document.getElementById("newEmpName").value = "";
+            document.getElementById("newEmpRole").value = "";
+            showToast(`${name} added successfully!`, "success");
+        }
+
+        function openDeleteModal(id, name) {
+            deleteTargetId = id;
+            document.getElementById("deleteModalText").textContent = `Are you sure you want to remove "${name}"?`;
+            document.getElementById("deleteModal").classList.add("active");
+        }
+        function closeDeleteModal() {
+            deleteTargetId = null;
+            document.getElementById("deleteModal").classList.remove("active");
+        }
+
+        async function confirmDelete() {
+            if (deleteTargetId) {
+                const emp = employees.find(e => e.id === deleteTargetId);
+                showLoading("Deleting employee...");
+                await formPost({ action: "deleteEmployee", empId: deleteTargetId });
+                selectedEmployees.delete(deleteTargetId);
+                // Re-fetch employees from sheet to stay in sync
+                await fetchEmployees();
+                hideLoading();
+                renderEmployeeList();
+                renderEmployees();
+                showToast(`${emp ? emp.name : "Employee"} removed.`, "success");
+            }
+            closeDeleteModal();
+        }
+
+        // ===== DOWNLOAD REPORT =====
+        function populateDownloadEmployees() {
+            const select = document.getElementById("dlEmployee");
+            select.innerHTML = '<option value="">-- Select Employee --</option><option value="ALL">All Employees</option>';
+            employees.forEach(emp => {
+                const opt = document.createElement("option");
+                opt.value = emp.id;
+                opt.textContent = emp.name + " (" + emp.role + ")";
+                select.appendChild(opt);
+            });
+        }
+
+        async function fetchReportData() {
+            const empId = document.getElementById("dlEmployee").value;
+            const from = document.getElementById("dlFromDate").value;
+            const to = document.getElementById("dlToDate").value;
+            if (!empId || !from || !to) { showToast("Select employee and date range.", "error"); return null; }
+            if (from > to) { showToast("From date cannot be after To date.", "error"); return null; }
+
+            showLoading("Fetching report...");
+            try {
+                const result = await sheetFetch("action=getStatusRange&empId=" + encodeURIComponent(empId) + "&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to));
+                hideLoading();
+                reportData = result.data || [];
+                return reportData;
+            } catch (err) {
+                hideLoading();
+                showToast("Failed to fetch report.", "error");
+                return null;
+            }
+        }
+
+        async function previewReport() {
+            const data = await fetchReportData();
+            if (!data) return;
+            const box = document.getElementById("dlPreviewBox");
+            const body = document.getElementById("dlPreviewBody");
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="8" class="no-data">No records found.</td></tr>';
+                box.style.display = "block";
+                return;
+            }
+            body.innerHTML = data.map((r, i) => `
+                <tr>
+                    <td>${i+1}</td><td>${r.empName}</td><td>${r.role}</td><td>${r.siteName}</td>
+                    <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
+                    <td>${r.scopeOfWork}</td><td>${r.status}</td><td>${r.date}</td>
+                </tr>
+            `).join("");
+            box.style.display = "block";
+            showToast(`Found ${data.length} record(s).`, "success");
+        }
+
+        async function downloadCSV() {
+            let data = reportData;
+            if (!data || data.length === 0) {
+                data = await fetchReportData();
+            }
+            if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
+
+            const headers = ["Employee ID","Employee Name","Role","Site Name","Type of Work","Scope of Work","Status","Efficiency (%)","Date"];
+            const csvRows = [headers.join(",")];
+            data.forEach(r => {
+                const eff = getEmpEfficiency(r.status, r.workType);
+                csvRows.push([
+                    r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"',
+                    '"'+r.siteName.replace(/"/g,'""')+'"', r.workType,
+                    '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date
+                ].join(","));
+            });
+
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const empSelect = document.getElementById("dlEmployee");
+            const empName = empSelect.options[empSelect.selectedIndex].text.split(" (")[0];
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${empName}_${document.getElementById("dlFromDate").value}_to_${document.getElementById("dlToDate").value}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast(`Downloaded ${data.length} record(s).`, "success");
+        }
+
+        // ===== MANAGE USERS (Super Admin Only) =====
+        function renderUserList() {
+            const body = document.getElementById("userListBody");
+            const userKeys = Object.keys(USERS);
+            document.getElementById("userCountBadge").textContent = userKeys.length + " users";
+
+            body.innerHTML = userKeys.map((key, i) => {
+                const u = USERS[key];
+                const isSA = key === SUPER_ADMIN;
+                return `<tr>
+                    <td>${i+1}</td>
+                    <td><strong>${key}</strong>${isSA ? ' <span style="color:#27ae60;font-size:11px;">(Super Admin)</span>' : ''}</td>
+                    <td>${u.displayName}</td>
+                    <td><span class="badge ${u.role==='admin'?'badge-project':'badge-service'}">${u.role.toUpperCase()}</span></td>
+                    <td>${isSA ? '<span style="color:#888;font-size:12px;">Protected</span>' : '<button class="delete-btn" onclick="deleteUser(\''+key+'\')">Delete</button>'}</td>
+                </tr>`;
+            }).join("");
+        }
+
+        function addUser() {
+            const username = document.getElementById("newUsername").value.trim().toLowerCase();
+            const password = document.getElementById("newPassword").value.trim();
+            const displayName = document.getElementById("newDisplayName").value.trim();
+            const role = document.getElementById("newUserRole").value;
+
+            if (!username || !password || !displayName) {
+                showToast("Please fill all fields.", "error");
+                return;
+            }
+            if (username.length < 3) {
+                showToast("Username must be at least 3 characters.", "error");
+                return;
+            }
+            if (password.length < 4) {
+                showToast("Password must be at least 4 characters.", "error");
+                return;
+            }
+            if (USERS[username]) {
+                showToast("Username already exists.", "error");
+                return;
+            }
+
+            USERS[username] = { password, role, displayName };
+            saveUsers();
+            renderUserList();
+
+            document.getElementById("newUsername").value = "";
+            document.getElementById("newPassword").value = "";
+            document.getElementById("newDisplayName").value = "";
+            document.getElementById("newUserRole").value = "admin";
+
+            showToast(`User "${displayName}" created as ${role.toUpperCase()}!`, "success");
+        }
+
+        function deleteUser(username) {
+            if (username === SUPER_ADMIN) {
+                showToast("Cannot delete super admin.", "error");
+                return;
+            }
+            const user = USERS[username];
+            if (confirm(`Delete user "${user.displayName}" (${username})?`)) {
+                delete USERS[username];
+                saveUsers();
+                renderUserList();
+                showToast(`User "${user.displayName}" deleted.`, "success");
+            }
+        }
+
+        // ===== TOAST =====
+        function showToast(msg, type) {
+            const toast = document.getElementById("toast");
+            toast.textContent = msg;
+            toast.className = "toast " + type + " show";
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+    </script>
+</body>
+</html>

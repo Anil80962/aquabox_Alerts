@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AquaBox Alerts
+Comment=Water Management Alerts Dashboard
+Exec=/usr/bin/python3 /home/aquabox/Desktop/Aquabox/aquabox_alerts.py
+Icon=/home/aquabox/Desktop/Aquabox/Fluxgen-Logo.png
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupWMClass=AquaBox
