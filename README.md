@@ -1,95 +1,130 @@
-# AquaBox Alerts - ZEST MEATER CODE
+# AquaBox Alerts Display System
 
-A GTK-based alert display system for Raspberry Pi 4, built for **Fluxgen Sustainable Technologies**. Monitors water infrastructure via the AquaGen API and displays real-time alerts on a 5-inch HDMI touchscreen.
+A fullscreen alerts dashboard for Raspberry Pi with 5-inch HDMI display, built for **Fluxgen Sustainable Technologies**.
+
+Real-time water management alerts with multi-language TTS and AI chat assistant.
 
 ## Features
 
-### Alert Display
-- Fetches alerts from AquaGen production API
-- Color-coded alert cards (High/Medium/Low/Info)
-- Unread/Read/Offline alert sections with counters
-- Auto-refreshes every 120 seconds
-- Scrollable alert list optimized for 800x480 display
+### Login & Security
+- **Admin settings** — fullscreen with dark blue wave animation
+- **API credentials** configured via admin page (`admin` / `admin`)
+- User login validates against admin-configured credentials
+- Session persistence (auto-login on reboot)
+- Logout waits for announce completion
+- Animated login page with Fluxgen logo and water effects
+- Virtual keyboard + password eye toggle
 
-### Text-to-Speech (TTS) Announcements
-- Auto-announces unread alerts with typing animation
-- Multi-language support: English, Telugu, Hindi, Kannada, Tamil
-- Individual and batch alert announcements
-- Offline unit announcements (hourly)
-- Typing animation synced with TTS audio in selected language
-- Cancel announcements mid-way with immediate button reset
+### Alerts Dashboard
+- **Read / Unread sections** with clickable stat boxes
+- **Color-coded cards** by importance
+- **Auto-refresh** every 2 minutes with live countdown
+- **Mark as Read** via API
+- **Instant counter updates**
 
-### WiFi Manager (Bottom Bar)
-- WiFi icon in bottom-left corner with live status
-- **White icon** = connected, **Red icon with X** = disconnected
-- Checks WiFi status every 5 seconds
-- Auto-reconnects on WiFi drop using `wpa_cli`
-- Auto-refreshes API alerts on reconnect
-- **Tap WiFi icon** to open WiFi Settings panel:
-  - Page 1: Shows current connection, scan for available networks
-  - Page 2: Select network, enter password with on-screen keyboard, Save & Connect
-  - Uses `nmcli` (NetworkManager) for reliable connections
-  - Saves credentials for boot persistence
+### Multi-Language TTS (6 Languages)
+| Language | Code | Translations |
+|----------|------|-------------|
+| English | ENG | Default |
+| Telugu | TEL | నిండింది, నీటి మట్టం పై పరిమితి... |
+| Kannada | KAN | ತುಂಬಿದೆ, ನೀರಿನ ಮಟ್ಟ ಮೇಲಿನ ಮಿತಿ... |
+| Tamil | TAM | நிரம்பியது, நீர் மட்டம் மேல் வரம்பை... |
+| Hindi | HIN | भरा हुआ, जल स्तर ऊपरी सीमा... |
+| Malayalam | MAL | നിറഞ്ഞു, ജല നിരപ്പ് ഉയർന്ന പരിധി... |
 
-### Volume Control (Bottom Bar)
-- Speaker icon next to WiFi icon
-- Tap to show volume slider (0-100%)
-- Adjusts system volume via `amixer` in real-time
+### Announcements
+- **Smart auto-announce** — only NEW unread alerts (tracks IDs)
+- **Announce All** — pre-generates audio, plays sequentially
+- **Announce Offline** — with typing animation
+- **Queue-based refresh** — refresh waits during announce
+- **No double voices** — single announce lock
+- **Dynamic typing speed** synced with audio
+- **Cancel** stops instantly
 
-### AquaGPT Chat
-- AI-powered water assistant chatbot
-- Voice input support
-- Context-aware answers about water management
+### AquaBox Chat (AI Assistant)
+- Tap **water drop icon** to open fullscreen chat
+- **Fluxgen icon** as bot avatar
+- **Typing animation** for bot responses
+- **Voice answers** — spoken through speaker via Google TTS
+- **Pre-generated audio** — no delay between text and voice
+- Built-in water Q&A (TDS, pH, water quality, saving tips)
+- DuckDuckGo API for general questions
+- Mic button (ready for voice input)
 
-### Other Features
-- Login screen with admin settings
-- Language selection dropdown in header
-- Live clock and date display
-- AquaGPT mascot with animated messages
-- Bluetooth audio support
-- WiFi hotspot setup mode (AP mode)
+### Mascot
+- **Water drop + AquaBox** always visible bottom-right
+- Rotating messages every 10 seconds
+- Non-intrusive overlay
 
-## Hardware
+### Desktop App
+- `AquaBox-Alerts.desktop` shortcut
+- Auto-starts on boot via systemd
 
-- Raspberry Pi 4 (4GB RAM)
-- 5-inch HDMI touchscreen (800x480)
-- WiFi (wlan0)
-- Optional: Bluetooth speaker
+## Requirements
 
-## Deployment
+### Hardware
+- Raspberry Pi 4
+- 5-inch HDMI display (800x480)
+- Speaker via 3.5mm audio jack
+- Internet connection
 
-The main application runs as a systemd service on the Pi:
-
+### Install
 ```bash
-# Service file: /etc/systemd/system/aquabox-alerts.service
-sudo systemctl enable aquabox-alerts
-sudo systemctl start aquabox-alerts
+sudo apt-get install -y espeak-ng ffmpeg wvkbd fonts-noto-core \
+    fonts-lohit-telu fonts-lohit-knda fonts-lohit-taml \
+    fonts-lohit-deva fonts-lohit-mlym
+pip3 install gTTS requests --break-system-packages
 ```
 
-### SSH Access (via Tailscale)
+## Setup
+
 ```bash
-ssh aquabox@100.78.44.6
+mkdir -p ~/Desktop/Aquabox
+cp aquabox_alerts.py ~/Desktop/Aquabox/
+cp *.jpg *.png ~/Desktop/Aquabox/
+cp AquaBox-Alerts.desktop ~/Desktop/
+chmod +x ~/Desktop/AquaBox-Alerts.desktop
 ```
 
-## Project Structure
+### Systemd Service
+```bash
+sudo tee /etc/systemd/system/aquabox-alerts.service << 'SERVICE'
+[Unit]
+Description=AquaBox Alerts Display
+After=graphical.target
+[Service]
+Type=simple
+User=aquabox
+Environment=WAYLAND_DISPLAY=wayland-0
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+Environment=GDK_BACKEND=wayland
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+ExecStartPre=/bin/bash -c "while [ ! -e /run/user/1000/wayland-0 ]; do sleep 0.5; done"
+ExecStartPre=/bin/sleep 1
+ExecStart=/usr/bin/python3 /home/aquabox/Desktop/Aquabox/aquabox_alerts.py
+Restart=on-failure
+RestartSec=3
+[Install]
+WantedBy=graphical.target
+SERVICE
+sudo systemctl daemon-reload && sudo systemctl enable aquabox-alerts.service
+```
 
-| File | Description |
-|------|-------------|
-| `aquabox_alerts.py` | Main GTK application (alerts, TTS, WiFi, volume, chat) |
-| `wifi_manager.py` | Standalone WiFi manager with AP hotspot mode |
-| `tts_service.py` | TTS Flask service |
-| `calibration_system.py` | Sensor calibration system |
-| `connect_bt.py` | Bluetooth speaker connection |
-| `bt_scan.py` / `bt_setup.py` | Bluetooth scanning and setup |
-| `ZEST_MEATER_CODE.ino` | Arduino/ESP32 IoT firmware |
-| `google_apps_script.js` | Google Apps Script integration |
-| `AquaBox-Alerts.desktop` | Desktop autostart entry |
+### First Time
+1. Tap **⚙ Admin** → `admin` / `admin`
+2. Set API credentials → **Test Connection** → **Save**
+3. Login with same credentials
+4. Select language from header dropdown
 
-## Dependencies
+## Assets
+| File | Purpose |
+|------|---------|
+| `aquabox_alerts.py` | Main application |
+| `AquaBox-Alerts.desktop` | Desktop shortcut |
+| `fluxgen-icon.jpg` | Bot avatar in chat |
+| `aquagpt-logo.png` | Water drop mascot |
+| `mic.jpg` | Mic button icon |
 
-- Python 3 with GTK 3 (`gi`, `Gtk`, `Gdk`, `cairo`)
-- `requests`, `flask`, `paramiko`
-- `gTTS` (Google Text-to-Speech)
-- `ffmpeg`, `aplay` (audio processing/playback)
-- `nmcli` (NetworkManager), `wvkbd-mobintl` (on-screen keyboard)
-- Tailscale (remote access)
+---
+
+Built by **Fluxgen Sustainable Technologies** — *Build a Water-Positive Future*
