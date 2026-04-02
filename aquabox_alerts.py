@@ -192,13 +192,102 @@ TRANSLATIONS = {
 }
 
 
-def _make_units_readable(text):
+_TIME_WORDS = {
+    "en": {
+        "ones": ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+                 "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+                 "seventeen", "eighteen", "nineteen"],
+        "tens": ["", "", "twenty", "thirty", "forty", "fifty"],
+        "morning": "in the morning", "afternoon": "in the afternoon", "evening": "in the evening",
+    },
+    "te": {
+        "ones": ["", "ఒకటి", "రెండు", "మూడు", "నాలుగు", "ఐదు", "ఆరు", "ఏడు", "ఎనిమిది", "తొమ్మిది",
+                 "పది", "పదకొండు", "పన్నెండు", "పదమూడు", "పధ్నాలుగు", "పదిహేను", "పదహారు",
+                 "పదిహేడు", "పద్దెనిమిది", "పంతొమ్మిది"],
+        "tens": ["", "", "ఇరవై", "ముప్పై", "నలభై", "యాభై"],
+        "morning": "ఉదయం", "afternoon": "మధ్యాహ్నం", "evening": "సాయంత్రం",
+    },
+    "hi": {
+        "ones": ["", "एक", "दो", "तीन", "चार", "पाँच", "छह", "सात", "आठ", "नौ",
+                 "दस", "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह",
+                 "सत्रह", "अठारह", "उन्नीस"],
+        "tens": ["", "", "बीस", "तीस", "चालीस", "पचास"],
+        "morning": "सुबह", "afternoon": "दोपहर", "evening": "शाम",
+    },
+    "kn": {
+        "ones": ["", "ಒಂದು", "ಎರಡು", "ಮೂರು", "ನಾಲ್ಕು", "ಐದು", "ಆರು", "ಏಳು", "ಎಂಟು", "ಒಂಬತ್ತು",
+                 "ಹತ್ತು", "ಹನ್ನೊಂದು", "ಹನ್ನೆರಡು", "ಹದಿಮೂರು", "ಹದಿನಾಲ್ಕು", "ಹದಿನೈದು", "ಹದಿನಾರು",
+                 "ಹದಿನೇಳು", "ಹದಿನೆಂಟು", "ಹತ್ತೊಂಬತ್ತು"],
+        "tens": ["", "", "ಇಪ್ಪತ್ತು", "ಮೂವತ್ತು", "ನಲವತ್ತು", "ಐವತ್ತು"],
+        "morning": "ಬೆಳಿಗ್ಗೆ", "afternoon": "ಮಧ್ಯಾಹ್ನ", "evening": "ಸಂಜೆ",
+    },
+    "ml": {
+        "ones": ["", "ഒന്ന്", "രണ്ട്", "മൂന്ന്", "നാല്", "അഞ്ച്", "ആറ്", "ഏഴ്", "എട്ട്", "ഒൻപത്",
+                 "പത്ത്", "പതിനൊന്ന്", "പന്ത്രണ്ട്", "പതിമൂന്ന്", "പതിനാല്", "പതിനഞ്ച്", "പതിനാറ്",
+                 "പതിനേഴ്", "പതിനെട്ട്", "പത്തൊൻപത്"],
+        "tens": ["", "", "ഇരുപത്", "മുപ്പത്", "നാൽപ്പത്", "അൻപത്"],
+        "morning": "രാവിലെ", "afternoon": "ഉച്ചയ്ക്ക്", "evening": "വൈകുന്നേരം",
+    },
+    "ta": {
+        "ones": ["", "ஒன்று", "இரண்டு", "மூன்று", "நான்கு", "ஐந்து", "ஆறு", "ஏழு", "எட்டு", "ஒன்பது",
+                 "பத்து", "பதினொன்று", "பன்னிரண்டு", "பதின்மூன்று", "பதினான்கு", "பதினைந்து", "பதினாறு",
+                 "பதினேழு", "பதினெட்டு", "பத்தொன்பது"],
+        "tens": ["", "", "இருபது", "முப்பது", "நாற்பது", "ஐம்பது"],
+        "morning": "காலை", "afternoon": "மதியம்", "evening": "மாலை",
+    },
+}
+
+
+def _make_time_readable(text, lang="en"):
+    """Convert time formats to spoken words in the given language."""
+    import re
+    tw = _TIME_WORDS.get(lang, _TIME_WORDS["en"])
+    ones = tw["ones"]
+    tens_w = tw["tens"]
+
+    def num_to_words(n):
+        if n < 20:
+            return ones[n]
+        t, o = divmod(n, 10)
+        if t < len(tens_w):
+            return tens_w[t] + (" " + ones[o] if o else "")
+        return str(n)
+
+    def replace_time(m):
+        hour = int(m.group(1))
+        minute = int(m.group(2))
+        period = m.group(3).upper()
+        h_word = num_to_words(hour)
+        if minute == 0:
+            m_word = ""
+        else:
+            m_word = " " + num_to_words(minute)
+        if period == "AM":
+            p_word = tw["morning"]
+        else:
+            if hour == 12:
+                p_word = tw["afternoon"]
+            elif hour < 5:
+                p_word = tw["afternoon"]
+            else:
+                p_word = tw["evening"]
+        if lang == "en":
+            return f"{h_word}{m_word} {p_word}"
+        return f"{p_word} {h_word}{m_word}"
+
+    text = re.sub(r'(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)', replace_time, text)
+    return text
+
+
+def _make_units_readable(text, lang="en"):
     """Replace abbreviations with full words for TTS clarity."""
     import re
     # "56.4 L" -> "56.4 liters", "207.15kL" -> "207.15 kiloliters"
     text = re.sub(r'(\d+\.?\d*)\s*kL\b', r'\1 kiloliters', text)
     text = re.sub(r'(\d+\.?\d*)\s*KL\b', r'\1 kiloliters', text)
     text = re.sub(r'(\d+\.?\d*)\s*L\b', r'\1 liters', text)
+    # Make time readable in the correct language
+    text = _make_time_readable(text, lang)
     return text
 
 
@@ -209,8 +298,8 @@ def translate_alert_text(title, body, status, lang):
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
     # Make units readable for TTS
-    body = _make_units_readable(body)
-    status = _make_units_readable(status)
+    body = _make_units_readable(body, lang)
+    status = _make_units_readable(status, lang)
 
     # Body translations
     translated_body = body
@@ -245,10 +334,10 @@ def translate_alert_text(title, body, status, lang):
     # Status translations
     translated_status = status
     if "Stable flow pattern" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
         translated_status = t.get("stable_flow", "Stable flow pattern detected")
         if time_part:
-            translated_status += " " + t["at"] + " " + time_part
+            translated_status += ", " + t["at"] + " " + time_part
     elif "No level variation" in status:
         time_part = ""
         import re
@@ -259,14 +348,14 @@ def translate_alert_text(title, body, status, lang):
         if time_part:
             translated_status += " " + time_part
     elif "Upper limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["stock_upper"] + (", " + t["at"] + " " + time_part if time_part else "")
     elif "Lower limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_lower"] + (" " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["stock_lower"] + (", " + t["at"] + " " + time_part if time_part else "")
     elif "daily consumption limit reached" in status.lower():
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["daily_limit"] + (" " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["daily_limit"] + (", " + t["at"] + " " + time_part if time_part else "")
     elif "90%" in status and "limit" in status.lower():
         translated_status = t["daily_limit_90"]
     elif "Abnormal" in status:
@@ -476,10 +565,20 @@ def _tts_generate(text, lang, mp3_path, wav_path):
     """Generate TTS audio with fallback to espeak if gTTS (internet) fails."""
     try:
         from gtts import gTTS
-        tts = gTTS(text=text, lang=lang) if lang != "en" else gTTS(text=text, lang="en", tld="co.in")
+        # Always use Indian English accent for English
+        if lang == "en":
+            tts = gTTS(text=text, lang="en", tld="co.in", slow=False)
+        else:
+            tts = gTTS(text=text, lang=lang, slow=False)
         tts.save(mp3_path)
+        # Enhanced audio: boost volume, enhance speech clarity, remove noise
         subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1",
-                        "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000",
+                        "-filter:a",
+                        "highpass=f=200,lowpass=f=6000,"
+                        "equalizer=f=1000:t=q:w=1:g=3,"
+                        "equalizer=f=2500:t=q:w=1:g=2,"
+                        "acompressor=threshold=-20dB:ratio=3:attack=5:release=50,"
+                        "volume=2.0",
                         wav_path], capture_output=True, timeout=30)
         return True
     except Exception as e:
@@ -2440,6 +2539,8 @@ class AlertsWindow(Gtk.Window):
         close_btn.set_relief(Gtk.ReliefStyle.NONE)
         def _close_chat(b):
             self._hide_chat_keyboard()
+            self._thinking_active = False
+            subprocess.run(["killall", "aplay"], capture_output=True)
             self._chat_window.hide()
         close_btn.connect("clicked", _close_chat)
         header.pack_end(close_btn, False, False, 5)
@@ -2549,7 +2650,7 @@ class AlertsWindow(Gtk.Window):
         if speak and text:
             def do_speak():
                 try:
-                    if _tts_generate(text, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
+                    if _tts_generate(text, "en", "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
                         subprocess.run(["aplay", "-D", "default", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
                 except Exception as e:
                     print("[AquaBox Chat] Speak error: " + str(e))
