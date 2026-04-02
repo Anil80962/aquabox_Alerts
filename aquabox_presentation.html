@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaBox - Smart Water Alert System | Fluxgen Sustainable Technologies</title>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --navy: #1e3a5a;
+  --blue-dark: #1e40af;
+  --blue: #3b82f6;
+  --blue-light: #60a5fa;
+  --blue-pale: #93c5fd;
+  --white: #f0f6ff;
+  --card-bg: rgba(30, 58, 90, 0.7);
+  --text: #e8f0fe;
+  --accent: #38bdf8;
+  --shadow: rgba(0,0,0,0.3);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--navy);
+  color: var(--text);
+}
+
+/* Slide viewport */
+.slides-viewport {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.slides-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.slide {
+  min-width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3vh 5vw;
+  position: relative;
+  background: linear-gradient(160deg, #0f2440 0%, var(--navy) 40%, #1a3555 100%);
+  overflow: hidden;
+}
+
+/* Fade-in animations for slide content */
+.slide .content { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.slide.active .content { opacity: 1; transform: translateY(0); }
+.slide .content.d1 { transition-delay: 0.15s; }
+.slide .content.d2 { transition-delay: 0.3s; }
+.slide .content.d3 { transition-delay: 0.45s; }
+.slide .content.d4 { transition-delay: 0.6s; }
+.slide .content.d5 { transition-delay: 0.75s; }
+
+/* Slide counter */
+.slide-counter {
+  position: fixed; top: 16px; right: 24px;
+  font-size: clamp(12px, 1.5vw, 16px);
+  color: rgba(255,255,255,0.5);
+  z-index: 100;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress dots */
+.progress-dots {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 100;
+}
+.progress-dots .dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+.progress-dots .dot.active {
+  background: var(--accent);
+  transform: scale(1.3);
+}
+
+/* Nav arrows */
+.nav-arrow {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 100;
+  transition: background 0.2s;
+  -webkit-user-select: none; user-select: none;
+}
+.nav-arrow:hover { background: rgba(255,255,255,0.25); }
+.nav-arrow.left { left: 16px; }
+.nav-arrow.right { right: 16px; }
+.nav-arrow.hidden { opacity: 0; pointer-events: none; }
+
+/* Typography */
+h1 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; letter-spacing: -1px; }
+h2 { font-size: clamp(1.4rem, 3.5vw, 2.4rem); font-weight: 600; margin-bottom: 1.5vh; }
+h3 { font-size: clamp(1rem, 2vw, 1.4rem); font-weight: 500; }
+p, li { font-size: clamp(0.8rem, 1.8vw, 1.15rem); line-height: 1.6; }
+
+/* Title slide specific */
+.title-main {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa, #38bdf8, #93c5fd);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -2px;
+}
+.title-sub {
+  font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+  color: var(--blue-pale);
+  margin-top: 0.5vh;
+}
+.title-company {
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  color: rgba(255,255,255,0.6);
+  margin-top: 2vh;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.title-tagline {
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  color: var(--accent);
+  margin-top: 1vh;
+  font-style: italic;
+}
+
+/* Water wave animation */
+.wave-container {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 120px;
+  overflow: hidden;
+}
+.wave {
+  position: absolute; bottom: 0; left: -50%; width: 200%; height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%233b82f6' fill-opacity='0.15' d='M0,64L48,58.7C96,53,192,43,288,48C384,53,480,75,576,80C672,85,768,75,864,64C960,53,1056,43,1152,48C1248,53,1344,75,1392,85.3L1440,96L1440,120L0,120Z'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: wave1 8s linear infinite;
+}
+.wave:nth-child(2) {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%2360a5fa' fill-opacity='0.1' d='M0,32L48,42.7C96,53,192,75,288,80C384,85,480,75,576,58.7C672,43,768,43,864,53.3C960,64,1056,85,1152,90.7C1248,96,1344,85,1392,80L1440,75L1440,120L0,120Z'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: wave2 6s linear infinite;
+}
+.wave:nth-child(3) {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%2393c5fd' fill-opacity='0.08' d='M0,96L48,85.3C96,75,192,53,288,53.3C384,53,480,75,576,85.3C672,96,768,96,864,85.3C960,75,1056,53,1152,48C1248,43,1344,53,1392,58.7L1440,64L1440,120L0,120Z'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: wave3 10s linear infinite;
+}
+@keyframes wave1 { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+@keyframes wave2 { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes wave3 { 0% { transform: translateX(0); } 100% { transform: translateX(50%); } }
+
+/* Bullet lists */
+.bullet-list { list-style: none; padding: 0; max-width: 800px; width: 100%; }
+.bullet-list li {
+  padding: 10px 0 10px 32px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.bullet-list li::before {
+  content: '';
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(10px, 2vw, 20px);
+  max-width: 960px; width: 100%;
+}
+.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: clamp(14px, 2.5vw, 24px);
+  transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  border-color: var(--accent);
+}
+.card-icon {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 8px;
+}
+.card h3 {
+  color: var(--accent);
+  margin-bottom: 6px;
+  font-size: clamp(0.85rem, 1.6vw, 1.1rem);
+}
+.card p {
+  color: rgba(255,255,255,0.7);
+  font-size: clamp(0.7rem, 1.3vw, 0.9rem);
+  line-height: 1.5;
+}
+
+/* Alert type badges */
+.alert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  max-width: 860px; width: 100%;
+}
+.alert-badge {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  border-left: 4px solid var(--accent);
+  font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+}
+.alert-badge.red { border-left-color: #ef4444; }
+.alert-badge.orange { border-left-color: #f97316; }
+.alert-badge.yellow { border-left-color: #eab308; }
+.alert-badge.green { border-left-color: #22c55e; }
+.alert-badge.blue { border-left-color: var(--blue-light); }
+.alert-badge.purple { border-left-color: #a78bfa; }
+
+/* TTS table */
+.lang-table {
+  border-collapse: collapse;
+  max-width: 700px; width: 100%;
+  margin: 1.5vh 0;
+}
+.lang-table th, .lang-table td {
+  padding: 10px 18px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+}
+.lang-table th {
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+  letter-spacing: 1px;
+}
+.lang-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+/* Security grid */
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  max-width: 860px; width: 100%;
+}
+.security-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+}
+.security-icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  background: rgba(56,189,248,0.15);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+/* Architecture flow */
+.arch-flow {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 0;
+  max-width: 900px; width: 100%;
+  margin: 2vh 0;
+}
+.arch-box {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: clamp(10px, 2vw, 20px) clamp(14px, 2.5vw, 24px);
+  text-align: center;
+  min-width: 120px;
+}
+.arch-box .arch-label {
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.arch-box .arch-name {
+  font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+  color: var(--accent);
+  font-weight: 600;
+}
+.arch-arrow {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--blue-light);
+  padding: 0 8px;
+}
+.arch-sub {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 12px; max-width: 700px; margin-top: 2vh;
+}
+.arch-tag {
+  background: rgba(56,189,248,0.1);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  color: var(--blue-pale);
+}
+
+/* Tech stack */
+.stack-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+  max-width: 860px; width: 100%;
+}
+.stack-item {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+}
+.stack-label {
+  color: var(--accent);
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 70px;
+}
+
+/* Deployment */
+.deploy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  max-width: 800px; width: 100%;
+}
+.deploy-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: clamp(12px, 2vw, 20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: border-color 0.3s;
+}
+.deploy-card:hover { border-color: var(--accent); }
+.deploy-card h3 {
+  color: var(--accent);
+  font-size: clamp(0.8rem, 1.4vw, 1rem);
+  margin-bottom: 4px;
+}
+.deploy-card p {
+  color: rgba(255,255,255,0.65);
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+}
+
+/* Thank you */
+.thankyou-line {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--blue));
+  border-radius: 2px;
+  margin: 1.5vh 0;
+}
+
+/* Fluxgen logo text */
+.fluxgen-brand {
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 300;
+  color: rgba(255,255,255,0.5);
+  font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+}
+
+/* Decorative background dots */
+.slide::before {
+  content: '';
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(circle at 20% 30%, rgba(59,130,246,0.04) 0%, transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(96,165,250,0.03) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .alert-grid { grid-template-columns: 1fr; }
+  .security-grid { grid-template-columns: 1fr; }
+  .stack-list { grid-template-columns: 1fr; }
+  .arch-flow { flex-direction: column; }
+  .arch-arrow { transform: rotate(90deg); }
+  .nav-arrow { width: 36px; height: 36px; font-size: 16px; }
+  .slide { padding: 2vh 4vw; }
+}
+</style>
+</head>
+<body>
+
+<div class="slide-counter" id="slideCounter">1 / 11</div>
+
+<div class="nav-arrow left hidden" id="navLeft" onclick="changeSlide(-1)">&#9664;</div>
+<div class="nav-arrow right" id="navRight" onclick="changeSlide(1)">&#9654;</div>
+
+<div class="progress-dots" id="progressDots"></div>
+
+<div class="slides-viewport">
+  <div class="slides-track" id="slidesTrack">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active" id="slide-0">
+      <div class="content title-main">AquaBox</div>
+      <div class="content d1 title-sub">Smart Water Alert System</div>
+      <div class="content d2 title-company" style="margin-top:3vh">Fluxgen Sustainable Technologies</div>
+      <div class="content d3 title-tagline">"Build a Water-Positive Future"</div>
+      <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <div class="slide" id="slide-1">
+      <h2 class="content" style="color:var(--accent)">The Problem</h2>
+      <div class="content d1" style="max-width:700px;text-align:center;margin-bottom:2vh;color:rgba(255,255,255,0.6)">Industries face critical challenges in water management</div>
+      <ul class="bullet-list content d2">
+        <li>Industries waste water due to <strong>lack of real-time monitoring</strong></li>
+        <li>Delayed alerts lead to <strong>overflow, leaks, and abnormal usage</strong></li>
+        <li>Manual tracking is <strong>error-prone and slow</strong></li>
+        <li>No <strong>multilingual support</strong> for diverse workforce across plant sites</li>
+      </ul>
+    </div>
+
+    <!-- SLIDE 3: Solution -->
+    <div class="slide" id="slide-2">
+      <h2 class="content" style="color:var(--accent)">The Solution &mdash; AquaBox</h2>
+      <div class="content d1" style="max-width:700px;text-align:center;margin-bottom:2vh;color:rgba(255,255,255,0.6)">An always-on smart display for water infrastructure</div>
+      <ul class="bullet-list content d2">
+        <li><strong>Raspberry Pi 4</strong> powered 5-inch touchscreen display</li>
+        <li><strong>Real-time water alerts</strong> from AquaGen cloud platform</li>
+        <li><strong>Multi-language voice announcements</strong> in 6 Indian languages</li>
+        <li><strong>AI-powered water assistant</strong> (AquaGPT) for interactive queries</li>
+        <li><strong>Always-on, wall-mounted</strong> at industrial plant sites</li>
+      </ul>
+    </div>
+
+    <!-- SLIDE 4: Key Features -->
+    <div class="slide" id="slide-3">
+      <h2 class="content" style="color:var(--accent)">Key Features</h2>
+      <div class="cards-grid content d1">
+        <div class="card">
+          <div class="card-icon">&#9888;&#65039;</div>
+          <h3>Real-time Alerts</h3>
+          <p>Color-coded by severity &mdash; red, orange, yellow. Instant delivery from AquaGen cloud.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#127908;</div>
+          <h3>6 Language TTS</h3>
+          <p>English, Telugu, Hindi, Kannada, Tamil, Malayalam voice announcements.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#128266;</div>
+          <h3>Auto-Announce</h3>
+          <p>Unread alerts and offline device notifications announced automatically.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#129302;</div>
+          <h3>AquaGPT Chat</h3>
+          <p>AI-powered water assistant for on-demand queries and insights.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#128246;</div>
+          <h3>WiFi Manager</h3>
+          <p>On-device network configuration without external tools.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">&#9000;&#65039;</div>
+          <h3>On-screen Keyboard</h3>
+          <p>Touch-friendly virtual keyboard for seamless input.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Alert Types -->
+    <div class="slide" id="slide-4">
+      <h2 class="content" style="color:var(--accent)">Alert Types</h2>
+      <div class="content d1" style="max-width:700px;text-align:center;margin-bottom:2vh;color:rgba(255,255,255,0.6)">Comprehensive monitoring across all water parameters</div>
+      <div class="alert-grid content d2">
+        <div class="alert-badge red">&#9679; Stock Level Upper Limit Exceeded</div>
+        <div class="alert-badge red">&#9679; Stock Level Lower Limit Breach</div>
+        <div class="alert-badge orange">&#9679; Daily Consumption at 90%</div>
+        <div class="alert-badge orange">&#9679; Daily Consumption at 100%</div>
+        <div class="alert-badge yellow">&#9679; Abnormal Water Usage Detected</div>
+        <div class="alert-badge green">&#9679; Stable Flow Pattern Detection</div>
+        <div class="alert-badge blue">&#9679; Device Offline / Online Status</div>
+        <div class="alert-badge purple">&#9679; No Level Variation Detection</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Multi-Language TTS -->
+    <div class="slide" id="slide-5">
+      <h2 class="content" style="color:var(--accent)">Multi-Language TTS</h2>
+      <table class="lang-table content d1">
+        <thead>
+          <tr><th>Language</th><th>Region</th><th>Engine</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>English</td><td>Pan-India</td><td>gTTS / espeak</td></tr>
+          <tr><td>Telugu</td><td>Andhra Pradesh, Telangana</td><td>gTTS / espeak</td></tr>
+          <tr><td>Hindi</td><td>North India</td><td>gTTS / espeak</td></tr>
+          <tr><td>Kannada</td><td>Karnataka</td><td>gTTS / espeak</td></tr>
+          <tr><td>Tamil</td><td>Tamil Nadu</td><td>gTTS / espeak</td></tr>
+          <tr><td>Malayalam</td><td>Kerala</td><td>gTTS / espeak</td></tr>
+        </tbody>
+      </table>
+      <ul class="bullet-list content d2" style="margin-top:1.5vh">
+        <li><strong>L</strong> reads as "liters", <strong>kL</strong> reads as "kiloliters" in all languages</li>
+        <li>Alerts <strong>translated to local language</strong> before text-to-speech</li>
+        <li><strong>espeak fallback</strong> ensures voice output when internet is unavailable</li>
+      </ul>
+    </div>
+
+    <!-- SLIDE 7: Security -->
+    <div class="slide" id="slide-6">
+      <h2 class="content" style="color:var(--accent)">Security</h2>
+      <div class="content d1" style="max-width:700px;text-align:center;margin-bottom:2vh;color:rgba(255,255,255,0.6)">Enterprise-grade security for industrial deployment</div>
+      <div class="security-grid content d2">
+        <div class="security-item">
+          <div class="security-icon">&#128274;</div>
+          <div><strong>Encrypted Credentials</strong><br>Fernet encryption tied to machine-id</div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon">&#128737;</div>
+          <div><strong>Firewall (UFW)</strong><br>Tailscale-only SSH access</div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon">&#128272;</div>
+          <div><strong>Restricted Sudo</strong><br>Minimal elevated permissions</div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon">&#128260;</div>
+          <div><strong>Auto Security Updates</strong><br>Unattended upgrades enabled</div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon">&#128683;</div>
+          <div><strong>Password Auth Disabled</strong><br>Key-based SSH only</div>
+        </div>
+        <div class="security-item">
+          <div class="security-icon">&#128230;</div>
+          <div><strong>No Plaintext Passwords</strong><br>All secrets encrypted at rest</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Architecture -->
+    <div class="slide" id="slide-7">
+      <h2 class="content" style="color:var(--accent)">Architecture</h2>
+      <div class="arch-flow content d1">
+        <div class="arch-box">
+          <div class="arch-label">Cloud</div>
+          <div class="arch-name">AquaGen API</div>
+        </div>
+        <div class="arch-arrow">&#10145;</div>
+        <div class="arch-box">
+          <div class="arch-label">Device</div>
+          <div class="arch-name">Raspberry Pi 4</div>
+        </div>
+        <div class="arch-arrow">&#10145;</div>
+        <div class="arch-box">
+          <div class="arch-label">Display</div>
+          <div class="arch-name">GTK3 UI</div>
+        </div>
+        <div class="arch-arrow">&#10145;</div>
+        <div class="arch-box">
+          <div class="arch-label">Output</div>
+          <div class="arch-name">Speaker</div>
+        </div>
+      </div>
+      <div class="arch-sub content d2">
+        <div class="arch-tag">Tailscale VPN</div>
+        <div class="arch-tag">PipeWire Audio</div>
+        <div class="arch-tag">Wayland (labwc)</div>
+        <div class="arch-tag">REST API + Bearer Auth</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Technical Stack -->
+    <div class="slide" id="slide-8">
+      <h2 class="content" style="color:var(--accent)">Technical Stack</h2>
+      <div class="stack-list content d1">
+        <div class="stack-item">
+          <span class="stack-label">Hardware</span>
+          <span>Raspberry Pi 4, 5" HDMI display, 3.5mm speaker</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-label">Software</span>
+          <span>Python 3, GTK3, Wayland, PipeWire</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-label">TTS</span>
+          <span>Google TTS (gTTS) + espeak fallback</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-label">API</span>
+          <span>AquaGen REST API with Bearer auth</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-label">VPN</span>
+          <span>Tailscale for secure remote access</span>
+        </div>
+        <div class="stack-item">
+          <span class="stack-label">OS</span>
+          <span>Raspberry Pi OS (Debian Bookworm)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Deployment -->
+    <div class="slide" id="slide-9">
+      <h2 class="content" style="color:var(--accent)">Deployment</h2>
+      <div class="content d1" style="max-width:700px;text-align:center;margin-bottom:2vh;color:rgba(255,255,255,0.6)">Live at customer sites across India</div>
+      <div class="deploy-grid content d2">
+        <div class="deploy-card">
+          <h3>&#127981; Customer Sites</h3>
+          <p>Sartorius, Sri Satya Sai &mdash; active deployments</p>
+        </div>
+        <div class="deploy-card">
+          <h3>&#128736; Wall-Mounted</h3>
+          <p>Installed beside water infrastructure for visibility</p>
+        </div>
+        <div class="deploy-card">
+          <h3>&#9889; Auto-Start</h3>
+          <p>Boots directly into AquaBox display on power-on</p>
+        </div>
+        <div class="deploy-card">
+          <h3>&#127760; Remote Management</h3>
+          <p>Full access via Tailscale VPN from anywhere</p>
+        </div>
+        <div class="deploy-card">
+          <h3>&#128259; OTA Updates</h3>
+          <p>Over-the-air software updates possible remotely</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Thank You -->
+    <div class="slide" id="slide-10">
+      <div class="content title-main" style="font-size:clamp(2rem,6vw,4.5rem)">Thank You</div>
+      <div class="thankyou-line content d1"></div>
+      <div class="content d2 title-sub" style="font-size:clamp(1rem,2vw,1.4rem)">AquaBox &mdash; Smart Water Alerts</div>
+      <div class="content d3 fluxgen-brand" style="margin-top:3vh">Fluxgen Sustainable Technologies</div>
+      <div class="content d4 title-tagline">"Build a Water-Positive Future"</div>
+      <div class="content d5" style="margin-top:3vh;color:rgba(255,255,255,0.4);font-size:clamp(0.7rem,1.2vw,0.9rem)">
+        www.fluxgen.com &nbsp;|&nbsp; info@fluxgen.com
+      </div>
+      <div class="wave-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  const TOTAL = 11;
+  let current = 0;
+  const track = document.getElementById('slidesTrack');
+  const counter = document.getElementById('slideCounter');
+  const navLeft = document.getElementById('navLeft');
+  const navRight = document.getElementById('navRight');
+  const dotsContainer = document.getElementById('progressDots');
+
+  // Create dots
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', function() { goTo(i); });
+    dotsContainer.appendChild(dot);
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= TOTAL) return;
+    // Remove active from previous slide
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = index;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    counter.textContent = (current + 1) + ' / ' + TOTAL;
+
+    // Update dots
+    var dots = dotsContainer.children;
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].className = 'dot' + (i === current ? ' active' : '');
+    }
+
+    // Nav arrow visibility
+    navLeft.className = 'nav-arrow left' + (current === 0 ? ' hidden' : '');
+    navRight.className = 'nav-arrow right' + (current === TOTAL - 1 ? ' hidden' : '');
+
+    // Activate slide (triggers CSS fade-in)
+    setTimeout(function() {
+      document.getElementById('slide-' + current).classList.add('active');
+    }, 100);
+  }
+
+  function changeSlideGlobal(dir) {
+    goTo(current + dir);
+  }
+  window.changeSlide = changeSlideGlobal;
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      changeSlideGlobal(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      changeSlideGlobal(-1);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      goTo(TOTAL - 1);
+    }
+  });
+
+  // Touch swipe support
+  var touchStartX = 0;
+  var touchStartY = 0;
+  var touchStartTime = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].screenX - touchStartX;
+    var dy = e.changedTouches[0].screenY - touchStartY;
+    var dt = Date.now() - touchStartTime;
+    // Require horizontal swipe > 50px, within 500ms, and more horizontal than vertical
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && dt < 500) {
+      if (dx < 0) changeSlideGlobal(1);
+      else changeSlideGlobal(-1);
+    }
+  }, { passive: true });
+})();
+</script>
+</body>
+</html>
