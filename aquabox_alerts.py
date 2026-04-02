@@ -455,8 +455,11 @@ def _tts_generate(text, lang, mp3_path, wav_path):
     except Exception as e:
         print(f"[{now()}] gTTS failed ({e}), falling back to espeak")
         try:
-            subprocess.run(["espeak", "-w", wav_path, "-s", "140", text[:500]],
+            espeak_tmp = wav_path + ".espeak.wav"
+            subprocess.run(["espeak", "-w", espeak_tmp, "-s", "140", text[:500]],
                           capture_output=True, timeout=15)
+            subprocess.run(["ffmpeg", "-y", "-i", espeak_tmp, "-ar", "44100", "-ac", "1",
+                           wav_path], capture_output=True, timeout=15)
             return True
         except Exception as e2:
             print(f"[{now()}] espeak also failed: {e2}")
@@ -2220,7 +2223,7 @@ class AlertsWindow(Gtk.Window):
             def do_speak():
                 try:
                     if _tts_generate(text, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
-                        subprocess.run(["aplay", "-D", "plughw:1,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
+                        subprocess.run(["aplay", "-D", "default", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
                 except Exception as e:
                     print("[AquaBox Chat] Speak error: " + str(e))
             threading.Thread(target=do_speak, daemon=True).start()
@@ -2291,7 +2294,7 @@ class AlertsWindow(Gtk.Window):
             GLib.idle_add(lambda: self._add_bot_message(answer))
             if wav_path:
                 time.sleep(0.3)
-                subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
         threading.Thread(target=get_answer, daemon=True).start()
 
     def _draw_mic_icon(self, widget, cr):
@@ -2819,8 +2822,11 @@ class AlertsWindow(Gtk.Window):
                     _status(f"Connected to {ssid}!", 0.26, 0.85, 0.37)
                     self._wifi_connected = True
                     GLib.idle_add(self._wifi_icon.queue_draw)
-                    # Kill on-screen keyboard
-                    subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+                    # Close on-screen keyboard
+                    if hasattr(self, '_wifi_kb_window') and self._wifi_kb_window:
+                        GLib.idle_add(self._wifi_kb_window.destroy)
+                        self._wifi_kb_window = None
+                    self._wifi_kb_visible = False
                     # Save to wpa_supplicant.conf for persistence
                     self._save_wifi_config(ssid, password)
                     # Refresh API
@@ -3033,22 +3039,20 @@ class AlertsWindow(Gtk.Window):
         pass_lbl.set_halign(Gtk.Align.START)
         page2.pack_start(pass_lbl, False, False, 0)
 
-        pass_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=4)
         self._wifi_pass_entry = Gtk.Entry()
         self._wifi_pass_entry.set_placeholder_text("Enter password")
         self._wifi_pass_entry.set_visibility(False)
         self._wifi_pass_entry.get_style_context().add_class("wifi-pass-entry")
-        pass_row.pack_start(self._wifi_pass_entry, True, True, 0)
-
-        show_pass_btn = Gtk.Button(label="\U0001F441")
-        show_pass_btn.set_relief(Gtk.ReliefStyle.NONE)
-        show_pass_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-        def toggle_pass_vis(b):
-            vis = not self._wifi_pass_entry.get_visibility()
-            self._wifi_pass_entry.set_visibility(vis)
-        show_pass_btn.connect("clicked", toggle_pass_vis)
-        pass_row.pack_start(show_pass_btn, False, False, 0)
-        page2.pack_start(pass_row, False, False, 0)
+        self._wifi_pass_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+        self._wifi_pass_entry.set_icon_tooltip_text(Gtk.EntryIconPosition.SECONDARY, "Show/Hide password")
+        def toggle_wifi_pass_vis(entry, icon_pos, event):
+            vis = not entry.get_visibility()
+            entry.set_visibility(vis)
+            entry.set_icon_from_icon_name(
+                Gtk.EntryIconPosition.SECONDARY,
+                "view-reveal-symbolic" if vis else "view-conceal-symbolic")
+        self._wifi_pass_entry.connect("icon-press", toggle_wifi_pass_vis)
+        page2.pack_start(self._wifi_pass_entry, False, False, 0)
 
         # Status label for page 2
         p2_status = Gtk.Label(label="")
@@ -3058,24 +3062,31 @@ class AlertsWindow(Gtk.Window):
 
         # Keyboard button
         self._wifi_kb_visible = False
+        self._wifi_kb_window = None
         kb_btn = Gtk.Button(label="\u2328  Open Keyboard")
         kb_btn.get_style_context().add_class("wifi-scan-btn")
         def toggle_keyboard(b):
             if self._wifi_kb_visible:
-                subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+                if self._wifi_kb_window:
+                    self._wifi_kb_window.destroy()
+                    self._wifi_kb_window = None
+                # Move wifi panel back to bottom
+                self._wifi_overlay.set_valign(Gtk.Align.END)
+                self._wifi_overlay.set_margin_bottom(40)
+                self._wifi_overlay.set_margin_top(0)
                 kb_btn.set_label("\u2328  Open Keyboard")
                 self._wifi_kb_visible = False
             else:
-                env = {
-                    "WAYLAND_DISPLAY": "wayland-0",
-                    "XDG_RUNTIME_DIR": "/run/user/1000",
-                    "HOME": os.path.expanduser("~"),
-                    "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
-                }
-                subprocess.Popen(["wvkbd-mobintl", "-L", "300"],
-                                 env=env, start_new_session=True)
+                # Move wifi panel to top so keyboard doesn't cover it
+                self._wifi_overlay.set_valign(Gtk.Align.START)
+                self._wifi_overlay.set_margin_top(5)
+                self._wifi_overlay.set_margin_bottom(0)
+                self._wifi_overlay.set_size_request(300, 200)
+                self._wifi_kb_entry = self._wifi_pass_entry
+                self._build_wifi_gtk_keyboard()
                 kb_btn.set_label("\u2715  Close Keyboard")
                 self._wifi_kb_visible = True
+                GLib.timeout_add(300, lambda: self._wifi_pass_entry.grab_focus() or False)
         kb_btn.connect("clicked", toggle_keyboard)
         page2.pack_start(kb_btn, False, False, 0)
 
@@ -3095,8 +3106,10 @@ class AlertsWindow(Gtk.Window):
                 p2_status.set_text("Please enter the password!")
                 p2_status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.95, 0.2, 0.2, 1))
                 return
-            # Kill keyboard before connecting
-            subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+            # Close keyboard before connecting
+            if hasattr(self, '_wifi_kb_window') and self._wifi_kb_window:
+                self._wifi_kb_window.destroy()
+                self._wifi_kb_window = None
             self._wifi_kb_visible = False
             self._connect_to_wifi(ssid, password, p2_status)
 
@@ -3193,11 +3206,120 @@ class AlertsWindow(Gtk.Window):
         # Auto-scan on open
         on_scan(scan_btn)
 
+    def _build_wifi_gtk_keyboard(self):
+        """Build GTK keyboard for WiFi password entry."""
+        self._wifi_kb_shift = False
+        self._wifi_kb_letter_btns = []
+        self._wifi_kb_window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
+        self._wifi_kb_window.set_title("Keyboard")
+        self._wifi_kb_window.set_decorated(False)
+        self._wifi_kb_window.set_default_size(800, 280)
+        self._wifi_kb_window.move(0, 200)
+        self._wifi_kb_window.set_keep_above(True)
+        self._wifi_kb_window.set_accept_focus(False)
+        self._wifi_kb_window.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+        kb_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        kb_box.set_margin_start(2)
+        kb_box.set_margin_end(2)
+        kb_box.set_margin_top(2)
+        kb_box.set_margin_bottom(2)
+
+        rows = [
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "@"],
+            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "_"],
+        ]
+        for row in rows:
+            row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2, homogeneous=True)
+            for key in row:
+                btn = Gtk.Button(label=key)
+                btn.modify_font(Pango.FontDescription("Sans bold 14"))
+                btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                btn.set_size_request(-1, 48)
+                btn.connect("clicked", self._wifi_kb_key, key)
+                if key.isalpha():
+                    self._wifi_kb_letter_btns.append((btn, key))
+                row_box.pack_start(btn, True, True, 0)
+            kb_box.pack_start(row_box, False, False, 0)
+
+        action_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+        for label, w, cb in [
+            ("\u21e7", 80, self._wifi_kb_shift_cb),
+            ("#", 50, lambda b: self._wifi_kb_key(b, "#")),
+            ("$", 50, lambda b: self._wifi_kb_key(b, "$")),
+            ("-", 50, lambda b: self._wifi_kb_key(b, "-")),
+            ("+", 50, lambda b: self._wifi_kb_key(b, "+")),
+        ]:
+            btn = Gtk.Button(label=label)
+            btn.modify_font(Pango.FontDescription("Sans bold 14"))
+            btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            btn.set_size_request(w, 48)
+            btn.connect("clicked", cb)
+            action_row.pack_start(btn, False, False, 0)
+
+        space_btn = Gtk.Button(label="Space")
+        space_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        space_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        space_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        space_btn.set_size_request(-1, 48)
+        space_btn.connect("clicked", lambda b: self._wifi_kb_key(b, " "))
+        action_row.pack_start(space_btn, True, True, 0)
+
+        bksp_btn = Gtk.Button(label="\u232b")
+        bksp_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        bksp_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        bksp_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        bksp_btn.set_size_request(80, 48)
+        bksp_btn.connect("clicked", self._wifi_kb_bksp)
+        action_row.pack_start(bksp_btn, False, False, 0)
+
+        kb_box.pack_start(action_row, False, False, 0)
+        self._wifi_kb_window.add(kb_box)
+        self._wifi_kb_window.show_all()
+
+    def _wifi_kb_key(self, button, key):
+        entry = self._wifi_kb_entry
+        char = key.upper() if self._wifi_kb_shift and key.isalpha() else key
+        entry.do_insert_at_cursor(entry, char)
+        if self._wifi_kb_shift:
+            self._wifi_kb_shift = False
+            for btn, k in self._wifi_kb_letter_btns:
+                btn.set_label(k.lower())
+
+    def _wifi_kb_shift_cb(self, button):
+        self._wifi_kb_shift = not self._wifi_kb_shift
+        for btn, k in self._wifi_kb_letter_btns:
+            btn.set_label(k.upper() if self._wifi_kb_shift else k.lower())
+        if self._wifi_kb_shift:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+        else:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+    def _wifi_kb_bksp(self, button):
+        entry = self._wifi_kb_entry
+        pos = entry.get_position()
+        if pos > 0:
+            text = entry.get_text()
+            entry.set_text(text[:pos-1] + text[pos:])
+            entry.set_position(pos - 1)
+
     def _close_wifi_popup(self):
         self._wifi_overlay.set_visible(False)
-        # Kill on-screen keyboard if open
-        subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+        # Close GTK keyboard if open
+        if hasattr(self, '_wifi_kb_window') and self._wifi_kb_window:
+            self._wifi_kb_window.destroy()
+            self._wifi_kb_window = None
         self._wifi_kb_visible = False
+        # Reset position
+        self._wifi_overlay.set_valign(Gtk.Align.END)
+        self._wifi_overlay.set_margin_bottom(40)
+        self._wifi_overlay.set_margin_top(0)
+        self._wifi_overlay.set_size_request(300, 350)
         # Restore panda
         if hasattr(self, '_panda_event'):
             self._panda_event.set_visible(True)
@@ -3690,7 +3812,7 @@ class AlertsWindow(Gtk.Window):
                     except:
                         audio_dur = 5
                     GLib.idle_add(self._start_typing, text, audio_dur)
-                    subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing to finish
                     for _ in range(200):
                         if self._typing_done or _announce_stop:
@@ -3749,7 +3871,7 @@ class AlertsWindow(Gtk.Window):
                         if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
                             continue
                         GLib.idle_add(self._start_typing, text)
-                        subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                        subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
                         time.sleep(1)
                     except Exception as e:
                         print("[" + now() + "] Auto offline announce error: " + str(e))
@@ -3812,7 +3934,7 @@ class AlertsWindow(Gtk.Window):
                     GLib.idle_add(self._start_typing, text, audio_duration)
                     time.sleep(0.3)
 
-                    audio_proc = subprocess.Popen(["aplay", "-D", "plughw:1,0", "-q", wav_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    audio_proc = subprocess.Popen(["aplay", "-D", "default", "-q", wav_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     while audio_proc.poll() is None:
                         if _announce_stop:
                             audio_proc.kill()
@@ -3880,7 +4002,7 @@ class AlertsWindow(Gtk.Window):
                         if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
                             continue
                     GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing animation to catch up with audio
                     time.sleep(1)
                 except Exception as e:
@@ -3960,7 +4082,7 @@ class AlertsWindow(Gtk.Window):
                 except:
                     audio_dur = 5
                 GLib.idle_add(self._start_typing, text, audio_dur)
-                subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
             except Exception as e:
                 print(f"[{now()}] Announce TTS error: {e}")
 
