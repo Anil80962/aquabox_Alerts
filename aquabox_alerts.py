@@ -43,6 +43,9 @@ TRANSLATIONS = {
         "stock_lower": "Stock Level Lower limit reached",
         "daily_limit": "Daily Limit Reached",
         "daily_limit_90": "90 percent of the Daily Limit Reached",
+        "stable_flow": "Stable flow pattern detected",
+        "avg_consumption": "Average consumption",
+        "no_level_variation": "No level variation detected",
         "abnormal": "Abnormal water usage detected",
         "offline": "Device is offline",
         "online": "Device is back online",
@@ -61,6 +64,9 @@ TRANSLATIONS = {
         "stock_lower": "నీటి మట్టం కింది పరిమితి చేరుకుంది",
         "daily_limit": "రోజువారీ పరిమితి చేరుకుంది",
         "daily_limit_90": "రోజువారీ పరిమితిలో 90 శాతం చేరుకుంది",
+        "stable_flow": "స్థిరమైన ప్రవాహ నమూనా గుర్తించబడింది",
+        "avg_consumption": "సగటు వినియోగం",
+        "no_level_variation": "నీటి మట్టంలో మార్పు లేదు",
         "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
         "offline": "పరికరం ఆఫ్‌లైన్‌లో ఉంది",
         "online": "పరికరం తిరిగి ఆన్‌లైన్‌లో ఉంది",
@@ -79,6 +85,9 @@ TRANSLATIONS = {
         "stock_lower": "जल स्तर निचली सीमा पर पहुंच गया",
         "daily_limit": "दैनिक सीमा पूरी हो गई",
         "daily_limit_90": "दैनिक सीमा का 90 प्रतिशत पूरा हो गया",
+        "stable_flow": "स्थिर प्रवाह पैटर्न पाया गया",
+        "avg_consumption": "औसत खपत",
+        "no_level_variation": "जल स्तर में कोई बदलाव नहीं",
         "abnormal": "असामान्य पानी का उपयोग पाया गया",
         "offline": "डिवाइस ऑफलाइन है",
         "online": "डिवाइस वापस ऑनलाइन है",
@@ -97,6 +106,9 @@ TRANSLATIONS = {
         "stock_lower": "ನೀರಿನ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit": "ದೈನಂದಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit_90": "ದೈನಂದಿನ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
+        "stable_flow": "ಸ್ಥಿರ ಹರಿವಿನ ಮಾದರಿ ಪತ್ತೆಯಾಗಿದೆ",
+        "avg_consumption": "ಸರಾಸರಿ ಬಳಕೆ",
+        "no_level_variation": "ನೀರಿನ ಮಟ್ಟದಲ್ಲಿ ಬದಲಾವಣೆ ಇಲ್ಲ",
         "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
         "offline": "ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
         "online": "ಸಾಧನ ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
@@ -115,6 +127,9 @@ TRANSLATIONS = {
         "stock_lower": "ജല നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
         "daily_limit": "ദൈനംദിന പരിധി എത്തി",
         "daily_limit_90": "ദൈനംദിന പരിധിയുടെ 90 ശതമാനം എത്തി",
+        "stable_flow": "സ്ഥിരമായ പ്രവാഹ രീതി കണ്ടെത്തി",
+        "avg_consumption": "ശരാശരി ഉപഭോഗം",
+        "no_level_variation": "ജല നിരപ്പിൽ മാറ്റമില്ല",
         "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
         "offline": "ഉപകരണം ഓഫ്‌ലൈനിലാണ്",
         "online": "ഉപകരണം വീണ്ടും ഓൺലൈനിലാണ്",
@@ -133,6 +148,9 @@ TRANSLATIONS = {
         "stock_lower": "நீர் மட்டம் கீழ் வரம்பை எட்டியது",
         "daily_limit": "தினசரி வரம்பு எட்டியது",
         "daily_limit_90": "தினசரி வரம்பின் 90 சதவீதம் எட்டியது",
+        "stable_flow": "நிலையான நீரோட்ட முறை கண்டறியப்பட்டது",
+        "avg_consumption": "சராசரி நுகர்வு",
+        "no_level_variation": "நீர் மட்டத்தில் மாற்றம் இல்லை",
         "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
         "offline": "சாதனம் ஆஃப்லைனில் உள்ளது",
         "online": "சாதனம் மீண்டும் ஆன்லைனில் உள்ளது",
@@ -144,15 +162,39 @@ TRANSLATIONS = {
 }
 
 
+def _make_units_readable(text):
+    """Replace abbreviations with full words for TTS clarity."""
+    import re
+    # "56.4 L" -> "56.4 liters", "207.15kL" -> "207.15 kiloliters"
+    text = re.sub(r'(\d+\.?\d*)\s*kL\b', r'\1 kiloliters', text)
+    text = re.sub(r'(\d+\.?\d*)\s*KL\b', r'\1 kiloliters', text)
+    text = re.sub(r'(\d+\.?\d*)\s*L\b', r'\1 liters', text)
+    return text
+
+
 def translate_alert_text(title, body, status, lang):
     """Translate alert text to local language, keep location name in English."""
     body = str(body)
     status = str(status)
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
+    # Make units readable for TTS
+    body = _make_units_readable(body)
+    status = _make_units_readable(status)
+
     # Body translations
     translated_body = body
-    if "filled" in body.lower():
+    if "Stable flow pattern" in body:
+        # e.g. "Stable flow pattern detected - Average consumption: 56.4 liters"
+        import re
+        m = re.search(r'(\d+\.?\d*)\s*liters', body)
+        amount = m.group(1) + " liters" if m else ""
+        translated_body = t.get("stable_flow", "Stable flow pattern detected")
+        if amount:
+            translated_body += ". " + t.get("avg_consumption", "Average consumption") + ": " + amount
+    elif "No level variation" in body or "no_level_variation" in body.lower():
+        translated_body = t.get("no_level_variation", "No level variation detected")
+    elif "filled" in body.lower():
         # Extract percentage e.g. "90.84% filled"
         parts = body.split("%")
         if len(parts) > 1:
@@ -172,7 +214,21 @@ def translate_alert_text(title, body, status, lang):
 
     # Status translations
     translated_status = status
-    if "Upper limit reached" in status:
+    if "Stable flow pattern" in status:
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t.get("stable_flow", "Stable flow pattern detected")
+        if time_part:
+            translated_status += " " + t["at"] + " " + time_part
+    elif "No level variation" in status:
+        time_part = ""
+        import re
+        m = re.search(r'for\s+([\d.]+)\s+days', status)
+        if m:
+            time_part = m.group(1) + " days"
+        translated_status = t.get("no_level_variation", "No level variation detected")
+        if time_part:
+            translated_status += " " + time_part
+    elif "Upper limit reached" in status:
         time_part = status.split("at")[-1].strip() if "at" in status else ""
         translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
     elif "Lower limit reached" in status:
@@ -200,7 +256,7 @@ ADMIN_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "admin_c
 ADMIN_USER = "admin"
 ADMIN_PASS = "admin"
 REFRESH_INTERVAL = 120  # seconds (2 minutes)
-OFFLINE_ANNOUNCE_INTERVAL = 3600  # 1 hour auto-announce offline  # seconds (2 minutes)
+OFFLINE_ANNOUNCE_INTERVAL = 10800  # seconds (3 hours)
 TOKEN_REFRESH = 13800  # refresh token every 3hr 50min (10 min before 4hr expiry)
 AUTO_MARK_READ = True  # Auto mark alerts as read when displayed
 ANNOUNCED_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "announced_alerts.json")
@@ -974,6 +1030,10 @@ class LoginWindow(Gtk.Window):
         self.password_entry.set_margin_start(30)
         self.password_entry.set_margin_end(30)
         self.password_entry.connect("activate", self.on_login)
+        self.password_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+        self.password_entry.set_icon_tooltip_text(Gtk.EntryIconPosition.SECONDARY, "Show/Hide password")
+        self.password_entry.connect("icon-press", self._toggle_password_visibility)
+        self._pass_visible = False
         card.pack_start(self.password_entry, False, False, 4)
 
         # Error label
@@ -1018,6 +1078,21 @@ class LoginWindow(Gtk.Window):
 
         outer.pack_start(card, False, False, 0)
         overlay.add_overlay(outer)
+
+        # Floating close keyboard button (hidden by default)
+        self._kb_close_btn = Gtk.Button(label="\u2715  Close Keyboard")
+        self._kb_close_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 0.9))
+        self._kb_close_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        self._kb_close_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+        self._kb_close_btn.set_halign(Gtk.Align.END)
+        self._kb_close_btn.set_valign(Gtk.Align.START)
+        self._kb_close_btn.set_margin_top(5)
+        self._kb_close_btn.set_margin_end(5)
+        self._kb_close_btn.connect("clicked", lambda b: self.toggle_keyboard(b))
+        self._kb_close_btn.set_no_show_all(True)
+        self._kb_close_btn.set_visible(False)
+        overlay.add_overlay(self._kb_close_btn)
+
         self.add(overlay)
         GLib.timeout_add(40, self._animate)
 
@@ -1124,6 +1199,16 @@ class LoginWindow(Gtk.Window):
         self._pass_visible = not self._pass_visible
         self.password_entry.set_visibility(self._pass_visible)
         button.set_label("○" if self._pass_visible else "●")
+
+    def _toggle_password_visibility(self, entry, icon_pos, event):
+        self._pass_visible = not self._pass_visible
+        self.password_entry.set_visibility(self._pass_visible)
+        if self._pass_visible:
+            self.password_entry.set_icon_from_icon_name(
+                Gtk.EntryIconPosition.SECONDARY, "view-reveal-symbolic")
+        else:
+            self.password_entry.set_icon_from_icon_name(
+                Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
 
     def _open_admin(self, button):
         """Open admin login - fullscreen with animation."""
@@ -1396,18 +1481,151 @@ class LoginWindow(Gtk.Window):
         dialog.show_all()
 
     def toggle_keyboard(self, button):
-        import subprocess
         if self._kb_visible:
-            subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
-            button.set_label("\u2328  Keyboard")
+            self._kb_window.hide()
+            self._kb_window.destroy()
+            self._kb_window = None
+            self.fullscreen()
+            self._kb_close_btn.set_visible(False)
             self._kb_visible = False
         else:
-            env = os.environ.copy()
-            env["WAYLAND_DISPLAY"] = "wayland-0"
-            env["XDG_RUNTIME_DIR"] = "/run/user/1000"
-            subprocess.Popen(["wvkbd-mobintl", "-L", "300"], env=env)
-            button.set_label("\u2328  Hide Keyboard")
+            self.unfullscreen()
+            self.resize(800, 200)
+            self.move(0, 0)
+            self._active_entry = self.username_entry
+            self._build_gtk_keyboard()
+            self._kb_close_btn.set_no_show_all(False)
+            self._kb_close_btn.show()
+            self._kb_close_btn.set_visible(True)
             self._kb_visible = True
+            GLib.timeout_add(300, lambda: self.username_entry.grab_focus() or False)
+
+    def _build_gtk_keyboard(self):
+        """Build a custom GTK on-screen keyboard."""
+        self._kb_shift = False
+        self._kb_window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
+        self._kb_window.set_title("Keyboard")
+        self._kb_window.set_decorated(False)
+        self._kb_window.set_default_size(800, 280)
+        self._kb_window.move(0, 200)
+        self._kb_window.set_keep_above(True)
+        self._kb_window.set_accept_focus(False)
+
+        self._kb_window.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+        kb_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        kb_box.set_margin_start(2)
+        kb_box.set_margin_end(2)
+        kb_box.set_margin_top(2)
+        kb_box.set_margin_bottom(2)
+
+        self._kb_letter_buttons = []
+
+        # Row 1: Numbers
+        row1 = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+        kb_box.pack_start(self._make_kb_row(row1, track_letters=False), False, False, 0)
+
+        # Row 2: QWERTY
+        row2 = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"]
+        kb_box.pack_start(self._make_kb_row(row2, track_letters=True), False, False, 0)
+
+        # Row 3: ASDF
+        row3 = ["a", "s", "d", "f", "g", "h", "j", "k", "l", "@"]
+        kb_box.pack_start(self._make_kb_row(row3, track_letters=True), False, False, 0)
+
+        # Row 4: ZXCV + symbols
+        row4 = ["z", "x", "c", "v", "b", "n", "m", "!", ".", "_"]
+        kb_box.pack_start(self._make_kb_row(row4, track_letters=True), False, False, 0)
+
+        # Row 5: Action keys
+        action_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2, homogeneous=False)
+
+        shift_btn = self._make_kb_key("\u21e7", width=80)
+        shift_btn.connect("clicked", self._kb_on_shift)
+        action_row.pack_start(shift_btn, False, False, 0)
+
+        symbols = ["#", "$", "-", "+"]
+        for s in symbols:
+            btn = self._make_kb_key(s, width=50)
+            btn.connect("clicked", self._kb_on_key, s)
+            action_row.pack_start(btn, False, False, 0)
+
+        space_btn = self._make_kb_key("Space", width=200)
+        space_btn.connect("clicked", self._kb_on_key, " ")
+        action_row.pack_start(space_btn, True, True, 0)
+
+        bksp_btn = self._make_kb_key("\u232b", width=80)
+        bksp_btn.connect("clicked", self._kb_on_backspace)
+        action_row.pack_start(bksp_btn, False, False, 0)
+
+        enter_btn = self._make_kb_key("\u23ce", width=80)
+        enter_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.2, 1))
+        enter_btn.connect("clicked", self._kb_on_enter)
+        action_row.pack_start(enter_btn, False, False, 0)
+
+        kb_box.pack_start(action_row, False, False, 0)
+
+        self._kb_window.add(kb_box)
+        self._kb_window.show_all()
+
+        # Track which entry is focused
+        self.username_entry.connect("focus-in-event", lambda w, e: setattr(self, '_active_entry', w))
+        self.password_entry.connect("focus-in-event", lambda w, e: setattr(self, '_active_entry', w))
+
+    def _make_kb_row(self, keys, track_letters=False):
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2, homogeneous=True)
+        for key in keys:
+            btn = self._make_kb_key(key)
+            btn.connect("clicked", self._kb_on_key, key)
+            if track_letters and key.isalpha():
+                self._kb_letter_buttons.append((btn, key))
+            row.pack_start(btn, True, True, 0)
+        return row
+
+    def _make_kb_key(self, label, width=0):
+        btn = Gtk.Button(label=label)
+        btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        btn.set_size_request(width if width else -1, 48)
+        return btn
+
+    def _kb_on_key(self, button, key):
+        entry = getattr(self, '_active_entry', self.username_entry)
+        char = key.upper() if self._kb_shift and key.isalpha() else key
+        entry.do_insert_at_cursor(entry, char)
+        if self._kb_shift:
+            self._kb_shift = False
+            for btn, k in self._kb_letter_buttons:
+                btn.set_label(k.lower())
+
+    def _kb_on_shift(self, button):
+        self._kb_shift = not self._kb_shift
+        # Update letter labels
+        for btn, key in self._kb_letter_buttons:
+            btn.set_label(key.upper() if self._kb_shift else key.lower())
+        # Highlight shift button
+        if self._kb_shift:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+        else:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+    def _kb_on_backspace(self, button):
+        entry = getattr(self, '_active_entry', self.username_entry)
+        pos = entry.get_position()
+        if pos > 0:
+            text = entry.get_text()
+            entry.set_text(text[:pos-1] + text[pos:])
+            entry.set_position(pos - 1)
+
+    def _kb_on_enter(self, button):
+        entry = getattr(self, '_active_entry', self.username_entry)
+        if entry == self.username_entry:
+            self.password_entry.grab_focus()
+            self._active_entry = self.password_entry
+        else:
+            self.on_login(None)
 
     def on_login(self, widget):
         global USERNAME, PASSWORD, LOGGED_IN, LOGIN_TYPE
@@ -1461,6 +1679,7 @@ class AlertsWindow(Gtk.Window):
         super().__init__(title="AquaBox Alerts")
         self.set_default_size(800, 480)
         self.fullscreen()
+        self._logged_out = False
 
         # Apply CSS
         css_provider = Gtk.CssProvider()
@@ -1755,11 +1974,14 @@ class AlertsWindow(Gtk.Window):
         self._all_offline_alerts = []
         GLib.timeout_add(3000, self.first_fetch)  # Wait 3s for network
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
-        # Offline announced manually via button only
+        # Auto-announce offline alerts on interval
+        GLib.timeout_add_seconds(OFFLINE_ANNOUNCE_INTERVAL, self._auto_announce_offline_timer)
 
 
     def _change_panda_msg(self):
         """Change message every 10 seconds."""
+        if self._logged_out:
+            return False
         self._panda_msg_idx += 1
         self._panda_msg_char = 0
         self._panda_current_msg = self._panda_messages[self._panda_msg_idx % len(self._panda_messages)]
@@ -1787,6 +2009,8 @@ class AlertsWindow(Gtk.Window):
         return False
 
     def _animate_panda(self):
+        if self._logged_out:
+            return False
         if self._panda_visible:
             self._panda_phase += 0.08
             self._panda_alpha = 1.0
@@ -1917,6 +2141,14 @@ class AlertsWindow(Gtk.Window):
         self._chat_entry.connect("activate", self._send_chat)
         input_box.pack_start(self._chat_entry, True, True, 0)
 
+        # Keyboard button
+        self._chat_kb_visible = False
+        chat_kb_btn = Gtk.Button(label="\u2328")
+        chat_kb_btn.modify_font(Pango.FontDescription("Sans 16"))
+        chat_kb_btn.set_tooltip_text("Open Keyboard")
+        chat_kb_btn.connect("clicked", self._toggle_chat_keyboard)
+        input_box.pack_start(chat_kb_btn, False, False, 0)
+
         # Mic button with image
         mic_btn = Gtk.Button()
         mic_pb = GdkPixbuf.Pixbuf.new_from_file_at_scale("/home/aquabox/Desktop/Aquabox/mic.jpg", 28, 28, True)
@@ -1988,7 +2220,7 @@ class AlertsWindow(Gtk.Window):
             def do_speak():
                 try:
                     if _tts_generate(text, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
-                        subprocess.run(["aplay", "-D", "plughw:0,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
+                        subprocess.run(["aplay", "-D", "plughw:1,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
                 except Exception as e:
                     print("[AquaBox Chat] Speak error: " + str(e))
             threading.Thread(target=do_speak, daemon=True).start()
@@ -2059,7 +2291,7 @@ class AlertsWindow(Gtk.Window):
             GLib.idle_add(lambda: self._add_bot_message(answer))
             if wav_path:
                 time.sleep(0.3)
-                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
         threading.Thread(target=get_answer, daemon=True).start()
 
     def _draw_mic_icon(self, widget, cr):
@@ -2086,6 +2318,127 @@ class AlertsWindow(Gtk.Window):
         cr.move_to(cx - 4, cy + 12)
         cr.line_to(cx + 4, cy + 12)
         cr.stroke()
+
+    def _toggle_chat_keyboard(self, button):
+        """Toggle on-screen keyboard for AquaGPT chat."""
+        if self._chat_kb_visible:
+            if hasattr(self, '_chat_kb_window') and self._chat_kb_window:
+                self._chat_kb_window.destroy()
+                self._chat_kb_window = None
+            self._chat_window.fullscreen()
+            button.set_label("\u2328")
+            self._chat_kb_visible = False
+        else:
+            self._chat_window.unfullscreen()
+            self._chat_window.resize(800, 200)
+            self._chat_window.move(0, 0)
+            self._chat_kb_entry = self._chat_entry
+            self._build_chat_keyboard()
+            button.set_label("\u2715")
+            self._chat_kb_visible = True
+            GLib.timeout_add(300, lambda: self._chat_entry.grab_focus() or False)
+
+    def _build_chat_keyboard(self):
+        """Build GTK keyboard for chat window."""
+        self._chat_kb_shift = False
+        self._chat_kb_letter_buttons = []
+        self._chat_kb_window = Gtk.Window(type=Gtk.WindowType.TOPLEVEL)
+        self._chat_kb_window.set_title("Keyboard")
+        self._chat_kb_window.set_decorated(False)
+        self._chat_kb_window.set_default_size(800, 280)
+        self._chat_kb_window.move(0, 200)
+        self._chat_kb_window.set_keep_above(True)
+        self._chat_kb_window.set_accept_focus(False)
+        self._chat_kb_window.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+        kb_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        kb_box.set_margin_start(2)
+        kb_box.set_margin_end(2)
+        kb_box.set_margin_top(2)
+        kb_box.set_margin_bottom(2)
+
+        rows = [
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "?"],
+            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "@"],
+        ]
+        for i, row in enumerate(rows):
+            row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2, homogeneous=True)
+            for key in row:
+                btn = Gtk.Button(label=key)
+                btn.modify_font(Pango.FontDescription("Sans bold 14"))
+                btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                btn.set_size_request(-1, 48)
+                btn.connect("clicked", self._chat_kb_on_key, key)
+                if key.isalpha():
+                    self._chat_kb_letter_buttons.append((btn, key))
+                row_box.pack_start(btn, True, True, 0)
+            kb_box.pack_start(row_box, False, False, 0)
+
+        # Action row
+        action_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+        shift_btn = Gtk.Button(label="\u21e7")
+        shift_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        shift_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        shift_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        shift_btn.set_size_request(80, 48)
+        shift_btn.connect("clicked", self._chat_kb_on_shift)
+        action_row.pack_start(shift_btn, False, False, 0)
+
+        space_btn = Gtk.Button(label="Space")
+        space_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        space_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        space_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        space_btn.set_size_request(-1, 48)
+        space_btn.connect("clicked", self._chat_kb_on_key, " ")
+        action_row.pack_start(space_btn, True, True, 0)
+
+        bksp_btn = Gtk.Button(label="\u232b")
+        bksp_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        bksp_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        bksp_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        bksp_btn.set_size_request(80, 48)
+        bksp_btn.connect("clicked", self._chat_kb_on_backspace)
+        action_row.pack_start(bksp_btn, False, False, 0)
+
+        send_btn = Gtk.Button(label="Send")
+        send_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        send_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.2, 1))
+        send_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        send_btn.set_size_request(80, 48)
+        send_btn.connect("clicked", lambda b: self._send_chat(b))
+        action_row.pack_start(send_btn, False, False, 0)
+
+        kb_box.pack_start(action_row, False, False, 0)
+        self._chat_kb_window.add(kb_box)
+        self._chat_kb_window.show_all()
+
+    def _chat_kb_on_key(self, button, key):
+        char = key.upper() if self._chat_kb_shift and key.isalpha() else key
+        self._chat_entry.do_insert_at_cursor(self._chat_entry, char)
+        if self._chat_kb_shift:
+            self._chat_kb_shift = False
+            for btn, k in self._chat_kb_letter_buttons:
+                btn.set_label(k.lower())
+
+    def _chat_kb_on_shift(self, button):
+        self._chat_kb_shift = not self._chat_kb_shift
+        for btn, k in self._chat_kb_letter_buttons:
+            btn.set_label(k.upper() if self._chat_kb_shift else k.lower())
+        if self._chat_kb_shift:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+        else:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+    def _chat_kb_on_backspace(self, button):
+        pos = self._chat_entry.get_position()
+        if pos > 0:
+            text = self._chat_entry.get_text()
+            self._chat_entry.set_text(text[:pos-1] + text[pos:])
+            self._chat_entry.set_position(pos - 1)
 
     def _voice_input(self, button):
         """Record voice and convert to text."""
@@ -2190,12 +2543,16 @@ class AlertsWindow(Gtk.Window):
         return (btn, num_label)
 
     def update_clock(self):
+        if self._logged_out:
+            return False
         self.clock_label.set_text(datetime.now().strftime("%I:%M:%S %p"))
         self.date_label.set_text(datetime.now().strftime("%d %b %Y, %A"))
         return True
 
     def _update_countdown(self):
         """Decrease countdown every second and update refresh bar."""
+        if self._logged_out:
+            return False
         if self._countdown > 0:
             self._countdown -= 1
         ts = self._last_refresh_time or "--:--:--"
@@ -2210,6 +2567,8 @@ class AlertsWindow(Gtk.Window):
 
     def _check_wifi_status(self):
         """Periodically check WiFi connection, auto-reconnect, and refresh API on reconnect."""
+        if self._logged_out:
+            return False
         try:
             out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
             connected = len(out.stdout.strip()) > 0
@@ -2707,10 +3066,15 @@ class AlertsWindow(Gtk.Window):
                 kb_btn.set_label("\u2328  Open Keyboard")
                 self._wifi_kb_visible = False
             else:
-                env = os.environ.copy()
-                env["XDG_RUNTIME_DIR"] = "/run/user/1000"
-                subprocess.Popen(["wvkbd-mobintl", "-L", "300"], env=env)
-                kb_btn.set_label("\u2328  Hide Keyboard")
+                env = {
+                    "WAYLAND_DISPLAY": "wayland-0",
+                    "XDG_RUNTIME_DIR": "/run/user/1000",
+                    "HOME": os.path.expanduser("~"),
+                    "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+                }
+                subprocess.Popen(["wvkbd-mobintl", "-L", "300"],
+                                 env=env, start_new_session=True)
+                kb_btn.set_label("\u2715  Close Keyboard")
                 self._wifi_kb_visible = True
         kb_btn.connect("clicked", toggle_keyboard)
         page2.pack_start(kb_btn, False, False, 0)
@@ -2928,24 +3292,21 @@ class AlertsWindow(Gtk.Window):
 
     def _on_logout(self, button):
         global _announce_stop, _auto_announcing
-        # If announce is running, stop it first then logout
-        if _auto_announcing:
-            # Let announce complete, then logout
-            def wait_and_logout():
-                while _auto_announcing:
-                    time.sleep(0.5)
-                GLib.idle_add(self._do_logout)
-            button.set_sensitive(False)
-            threading.Thread(target=wait_and_logout, daemon=True).start()
-            return
+        # Stop any running announcement immediately
+        _announce_stop = True
+        _auto_announcing = False
+        subprocess.run(["killall", "aplay"], capture_output=True)
         self._do_logout()
 
     def _do_logout(self):
-        global USERNAME, PASSWORD, LOGGED_IN
+        global USERNAME, PASSWORD, LOGGED_IN, token, token_time
         USERNAME = ""
         PASSWORD = ""
         LOGGED_IN = False
-        import subprocess
+        token = ""
+        token_time = 0
+        # Stop all timers by marking window as logged out
+        self._logged_out = True
         subprocess.run(["rm", "-f", CREDS_FILE], capture_output=True)
         subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
         subprocess.run(["killall", "aplay"], capture_output=True)
@@ -3006,24 +3367,44 @@ class AlertsWindow(Gtk.Window):
         return False
 
     def refresh_alerts(self):
+        if self._logged_out:
+            return False
         threading.Thread(target=self._fetch_and_update, daemon=True).start()
         return True
 
     _last_fetch_time_actual = 0
 
     def _fetch_and_update(self):
-        global _refresh_queued
+        global _refresh_queued, token, token_time
         # If announce is running, queue the refresh
         if _auto_announcing:
             _refresh_queued = True
             print("[" + now() + "] Refresh queued - announce in progress")
             return
-        # Prevent fetching more than once every 30 seconds
+        # Prevent fetching more than once every 10 seconds
         now_ts = time.time()
-        if now_ts - self._last_fetch_time_actual < 30:
+        if now_ts - self._last_fetch_time_actual < 10:
             return
         self._last_fetch_time_actual = now_ts
+
         data = fetch_alerts()
+
+        # If fetch failed, retry immediately with token refresh
+        if not data:
+            print(f"[{now()}] Fetch failed, refreshing token and retrying...")
+            token = ""
+            token_time = 0
+            time.sleep(2)
+            data = fetch_alerts()
+
+        # If still failed, one more try after 5 seconds
+        if not data:
+            print(f"[{now()}] Second attempt failed, final retry in 5s...")
+            time.sleep(5)
+            token = ""
+            token_time = 0
+            data = fetch_alerts()
+
         # Pre-cache audio for instant playback
         if data:
             today = data.get("generalAlerts", {}).get("alerts", {}).get("today", [])
@@ -3309,7 +3690,7 @@ class AlertsWindow(Gtk.Window):
                     except:
                         audio_dur = 5
                     GLib.idle_add(self._start_typing, text, audio_dur)
-                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing to finish
                     for _ in range(200):
                         if self._typing_done or _announce_stop:
@@ -3334,44 +3715,62 @@ class AlertsWindow(Gtk.Window):
                 GLib.idle_add(self.refresh_alerts)
 
     def _auto_announce_offline_timer(self):
-        """Auto-announce offline alerts every 1 hour."""
+        """Auto-announce offline alerts periodically."""
+        if self._logged_out:
+            return False
         if not self._all_offline_alerts:
             return True
-        print("[" + now() + "] Auto-announcing " + str(len(self._all_offline_alerts)) + " offline alerts (hourly)")
+        if _auto_announcing:
+            print("[" + now() + "] Skipping offline announce - another announce in progress")
+            return True
+        print("[" + now() + "] Auto-announcing " + str(len(self._all_offline_alerts)) + " offline alerts")
 
         def do_offline_auto():
-            import subprocess
-            _start_announcing()
-            alerts = list(self._all_offline_alerts)
+            global _auto_announcing
+            _auto_announcing = True
+            try:
+                _start_announcing()
+                alerts = list(self._all_offline_alerts)
 
-            for i, alert in enumerate(alerts):
-                if _announce_stop:
-                    break
-                title = alert.get("title", "")
-                desc = alert.get("description", {})
-                status = desc.get("status", "")
-                t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
-                _, _, t_status = translate_alert_text(title, "", status, TTS_LANG)
-                text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(len(alerts)) + ". " + title + ". " + t_status
+                for i, alert in enumerate(alerts):
+                    if _announce_stop:
+                        break
+                    title = alert.get("title", "")
+                    desc = alert.get("description", {})
+                    status = desc.get("status", "")
+                    t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+                    _, _, t_status = translate_alert_text(title, "", status, TTS_LANG)
+                    text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(len(alerts)) + ". " + title + ". " + t_status
 
-                try:
-                    mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
-                    wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
-                    if _announce_stop: break
-                    if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
-                        continue
-                    GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
-                    time.sleep(1)
-                except Exception as e:
-                    print("[" + now() + "] Auto offline announce error: " + str(e))
-                time.sleep(0.5)
+                    try:
+                        mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
+                        wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
+                        if _announce_stop: break
+                        if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                            continue
+                        GLib.idle_add(self._start_typing, text)
+                        subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
+                        time.sleep(1)
+                    except Exception as e:
+                        print("[" + now() + "] Auto offline announce error: " + str(e))
+                    time.sleep(0.5)
+
+                print("[" + now() + "] Offline announce complete")
+            finally:
+                _auto_announcing = False
+                _stop_announcing()
+                global _refresh_queued
+                if _refresh_queued:
+                    _refresh_queued = False
+                    GLib.idle_add(self.refresh_alerts)
 
         threading.Thread(target=do_offline_auto, daemon=True).start()
-        return True  # Keep timer  # Keep timer running
+        return True
 
     def _on_announce_offline(self, button):
         """Announce all offline units."""
+        if _auto_announcing:
+            return
         alerts = self._all_offline_alerts
         if not alerts:
             return
@@ -3379,15 +3778,11 @@ class AlertsWindow(Gtk.Window):
         button.set_label(f"Announcing {len(alerts)} offline units...")
 
         def do_offline():
-            import subprocess
+            global _refresh_queued
             _start_announcing()
             self._batch_announcing = True
             total = len(alerts)
 
-            # Pre-generate all audio
-            GLib.idle_add(button.set_label, "Generating audio...")
-            audio_files = []
-            texts = []
             for i, alert in enumerate(alerts):
                 if _announce_stop:
                     break
@@ -3397,47 +3792,39 @@ class AlertsWindow(Gtk.Window):
                 t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
                 _, _, t_status = translate_alert_text(title, "", status, TTS_LANG)
                 text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(total) + ". " + title + ". " + t_status
-                texts.append(text)
+
+                GLib.idle_add(button.set_label, f"Announcing {i+1}/{total}...")
+
                 try:
                     mp3_path = "/tmp/offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/offline_" + str(i) + ".wav"
                     if _announce_stop: break
-                    if _tts_generate(text, TTS_LANG, mp3_path, wav_path):
-                        audio_files.append(wav_path)
-                    else:
-                        audio_files.append(None)
+                    if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                        continue
+
+                    audio_duration = 0
+                    try:
+                        audio_duration = os.path.getsize(wav_path) / (44100 * 2)
+                    except:
+                        audio_duration = 5
+
+                    self._typing_done = False
+                    GLib.idle_add(self._start_typing, text, audio_duration)
+                    time.sleep(0.3)
+
+                    audio_proc = subprocess.Popen(["aplay", "-D", "plughw:1,0", "-q", wav_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    while audio_proc.poll() is None:
+                        if _announce_stop:
+                            audio_proc.kill()
+                            break
+                        time.sleep(0.1)
+
+                    for _ in range(100):
+                        if self._typing_done or _announce_stop:
+                            break
+                        time.sleep(0.01)
                 except Exception as e:
-                    audio_files.append(None)
-
-            # Play each with animation
-            GLib.idle_add(button.set_label, "Playing offline alerts...")
-            for i, alert in enumerate(alerts):
-                if _announce_stop:
-                    break
-                if i >= len(audio_files) or not audio_files[i]:
-                    continue
-
-                audio_duration = 0
-                try:
-                    audio_duration = os.path.getsize(audio_files[i]) / (44100 * 2)
-                except:
-                    audio_duration = 5
-
-                self._typing_done = False
-                GLib.idle_add(self._start_typing, texts[i], audio_duration)
-                time.sleep(0.3)
-
-                audio_proc = subprocess.Popen(["aplay", "-D", "plughw:0,0", "-q", audio_files[i]], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                while audio_proc.poll() is None:
-                    if _announce_stop:
-                        audio_proc.kill()
-                        break
-                    time.sleep(0.1)
-
-                for _ in range(100):
-                    if self._typing_done or _announce_stop:
-                        break
-                    time.sleep(0.01)
+                    print(f"[{now()}] Offline announce error: {e}")
 
                 time.sleep(0.5)
 
@@ -3457,14 +3844,18 @@ class AlertsWindow(Gtk.Window):
 
     def _on_announce_all(self, button):
         """Announce all alerts one by one."""
+        global _auto_announcing
+        if _auto_announcing:
+            return
         alerts = self._all_today_alerts
         if not alerts:
             return
+        _auto_announcing = True
         button.set_sensitive(False)
         button.set_label(f"Announcing {len(alerts)} alerts...")
 
         def do_all():
-            import subprocess
+            global _refresh_queued
             _start_announcing()
             for i, alert in enumerate(alerts):
                 if _announce_stop:
@@ -3489,7 +3880,7 @@ class AlertsWindow(Gtk.Window):
                         if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
                             continue
                     GLib.idle_add(self._start_typing, text)
-                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                    subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing animation to catch up with audio
                     time.sleep(1)
                 except Exception as e:
@@ -3499,6 +3890,7 @@ class AlertsWindow(Gtk.Window):
                 time.sleep(0.5)
 
             self._batch_announcing = False
+            _auto_announcing = False
             _stop_announcing()
             # Process queued refresh
             if _refresh_queued:
@@ -3511,6 +3903,8 @@ class AlertsWindow(Gtk.Window):
 
     def _after_announce_all(self, button):
         """Update UI after announcing all - re-enable button."""
+        global _auto_announcing
+        _auto_announcing = False
         button.set_sensitive(True)
         button.set_label("\u266A  Announce All Alerts")
         button.get_style_context().remove_class("btn-done")
@@ -3536,6 +3930,8 @@ class AlertsWindow(Gtk.Window):
 
     def _on_announce(self, button, alert):
         """Announce alert via TTS with typing animation."""
+        if _auto_announcing:
+            return
         button.set_sensitive(False)
         button.set_label("Speaking...")
 
@@ -3564,7 +3960,7 @@ class AlertsWindow(Gtk.Window):
                 except:
                     audio_dur = 5
                 GLib.idle_add(self._start_typing, text, audio_dur)
-                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                subprocess.run(["aplay", "-D", "plughw:1,0", "-q", wav_path], capture_output=True, timeout=30)
             except Exception as e:
                 print(f"[{now()}] Announce TTS error: {e}")
 
