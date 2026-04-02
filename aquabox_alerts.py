@@ -146,6 +146,8 @@ TRANSLATIONS = {
 
 def translate_alert_text(title, body, status, lang):
     """Translate alert text to local language, keep location name in English."""
+    body = str(body)
+    status = str(status)
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
     # Body translations
@@ -208,9 +210,9 @@ token = ""
 token_time = 0
 alerts_data = {}
 fetch_lock = threading.Lock()
+FETCH_LOCK_TIMEOUT = 20  # seconds
 announced_ids = set()  # Track announced alert IDs to avoid repeats
 _announce_stop = False  # Flag to stop announcing
-_announced_ids = set()  # Track already-announced alert IDs
 _auto_announcing = False  # Prevent overlapping auto-announce
 _refresh_queued = False  # Queue refresh if announce is running
 # No lock needed - _announce_stop handles cancellation
@@ -219,11 +221,10 @@ _cache_lock = threading.Lock()
 
 
 def _start_announcing():
+    """Cancel any previous announcement before starting new one."""
     global _announce_stop
     _announce_stop = True
-    import subprocess
     subprocess.run(["killall", "aplay"], capture_output=True)
-    import time
     time.sleep(0.3)
     _announce_stop = False
     return True
@@ -242,11 +243,11 @@ def set_api_credentials(user, passwd, lt):
 def precache_audio(alerts):
     """Pre-generate gTTS audio for all alerts in background."""
     global _audio_cache
-    import subprocess
+    # Clean old cache files older than 1 day
     try:
-        from gtts import gTTS
-    except:
-        return
+        subprocess.run(["find", "/tmp", "-name", "cache_*.mp3", "-mmin", "+1440", "-delete"], capture_output=True, timeout=5)
+        subprocess.run(["find", "/tmp", "-name", "cache_*.wav", "-mmin", "+1440", "-delete"], capture_output=True, timeout=5)
+    except: pass
     for alert in alerts:
         aid = alert.get("id", "")
         if aid in _audio_cache:
@@ -255,18 +256,15 @@ def precache_audio(alerts):
         body = alert.get("body", "")
         desc = alert.get("description", {})
         status = desc.get("status", "")
-        t_single = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
         _, t_body_s, t_status_s = translate_alert_text(title, body, status, TTS_LANG)
         text = title + ". " + t_body_s + ". " + t_status_s
         try:
             mp3 = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.mp3"
             wav = f"/tmp/cache_{hash(aid) & 0xFFFFFFFF}.wav"
-            tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-            tts.save(mp3)
-            subprocess.run(["ffmpeg", "-y", "-i", mp3, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav], capture_output=True, timeout=30)
-            with _cache_lock:
-                _audio_cache[aid] = wav
-            print(f"[{datetime.now().strftime('%H:%M:%S')}] Cached audio: {title[:30]}")
+            if _tts_generate(text, TTS_LANG, mp3, wav):
+                with _cache_lock:
+                    _audio_cache[aid] = wav
+                print(f"[{datetime.now().strftime('%H:%M:%S')}] Cached audio: {title[:30]}")
         except Exception as e:
             print(f"Audio cache error: {e}")
 
@@ -340,7 +338,10 @@ def get_token():
 
 def fetch_alerts():
     global alerts_data, token, token_time
-    with fetch_lock:
+    if not fetch_lock.acquire(timeout=FETCH_LOCK_TIMEOUT):
+        print(f"[{now()}] fetch_lock timeout - skipping fetch")
+        return None
+    try:
         # Refresh token if needed
         if not token or (time.time() - token_time) > TOKEN_REFRESH:
             if not get_token():
@@ -376,11 +377,34 @@ def fetch_alerts():
             except Exception as e:
                 print(f"[{now()}] Alerts error: {e}")
                 break
-    return None
+        return None
+    finally:
+        fetch_lock.release()
 
 
 def now():
     return datetime.now().strftime("%H:%M:%S")
+
+
+def _tts_generate(text, lang, mp3_path, wav_path):
+    """Generate TTS audio with fallback to espeak if gTTS (internet) fails."""
+    try:
+        from gtts import gTTS
+        tts = gTTS(text=text, lang=lang) if lang != "en" else gTTS(text=text, lang="en", tld="co.in")
+        tts.save(mp3_path)
+        subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1",
+                        "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000",
+                        wav_path], capture_output=True, timeout=30)
+        return True
+    except Exception as e:
+        print(f"[{now()}] gTTS failed ({e}), falling back to espeak")
+        try:
+            subprocess.run(["espeak", "-w", wav_path, "-s", "140", text[:500]],
+                          capture_output=True, timeout=15)
+            return True
+        except Exception as e2:
+            print(f"[{now()}] espeak also failed: {e2}")
+            return False
 
 
 def mark_alerts_as_read(alerts_list):
@@ -1244,11 +1268,9 @@ class LoginWindow(Gtk.Window):
         dialog = Gtk.Window(title="Admin Settings")
         dialog.set_default_size(800, 480)
         dialog.fullscreen()
-        # Make scrollable
-        scroll_admin = Gtk.ScrolledWindow()
-        scroll_admin.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
 
+        # Make scrollable
         scroll_admin = Gtk.ScrolledWindow()
         scroll_admin.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -1433,9 +1455,6 @@ class LoginWindow(Gtk.Window):
             win.show_all()
         else:
             self.error_label.set_text("Login failed. Check username/password.")
-            # credentials handled by _set_api_creds
-            pass  # handled by _set_api_creds
-            pass
 
 class AlertsWindow(Gtk.Window):
     def __init__(self):
@@ -1734,7 +1753,7 @@ class AlertsWindow(Gtk.Window):
         GLib.timeout_add_seconds(1, self._update_countdown)
         self._all_today_alerts = []
         self._all_offline_alerts = []
-        GLib.timeout_add(500, self.first_fetch)
+        GLib.timeout_add(3000, self.first_fetch)  # Wait 3s for network
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
         # Offline announced manually via button only
 
@@ -1757,11 +1776,10 @@ class AlertsWindow(Gtk.Window):
         self._panda_msg_idx += 1
         self._panda_da.set_visible(True)
         self._panda_da.show()
-        pass
         return True  # Keep timer
 
     def _hide_panda(self):
-        self._panda_visible = True
+        self._panda_visible = False
         GLib.timeout_add(50, self._fade_panda_out)
         return False
 
@@ -1969,15 +1987,8 @@ class AlertsWindow(Gtk.Window):
         if speak and text:
             def do_speak():
                 try:
-                    import subprocess
-                    from gtts import gTTS
-                    if TTS_LANG != "en":
-                        tts = gTTS(text=text, lang=TTS_LANG)
-                    else:
-                        tts = gTTS(text=text, lang="en", tld="co.in")
-                    tts.save("/tmp/aquabox_chat.mp3")
-                    subprocess.run(["ffmpeg", "-y", "-i", "/tmp/aquabox_chat.mp3", "-ar", "44100", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=15)
-                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
+                    if _tts_generate(text, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
+                        subprocess.run(["aplay", "-D", "plughw:0,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
                 except Exception as e:
                     print("[AquaBox Chat] Speak error: " + str(e))
             threading.Thread(target=do_speak, daemon=True).start()
@@ -2041,20 +2052,12 @@ class AlertsWindow(Gtk.Window):
             # Pre-generate audio first
             wav_path = None
             try:
-                import subprocess
-                from gtts import gTTS
-                if TTS_LANG != "en":
-                    tts = gTTS(text=answer, lang=TTS_LANG)
-                else:
-                    tts = gTTS(text=answer, lang="en", tld="co.in")
-                tts.save("/tmp/aquabox_chat.mp3")
-                subprocess.run(["ffmpeg", "-y", "-i", "/tmp/aquabox_chat.mp3", "-ar", "44100", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=15)
-                wav_path = "/tmp/aquabox_chat.wav"
+                if _tts_generate(answer, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
+                    wav_path = "/tmp/aquabox_chat.wav"
             except: pass
             # Show typing + play audio simultaneously
             GLib.idle_add(lambda: self._add_bot_message(answer))
             if wav_path:
-                import subprocess
                 time.sleep(0.3)
                 subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
         threading.Thread(target=get_answer, daemon=True).start()
@@ -2091,7 +2094,6 @@ class AlertsWindow(Gtk.Window):
         button.set_label("Mic")
 
     def _get_ai_answer(self, question):
-        from gtts import gTTS
         """Get answer using DuckDuckGo Instant Answer API."""
         try:
             q = question.lower()
@@ -2988,7 +2990,19 @@ class AlertsWindow(Gtk.Window):
         return False  # Don't repeat
 
     def first_fetch(self):
-        threading.Thread(target=self._fetch_and_update, daemon=True).start()
+        def _first_fetch_with_retry():
+            for attempt in range(5):
+                data = fetch_alerts()
+                if data:
+                    GLib.idle_add(self._render_alerts, data)
+                    today = data.get("generalAlerts", {}).get("alerts", {}).get("today", [])
+                    if today:
+                        threading.Thread(target=precache_audio, args=(today,), daemon=True).start()
+                    return
+                print(f"[{now()}] First fetch attempt {attempt+1}/5 failed, retrying in {3*(attempt+1)}s...")
+                time.sleep(3 * (attempt + 1))
+            GLib.idle_add(self._render_alerts, None)
+        threading.Thread(target=_first_fetch_with_retry, daemon=True).start()
         return False
 
     def refresh_alerts(self):
@@ -3029,7 +3043,7 @@ class AlertsWindow(Gtk.Window):
             self.alerts_container.pack_start(lbl, True, True, 20)
             prev = f" | Last success: {self._last_refresh_time}" if self._last_refresh_time else ""
             self.refresh_label.set_text(f"Error | Quick retry in 10s{prev}")
-            # Will retry on next scheduled refresh
+            GLib.timeout_add_seconds(10, self._quick_retry)
             self.alerts_container.show_all()
             return
 
@@ -3086,7 +3100,7 @@ class AlertsWindow(Gtk.Window):
                     card = self._make_alert_card(alert)
                     self.alerts_container.pack_start(card, False, False, 0)
                 # Auto-announce only NEW unread alerts (not already announced)
-                new_unread = [a for a in unread_alerts if a.get('id','') not in _announced_ids]
+                new_unread = [a for a in unread_alerts if a.get('id','') not in announced_ids]
                 if new_unread and not _auto_announcing:
                     threading.Thread(target=self._auto_announce_unread, args=(list(new_unread),), daemon=True).start()
             else:
@@ -3260,68 +3274,64 @@ class AlertsWindow(Gtk.Window):
 
     def _auto_announce_unread(self, alerts):
         """Auto-announce unread alerts one by one."""
-        global _auto_announcing, _announced_ids
+        global _auto_announcing, announced_ids
         if _auto_announcing:
             return
         _auto_announcing = True
-        import subprocess
-        _start_announcing()
-        time.sleep(3)
+        try:
+            _start_announcing()
+            time.sleep(3)
 
-        for i, alert in enumerate(alerts):
-            if _announce_stop:
-                break
-            title = alert.get("title", "")
-            body = alert.get("body", "")
-            desc = alert.get("description", {})
-            status = desc.get("status", "")
-            t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
-            _, t_body, t_status = translate_alert_text(title, body, status, TTS_LANG)
-            text = t["unread_alert"] + " " + str(i+1) + " " + t["of"] + " " + str(len(alerts)) + ". " + title + ". " + t_body + ". " + t_status
+            for i, alert in enumerate(alerts):
+                if _announce_stop:
+                    break
+                title = alert.get("title", "")
+                body = alert.get("body", "")
+                desc = alert.get("description", {})
+                status = desc.get("status", "")
+                t = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
+                _, t_body, t_status = translate_alert_text(title, body, status, TTS_LANG)
+                text = t["unread_alert"] + " " + str(i+1) + " " + t["of"] + " " + str(len(alerts)) + ". " + title + ". " + t_body + ". " + t_status
 
-            try:
-                aid = alert.get("id", "")
-                wav_path = _audio_cache.get(aid)
-                if not wav_path or not os.path.exists(str(wav_path)):
-                    from gtts import gTTS
-                    mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
-                    wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
-                    if _announce_stop: break
-                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-                    tts.save(mp3_path)
-                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
-
-                audio_dur = 0
                 try:
-                    audio_dur = os.path.getsize(wav_path) / (44100 * 2)
-                except:
-                    audio_dur = 5
-                GLib.idle_add(self._start_typing, text, audio_dur)
-                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
-                # Wait for typing to finish
-                for _ in range(200):
-                    if self._typing_done or _announce_stop:
-                        break
-                    time.sleep(0.02)
+                    aid = alert.get("id", "")
+                    wav_path = _audio_cache.get(aid)
+                    if not wav_path or not os.path.exists(str(wav_path)):
+                        mp3_path = "/tmp/auto_unread_" + str(i) + ".mp3"
+                        wav_path = "/tmp/auto_unread_" + str(i) + ".wav"
+                        if _announce_stop: break
+                        if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                            continue
+
+                    audio_dur = 0
+                    try:
+                        audio_dur = os.path.getsize(wav_path) / (44100 * 2)
+                    except:
+                        audio_dur = 5
+                    GLib.idle_add(self._start_typing, text, audio_dur)
+                    subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                    # Wait for typing to finish
+                    for _ in range(200):
+                        if self._typing_done or _announce_stop:
+                            break
+                        time.sleep(0.02)
+                    time.sleep(0.5)
+                except Exception as e:
+                    print("[" + now() + "] Auto-announce unread error: " + str(e))
+
+                announced_ids.add(alert.get("id", ""))
+                announce_and_mark_read(alert)
+                GLib.idle_add(self._update_counters, 1)
                 time.sleep(0.5)
-            except Exception as e:
-                print("[" + now() + "] Auto-announce unread error: " + str(e))
 
-            _announced_ids.add(alert.get("id", ""))
-            announce_and_mark_read(alert)
-            GLib.idle_add(self._update_counters, 1)
-            time.sleep(0.5)
-
-        _auto_announcing = False
-        print("[" + now() + "] Auto-announced " + str(len(alerts)) + " unread alerts")
-        # Process queued refresh
-        global _refresh_queued
-        if _refresh_queued:
-            _refresh_queued = False
-            print("[" + now() + "] Processing queued refresh")
-            time.sleep(1)
-            GLib.idle_add(self.refresh_alerts)
-        _stop_announcing()
+            print("[" + now() + "] Auto-announced " + str(len(alerts)) + " unread alerts")
+        finally:
+            _auto_announcing = False
+            _stop_announcing()
+            global _refresh_queued
+            if _refresh_queued:
+                _refresh_queued = False
+                GLib.idle_add(self.refresh_alerts)
 
     def _auto_announce_offline_timer(self):
         """Auto-announce offline alerts every 1 hour."""
@@ -3345,13 +3355,11 @@ class AlertsWindow(Gtk.Window):
                 text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(len(alerts)) + ". " + title + ". " + t_status
 
                 try:
-                    from gtts import gTTS
                     mp3_path = "/tmp/auto_offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/auto_offline_" + str(i) + ".wav"
                     if _announce_stop: break
-                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-                    tts.save(mp3_path)
-                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
+                    if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                        continue
                     GLib.idle_add(self._start_typing, text)
                     subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
                     time.sleep(1)
@@ -3391,14 +3399,13 @@ class AlertsWindow(Gtk.Window):
                 text = t["offline_unit"] + " " + str(i+1) + " " + t["of"] + " " + str(total) + ". " + title + ". " + t_status
                 texts.append(text)
                 try:
-                    from gtts import gTTS
                     mp3_path = "/tmp/offline_" + str(i) + ".mp3"
                     wav_path = "/tmp/offline_" + str(i) + ".wav"
-                    if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-                    tts.save(mp3_path)
-                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=15)
-                    audio_files.append(wav_path)
+                    if _announce_stop: break
+                    if _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                        audio_files.append(wav_path)
+                    else:
+                        audio_files.append(None)
                 except Exception as e:
                     audio_files.append(None)
 
@@ -3476,13 +3483,11 @@ class AlertsWindow(Gtk.Window):
                     aid = alert.get("id", "")
                     wav_path = _audio_cache.get(aid)
                     if not wav_path or not os.path.exists(wav_path):
-                        from gtts import gTTS
                         mp3_path = "/tmp/aquabox_announce_all.mp3"
                         wav_path = "/tmp/aquabox_announce_all.wav"
                         if _announce_stop: break
-                        tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-                        tts.save(mp3_path)
-                        subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
+                        if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                            continue
                     GLib.idle_add(self._start_typing, text)
                     subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
                     # Wait for typing animation to catch up with audio
@@ -3538,7 +3543,6 @@ class AlertsWindow(Gtk.Window):
         body = alert.get("body", "")
         desc = alert.get("description", {})
         status = desc.get("status", "")
-        t_single = TRANSLATIONS.get(TTS_LANG, TRANSLATIONS["en"])
         _, t_body_s, t_status_s = translate_alert_text(title, body, status, TTS_LANG)
         text = title + ". " + t_body_s + ". " + t_status_s
 
@@ -3549,13 +3553,11 @@ class AlertsWindow(Gtk.Window):
                 aid = alert.get("id", "")
                 wav_path = _audio_cache.get(aid)
                 if not wav_path or not os.path.exists(wav_path):
-                    from gtts import gTTS
                     mp3_path = "/tmp/aquabox_announce.mp3"
                     wav_path = "/tmp/aquabox_announce.wav"
-                    if _announce_stop: pass  # cancelled
-                    tts = gTTS(text=text, lang=TTS_LANG) if TTS_LANG != "en" else gTTS(text=text, lang="en", tld="co.in")
-                    tts.save(mp3_path)
-                    subprocess.run(["ffmpeg", "-y", "-i", mp3_path, "-ar", "44100", "-ac", "1", "-filter:a", "volume=1.5,highpass=f=100,lowpass=f=8000", wav_path], capture_output=True, timeout=30)
+                    if _announce_stop: pass
+                    if not _tts_generate(text, TTS_LANG, mp3_path, wav_path):
+                        raise Exception("TTS generation failed")
                 audio_dur = 0
                 try:
                     audio_dur = os.path.getsize(wav_path) / (44100 * 2)
