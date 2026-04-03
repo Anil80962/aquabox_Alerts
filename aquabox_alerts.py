@@ -2941,37 +2941,88 @@ class AlertsWindow(Gtk.Window):
 
     # ==================== WiFi & Volume Controls ====================
 
+    _tailscale_restart_count = 0
+
     def _check_wifi_status(self):
-        """Periodically check WiFi connection, auto-reconnect, and refresh API on reconnect."""
+        """Periodically check WiFi, auto-reconnect, restart Tailscale, and refresh on recovery."""
         try:
             out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
             connected = len(out.stdout.strip()) > 0
         except Exception:
             connected = False
 
+        # Also check internet connectivity (not just WiFi link)
+        if connected:
+            try:
+                import requests
+                requests.get("https://prod-aquagen.azurewebsites.net", timeout=5)
+                internet = True
+            except Exception:
+                internet = False
+        else:
+            internet = False
+
         was_disconnected = not self._wifi_connected
 
         if not connected:
-            # Try to reconnect WiFi
+            # Try multiple reconnect methods
             try:
+                # Try nmcli first
+                subprocess.run(
+                    ["sudo", "nmcli", "device", "wifi", "rescan"],
+                    capture_output=True, timeout=5
+                )
+                subprocess.run(
+                    ["sudo", "nmcli", "connection", "up", "netplan-wlan0-" + self._last_ssid] if hasattr(self, '_last_ssid') and self._last_ssid else
+                    ["sudo", "nmcli", "device", "connect", "wlan0"],
+                    capture_output=True, timeout=10
+                )
+            except Exception:
+                pass
+            try:
+                # Also try wpa_cli
                 subprocess.run(
                     ["sudo", "wpa_cli", "-i", "wlan0", "reconnect"],
                     capture_output=True, timeout=5
                 )
-                print(f"[{now()}] WiFi disconnected - attempting reconnect...")
             except Exception:
                 pass
+            GLib.idle_add(self.refresh_label.set_text, "WiFi disconnected - reconnecting...")
+            print(f"[{now()}] WiFi disconnected - attempting reconnect...")
+        else:
+            # Save current SSID for reconnect
+            try:
+                out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
+                self._last_ssid = out.stdout.strip()
+            except: pass
 
         if connected != self._wifi_connected:
             self._wifi_connected = connected
             self._wifi_icon.queue_draw()
 
-            if connected and was_disconnected:
-                # Just reconnected - refresh API data
-                print(f"[{now()}] WiFi reconnected! Refreshing alerts...")
-                self.refresh_label.set_text("WiFi reconnected - Refreshing...")
-                self._countdown = REFRESH_INTERVAL
-                threading.Thread(target=self._fetch_and_update, daemon=True).start()
+        if connected and internet and was_disconnected:
+            # Just reconnected with internet - restart Tailscale and refresh
+            print(f"[{now()}] WiFi + Internet restored! Restarting Tailscale...")
+            subprocess.run(["sudo", "systemctl", "restart", "tailscaled"],
+                           capture_output=True, timeout=15)
+            self._tailscale_restart_count = 0
+            print(f"[{now()}] Refreshing token and alerts...")
+            GLib.idle_add(self.refresh_label.set_text, "Network restored - Refreshing...")
+            self._countdown = REFRESH_INTERVAL
+            self._last_fetch_time_actual = 0
+            global token, token_time
+            token = ""
+            token_time = 0
+            threading.Thread(target=self._fetch_and_update, daemon=True).start()
+
+        # Periodically restart Tailscale if WiFi is up but no internet (every 5 min)
+        if connected and not internet:
+            self._tailscale_restart_count += 1
+            if self._tailscale_restart_count >= 60:  # 60 * 5s = 5 minutes
+                print(f"[{now()}] WiFi up but no internet - restarting Tailscale...")
+                subprocess.run(["sudo", "systemctl", "restart", "tailscaled"],
+                               capture_output=True, timeout=15)
+                self._tailscale_restart_count = 0
 
         return True
 
@@ -3192,13 +3243,23 @@ class AlertsWindow(Gtk.Window):
                     subprocess.run(["sudo", "dhclient", "wlan0"], capture_output=True, timeout=10)
                     _status(f"Connected to {ssid}!", 0.26, 0.85, 0.37)
                     self._wifi_connected = True
+                    self._last_ssid = ssid
                     GLib.idle_add(self._wifi_icon.queue_draw)
-                    # Kill on-screen keyboard
-                    subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+                    # Close GTK keyboard if open
+                    if hasattr(self, '_hide_wifi_kb_func') and self._hide_wifi_kb_func:
+                        GLib.idle_add(self._hide_wifi_kb_func)
                     # Save to wpa_supplicant.conf for persistence
                     self._save_wifi_config(ssid, password)
-                    # Refresh API
+                    # Restart Tailscale so remote access works on new network
+                    print(f"[{now()}] Restarting Tailscale for new network...")
+                    subprocess.run(["sudo", "systemctl", "restart", "tailscaled"],
+                                   capture_output=True, timeout=15)
+                    # Refresh token and alerts
                     print(f"[{now()}] WiFi changed to {ssid}, refreshing alerts...")
+                    global token, token_time
+                    token = ""
+                    token_time = 0
+                    self._last_fetch_time_actual = 0
                     self._countdown = REFRESH_INTERVAL
                     threading.Thread(target=self._fetch_and_update, daemon=True).start()
                     return
@@ -3462,8 +3523,9 @@ class AlertsWindow(Gtk.Window):
                 entry.set_text(text[:pos-1] + text[pos:])
                 entry.set_position(pos - 1)
 
+        self._wifi_kb_closing = False
         def show_wifi_kb():
-            if self._wifi_kb_visible:
+            if self._wifi_kb_visible or self._wifi_kb_closing:
                 return
             self._wifi_kb_visible = True
             self._wifi_kb_letter_btns.clear()
@@ -3481,7 +3543,12 @@ class AlertsWindow(Gtk.Window):
             cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
             cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
             cb.modify_font(Pango.FontDescription("Sans bold 12"))
-            cb.connect("clicked", lambda b: hide_wifi_kb())
+            cb.set_can_focus(False)
+            def _close_wifi_kb(b):
+                self._wifi_kb_closing = True
+                hide_wifi_kb()
+                GLib.timeout_add(500, lambda: setattr(self, '_wifi_kb_closing', False) or False)
+            cb.connect("clicked", _close_wifi_kb)
             cr.pack_end(cb, False, False, 4)
             kb.pack_start(cr, False, False, 0)
             for row in [["1","2","3","4","5","6","7","8","9","0"],
@@ -3495,6 +3562,7 @@ class AlertsWindow(Gtk.Window):
                     b.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
                     b.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
                     b.set_size_request(-1, 55)
+                    b.set_can_focus(False)
                     b.connect("clicked", wifi_kb_key, key)
                     if key.isalpha():
                         self._wifi_kb_letter_btns.append((b, key))
@@ -3506,6 +3574,7 @@ class AlertsWindow(Gtk.Window):
             sb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
             sb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
             sb.set_size_request(80, 55)
+            sb.set_can_focus(False)
             sb.connect("clicked", wifi_kb_shift_cb)
             ar.pack_start(sb, False, False, 0)
             for sym in ["#","$","-","+"]:
@@ -3514,6 +3583,7 @@ class AlertsWindow(Gtk.Window):
                 xb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
                 xb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
                 xb.set_size_request(50, 55)
+                xb.set_can_focus(False)
                 xb.connect("clicked", wifi_kb_key, sym)
                 ar.pack_start(xb, False, False, 0)
             sp = Gtk.Button(label="Space")
@@ -3521,6 +3591,7 @@ class AlertsWindow(Gtk.Window):
             sp.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
             sp.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
             sp.set_size_request(-1, 55)
+            sp.set_can_focus(False)
             sp.connect("clicked", wifi_kb_key, " ")
             ar.pack_start(sp, True, True, 0)
             bk = Gtk.Button(label="\u232b")
@@ -3528,6 +3599,7 @@ class AlertsWindow(Gtk.Window):
             bk.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
             bk.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
             bk.set_size_request(80, 55)
+            bk.set_can_focus(False)
             bk.connect("clicked", wifi_kb_bksp)
             ar.pack_start(bk, False, False, 0)
             kb.pack_start(ar, False, False, 0)
@@ -3849,18 +3921,36 @@ class AlertsWindow(Gtk.Window):
     _last_fetch_time_actual = 0
 
     def _fetch_and_update(self):
-        global _refresh_queued
+        global _refresh_queued, token, token_time
         # If announce is running, queue the refresh
         if _auto_announcing:
             _refresh_queued = True
             print("[" + now() + "] Refresh queued - announce in progress")
             return
-        # Prevent fetching more than once every 30 seconds
+        # Prevent fetching more than once every 15 seconds
         now_ts = time.time()
-        if now_ts - self._last_fetch_time_actual < 30:
+        if now_ts - self._last_fetch_time_actual < 15:
             return
         self._last_fetch_time_actual = now_ts
+
         data = fetch_alerts()
+
+        # If failed, refresh token and retry
+        if not data:
+            print(f"[{now()}] Fetch failed, refreshing token and retrying...")
+            token = ""
+            token_time = 0
+            time.sleep(2)
+            data = fetch_alerts()
+
+        # If still failed, wait and try once more
+        if not data:
+            print(f"[{now()}] Second attempt failed, retrying in 5s...")
+            time.sleep(5)
+            token = ""
+            token_time = 0
+            data = fetch_alerts()
+
         # Pre-cache audio for instant playback
         if data:
             today = data.get("generalAlerts", {}).get("alerts", {}).get("today", [])
@@ -3876,15 +3966,25 @@ class AlertsWindow(Gtk.Window):
             self.alerts_container.remove(child)
 
         if not data:
-            lbl = Gtk.Label(label="Failed to fetch alerts. Retrying...")
+            # Track consecutive failures for escalating retry
+            if not hasattr(self, '_fail_count'):
+                self._fail_count = 0
+            self._fail_count += 1
+            retry_delay = min(10 * self._fail_count, 60)  # 10s, 20s, 30s... max 60s
+
+            lbl = Gtk.Label(label=f"Network error. Retrying in {retry_delay}s...")
             lbl.get_style_context().add_class("no-alerts")
             lbl.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.4, 0.4, 1))
             self.alerts_container.pack_start(lbl, True, True, 20)
             prev = f" | Last success: {self._last_refresh_time}" if self._last_refresh_time else ""
-            self.refresh_label.set_text(f"Error | Quick retry in 10s{prev}")
-            GLib.timeout_add_seconds(10, self._quick_retry)
+            self.refresh_label.set_text(f"Network error (attempt {self._fail_count}) | Retry in {retry_delay}s{prev}")
+            self._last_fetch_time_actual = 0  # Reset throttle for retry
+            GLib.timeout_add_seconds(retry_delay, self._quick_retry)
             self.alerts_container.show_all()
             return
+
+        # Reset fail counter on success
+        self._fail_count = 0
 
         general = data.get("generalAlerts", {})
         offline = data.get("offlineAlerts", {})
