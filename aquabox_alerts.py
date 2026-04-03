@@ -526,12 +526,12 @@ window { background-color: #ffffff; }
 }
 .header-title {
     color: white;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .header-sub {
     color: #93c5fd;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .stats-bar {
@@ -548,12 +548,12 @@ window { background-color: #ffffff; }
 }
 .stat-num {
     color: #1565c0;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .stat-label {
     color: #555555;
-    font-size: 20px;
+    font-size: 28px;
 }
 .stat-num-unread { color: #f87171; }
 .stat-num-read { color: #4ade80; }
@@ -571,27 +571,27 @@ window { background-color: #ffffff; }
     border-left-style: solid;
 }
 .alert-title {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .alert-body {
-    font-size: 20px;
+    font-size: 28px;
     margin-top: 2px;
 }
 .alert-time {
-    font-size: 20px;
+    font-size: 28px;
     color: #64748b;
     margin-top: 2px;
 }
 .alert-detail {
-    font-size: 20px;
+    font-size: 28px;
     margin-top: 3px;
     padding: 4px 6px;
     border-radius: 4px;
     background-color: rgba(0,0,0,0.05);
 }
 .alert-badge {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 9px;
@@ -601,11 +601,11 @@ window { background-color: #ffffff; }
 
 .unread-dot {
     color: #ef4444;
-    font-size: 20px;
+    font-size: 28px;
 }
 .read-check {
     color: #22c55e;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .alert-actions {
@@ -618,7 +618,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -629,7 +629,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -640,7 +640,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     padding: 4px 12px;
     min-height: 29px;
 }
@@ -648,12 +648,12 @@ window { background-color: #ffffff; }
 
 .alert-expander {
     color: #64748b;
-    font-size: 20px;
+    font-size: 28px;
     padding-top: 4px;
 }
 .alert-expander title {
     color: #64748b;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .offline-card {
@@ -665,17 +665,17 @@ window { background-color: #ffffff; }
 }
 .offline-title {
     color: #c62828;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .offline-body {
     color: #555555;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .section-header {
     color: #333333;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 8px 12px 4px;
 }
@@ -687,7 +687,7 @@ window { background-color: #ffffff; }
 }
 .refresh-text {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .announce-bar {
@@ -697,7 +697,7 @@ window { background-color: #ffffff; }
 }
 .announce-text {
     color: #60a5fa;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     font-family: monospace;
 }
@@ -710,18 +710,18 @@ window { background-color: #ffffff; }
 }
 .announce-overlay-icon {
     color: #60a5fa;
-    font-size: 20px;
+    font-size: 28px;
 }
 .announce-overlay-text {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 28px;
     font-family: monospace;
     font-weight: bold;
     min-height: 66px;
 }
 .announce-overlay-title {
     color: #94a3b8;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -733,7 +733,7 @@ window { background-color: #ffffff; }
     border: 1px solid #1e40af;
     border-radius: 6px;
     padding: 2px 6px;
-    font-size: 20px;
+    font-size: 28px;
     min-height: 24px;
 }
 
@@ -754,17 +754,17 @@ window { background-color: #ffffff; }
 
 .header-clock {
     color: white;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .header-date {
     color: #93c5fd;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .no-alerts {
     color: #2e7d32;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 44px;
 }
@@ -789,12 +789,12 @@ window { background-color: #ffffff; }
 }
 .wifi-ssid {
     color: #ffffff;
-    font-size: 13px;
+    font-size: 20px;
     font-weight: bold;
 }
 .wifi-signal {
     color: #93c5fd;
-    font-size: 12px;
+    font-size: 18px;
 }
 .wifi-net-row {
     background: rgba(255,255,255,0.06);
@@ -807,16 +807,16 @@ window { background-color: #ffffff; }
 }
 .wifi-net-name {
     color: #ffffff;
-    font-size: 12px;
+    font-size: 18px;
     font-weight: bold;
 }
 .wifi-net-signal {
     color: #93c5fd;
-    font-size: 11px;
+    font-size: 16px;
 }
 .wifi-net-connected {
     color: #4ade80;
-    font-size: 11px;
+    font-size: 16px;
     font-weight: bold;
 }
 .wifi-scan-btn {
@@ -825,7 +825,7 @@ window { background-color: #ffffff; }
     border: 1px solid #3b82f6;
     border-radius: 6px;
     padding: 4px 12px;
-    font-size: 11px;
+    font-size: 16px;
 }
 .wifi-scan-btn:hover {
     background: #2563eb;
@@ -836,7 +836,7 @@ window { background-color: #ffffff; }
     border: none;
     border-radius: 6px;
     padding: 4px 12px;
-    font-size: 11px;
+    font-size: 16px;
 }
 .wifi-connect-btn:hover {
     background: #22c55e;
@@ -847,14 +847,14 @@ window { background-color: #ffffff; }
     border: none;
     border-radius: 6px;
     padding: 4px 10px;
-    font-size: 11px;
+    font-size: 16px;
 }
 .wifi-disconnect-btn:hover {
     background: #ef4444;
 }
 .wifi-status-label {
     color: #fbbf24;
-    font-size: 11px;
+    font-size: 16px;
 }
 .wifi-pass-entry {
     background: rgba(255,255,255,0.1);
@@ -862,11 +862,11 @@ window { background-color: #ffffff; }
     border: 1px solid #3b82f6;
     border-radius: 4px;
     padding: 4px 8px;
-    font-size: 12px;
+    font-size: 18px;
 }
 .volume-label {
     color: #93c5fd;
-    font-size: 12px;
+    font-size: 18px;
 }
 """
 
@@ -910,7 +910,7 @@ class LoginWindow(Gtk.Window):
         # Logo
         logo_path = "/home/aquabox/Desktop/Aquabox/Fluxgen-Logo.png"
         if os.path.exists(logo_path):
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 220, 65, True)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 420, 120, True)
             logo = Gtk.Image.new_from_pixbuf(pixbuf)
             logo.set_margin_top(8)
             card.pack_start(logo, False, False, 0)
@@ -918,7 +918,7 @@ class LoginWindow(Gtk.Window):
         # Tagline below logo
         tag = Gtk.Label(label="Build a Water-Positive Future")
         tag.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.3, 0.55, 0.8, 0.6))
-        tag.modify_font(Pango.FontDescription("Sans italic 8"))
+        tag.modify_font(Pango.FontDescription("Sans italic 16"))
         tag.set_margin_bottom(2)
         card.pack_start(tag, False, False, 2)
 
@@ -935,7 +935,7 @@ class LoginWindow(Gtk.Window):
         # Sign In label
         signin = Gtk.Label(label="Sign In")
         signin.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.05, 0.15, 0.4, 1))
-        signin.modify_font(Pango.FontDescription("Sans bold 11"))
+        signin.modify_font(Pango.FontDescription("Sans bold 14"))
         signin.set_halign(Gtk.Align.START)
         signin.set_margin_start(30)
         card.pack_start(signin, False, False, 0)
@@ -943,7 +943,7 @@ class LoginWindow(Gtk.Window):
         # Username
         ulabel = Gtk.Label(label="Username")
         ulabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        ulabel.modify_font(Pango.FontDescription("Sans bold 10"))
+        ulabel.modify_font(Pango.FontDescription("Sans bold 18"))
         ulabel.set_halign(Gtk.Align.START)
         ulabel.set_margin_start(30)
         ulabel.set_margin_top(4)
@@ -951,7 +951,7 @@ class LoginWindow(Gtk.Window):
 
         self.username_entry = Gtk.Entry()
         self.username_entry.set_placeholder_text("Enter your username")
-        self.username_entry.modify_font(Pango.FontDescription("Sans 11"))
+        self.username_entry.modify_font(Pango.FontDescription("Sans 14"))
         self.username_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.username_entry.set_margin_start(30)
         self.username_entry.set_margin_end(30)
@@ -960,7 +960,7 @@ class LoginWindow(Gtk.Window):
         # Password
         plabel = Gtk.Label(label="Password")
         plabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        plabel.modify_font(Pango.FontDescription("Sans bold 10"))
+        plabel.modify_font(Pango.FontDescription("Sans bold 18"))
         plabel.set_halign(Gtk.Align.START)
         plabel.set_margin_start(30)
         plabel.set_margin_top(3)
@@ -969,7 +969,7 @@ class LoginWindow(Gtk.Window):
         self.password_entry = Gtk.Entry()
         self.password_entry.set_placeholder_text("Enter your password")
         self.password_entry.set_visibility(False)
-        self.password_entry.modify_font(Pango.FontDescription("Sans 11"))
+        self.password_entry.modify_font(Pango.FontDescription("Sans 14"))
         self.password_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.password_entry.set_margin_start(30)
         self.password_entry.set_margin_end(30)
@@ -984,32 +984,22 @@ class LoginWindow(Gtk.Window):
         else:
             self.error_label = Gtk.Label(label="")
         self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 1))
-        self.error_label.modify_font(Pango.FontDescription("Sans bold 11"))
+        self.error_label.modify_font(Pango.FontDescription("Sans bold 14"))
         card.pack_start(self.error_label, False, False, 2)
 
         # Login button
         btn = Gtk.Button(label="Login  ➜")
         btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.06, 0.2, 0.6, 0.5))
         btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        btn.modify_font(Pango.FontDescription("Sans bold 13"))
+        btn.modify_font(Pango.FontDescription("Sans bold 18"))
         btn.set_margin_start(30)
         btn.set_margin_end(30)
         btn.set_margin_top(3)
         btn.connect("clicked", self.on_login)
         card.pack_start(btn, False, False, 0)
 
-        # Keyboard button
-        kb_btn = Gtk.Button(label="\u2328  Keyboard")
-        kb_btn.modify_font(Pango.FontDescription("Sans 11"))
-        kb_btn.set_margin_start(30)
-        kb_btn.set_margin_end(30)
-        kb_btn.set_margin_top(3)
-        kb_btn.set_margin_bottom(4)
-        kb_btn.connect("clicked", self.toggle_keyboard)
-        card.pack_start(kb_btn, False, False, 0)
-
         admin_btn = Gtk.Button(label="⚙ Admin")
-        admin_btn.modify_font(Pango.FontDescription("Sans 8"))
+        admin_btn.modify_font(Pango.FontDescription("Sans 12"))
         admin_btn.set_margin_start(30)
         admin_btn.set_margin_end(30)
         admin_btn.set_margin_bottom(6)
@@ -1018,7 +1008,21 @@ class LoginWindow(Gtk.Window):
 
         outer.pack_start(card, False, False, 0)
         overlay.add_overlay(outer)
-        self.add(overlay)
+        self._login_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self._login_main.pack_start(overlay, True, True, 0)
+        self.add(self._login_main)
+
+        # Auto-show keyboard when entries focused
+        self._login_kb_visible = False
+        self._login_kb_shift = False
+        self._login_kb_letter_btns = []
+        self._active_entry = self.username_entry
+        def _on_entry_focus(w, e):
+            self._active_entry = w
+            self._show_login_kb()
+        self.username_entry.connect("focus-in-event", _on_entry_focus)
+        self.password_entry.connect("focus-in-event", _on_entry_focus)
+
         GLib.timeout_add(40, self._animate)
 
     def _draw_accent(self, widget, cr):
@@ -1059,7 +1063,10 @@ class LoginWindow(Gtk.Window):
         self._ripples = [r for r in self._ripples if r["r"] < r["max"]]
         for r in self._ripples:
             r["r"] += 1.2
-        self.get_child().get_child().queue_draw()
+        try:
+            self._login_main.get_children()[0].get_child().queue_draw()
+        except: pass
+        self.fullscreen()
         return True
 
     def _draw_bg(self, widget, cr):
@@ -1149,13 +1156,13 @@ class LoginWindow(Gtk.Window):
 
         title = Gtk.Label(label="Admin Settings")
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
-        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title.modify_font(Pango.FontDescription("Sans bold 18"))
         title.set_margin_top(15)
         card.pack_start(title, False, False, 0)
 
         sub = Gtk.Label(label="Enter admin credentials")
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
-        sub.modify_font(Pango.FontDescription("Sans 9"))
+        sub.modify_font(Pango.FontDescription("Sans 12"))
         card.pack_start(sub, False, False, 0)
 
         sep = Gtk.Separator()
@@ -1165,20 +1172,20 @@ class LoginWindow(Gtk.Window):
         card.pack_start(sep, False, False, 0)
 
         ul = Gtk.Label(label="Admin Username")
-        ul.modify_font(Pango.FontDescription("Sans bold 10"))
+        ul.modify_font(Pango.FontDescription("Sans bold 18"))
         ul.set_halign(Gtk.Align.START)
         ul.set_margin_start(25)
         ul.set_margin_top(6)
         card.pack_start(ul, False, False, 0)
         admin_user = Gtk.Entry()
         admin_user.set_placeholder_text("Enter admin username")
-        admin_user.modify_font(Pango.FontDescription("Sans 11"))
+        admin_user.modify_font(Pango.FontDescription("Sans 14"))
         admin_user.set_margin_start(25)
         admin_user.set_margin_end(25)
         card.pack_start(admin_user, False, False, 0)
 
         pl = Gtk.Label(label="Admin Password")
-        pl.modify_font(Pango.FontDescription("Sans bold 10"))
+        pl.modify_font(Pango.FontDescription("Sans bold 18"))
         pl.set_halign(Gtk.Align.START)
         pl.set_margin_start(25)
         pl.set_margin_top(4)
@@ -1186,14 +1193,14 @@ class LoginWindow(Gtk.Window):
         admin_pass = Gtk.Entry()
         admin_pass.set_placeholder_text("Enter admin password")
         admin_pass.set_visibility(False)
-        admin_pass.modify_font(Pango.FontDescription("Sans 11"))
+        admin_pass.modify_font(Pango.FontDescription("Sans 14"))
         admin_pass.set_margin_start(25)
         admin_pass.set_margin_end(25)
         card.pack_start(admin_pass, False, False, 0)
 
         err = Gtk.Label(label="")
         err.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
-        err.modify_font(Pango.FontDescription("Sans bold 9"))
+        err.modify_font(Pango.FontDescription("Sans bold 15"))
         card.pack_start(err, False, False, 0)
 
         btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -1204,10 +1211,10 @@ class LoginWindow(Gtk.Window):
         login_btn = Gtk.Button(label="Login")
         login_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.69, 1))
         login_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        login_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+        login_btn.modify_font(Pango.FontDescription("Sans bold 15"))
 
         back_btn = Gtk.Button(label="Back")
-        back_btn.modify_font(Pango.FontDescription("Sans 10"))
+        back_btn.modify_font(Pango.FontDescription("Sans 15"))
         back_btn.connect("clicked", lambda b: self._admin_win.destroy())
 
         def on_admin_login(btn):
@@ -1227,7 +1234,116 @@ class LoginWindow(Gtk.Window):
 
         outer.pack_start(card, False, False, 0)
         overlay.add_overlay(outer)
-        self._admin_win.add(overlay)
+        admin_login_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        admin_login_main.pack_start(overlay, True, True, 0)
+        self._admin_win.add(admin_login_main)
+
+        # GTK keyboard for admin login
+        adm_kb_visible = [False]
+        adm_kb_box_ref = [None]
+        adm_kb_shift = [False]
+        adm_kb_letter_btns = []
+        adm_active = [admin_user]
+
+        def adm_kb_key(button, key):
+            entry = adm_active[0]
+            char = key.upper() if adm_kb_shift[0] and key.isalpha() else key
+            entry.do_insert_at_cursor(entry, char)
+            if adm_kb_shift[0]:
+                adm_kb_shift[0] = False
+                for b, k in adm_kb_letter_btns:
+                    b.set_label(k.lower())
+
+        def adm_kb_shift_toggle(button):
+            adm_kb_shift[0] = not adm_kb_shift[0]
+            for b, k in adm_kb_letter_btns:
+                b.set_label(k.upper() if adm_kb_shift[0] else k.lower())
+            if adm_kb_shift[0]:
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+            else:
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+        def adm_kb_bksp(button):
+            entry = adm_active[0]
+            pos = entry.get_position()
+            if pos > 0:
+                text = entry.get_text()
+                entry.set_text(text[:pos-1] + text[pos:])
+                entry.set_position(pos - 1)
+
+        def show_adm_kb():
+            if adm_kb_visible[0]:
+                return
+            adm_kb_visible[0] = True
+            adm_kb_letter_btns.clear()
+            kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+            kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            cr.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cb = Gtk.Button(label="\u2715 Close")
+            cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+            cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            cb.modify_font(Pango.FontDescription("Sans bold 12"))
+            cb.connect("clicked", lambda b: hide_adm_kb())
+            cr.pack_end(cb, False, False, 4)
+            kb.pack_start(cr, False, False, 0)
+            for row in [["1","2","3","4","5","6","7","8","9","0"],
+                        ["q","w","e","r","t","y","u","i","o","p"],
+                        ["a","s","d","f","g","h","j","k","l","@"],
+                        ["z","x","c","v","b","n","m","!",".","_"]]:
+                rb = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
+                for key in row:
+                    b = Gtk.Button(label=key)
+                    b.modify_font(Pango.FontDescription("Sans bold 14"))
+                    b.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                    b.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                    b.set_size_request(-1, 55)
+                    b.connect("clicked", adm_kb_key, key)
+                    if key.isalpha():
+                        adm_kb_letter_btns.append((b, key))
+                    rb.pack_start(b, True, True, 0)
+                kb.pack_start(rb, False, False, 0)
+            ar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1)
+            sb = Gtk.Button(label="\u21e7")
+            sb.modify_font(Pango.FontDescription("Sans bold 14"))
+            sb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sb.set_size_request(80, 55)
+            sb.connect("clicked", adm_kb_shift_toggle)
+            ar.pack_start(sb, False, False, 0)
+            sp = Gtk.Button(label="Space")
+            sp.modify_font(Pango.FontDescription("Sans bold 14"))
+            sp.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sp.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sp.set_size_request(-1, 55)
+            sp.connect("clicked", adm_kb_key, " ")
+            ar.pack_start(sp, True, True, 0)
+            bk = Gtk.Button(label="\u232b")
+            bk.modify_font(Pango.FontDescription("Sans bold 14"))
+            bk.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            bk.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            bk.set_size_request(80, 55)
+            bk.connect("clicked", adm_kb_bksp)
+            ar.pack_start(bk, False, False, 0)
+            kb.pack_start(ar, False, False, 0)
+            admin_login_main.pack_end(kb, False, False, 0)
+            kb.show_all()
+            adm_kb_box_ref[0] = kb
+
+        def hide_adm_kb():
+            if not adm_kb_visible[0]:
+                return
+            if adm_kb_box_ref[0]:
+                adm_kb_box_ref[0].destroy()
+                adm_kb_box_ref[0] = None
+            adm_kb_visible[0] = False
+
+        def on_adm_focus(w, e):
+            adm_active[0] = w
+            show_adm_kb()
+        admin_user.connect("focus-in-event", on_adm_focus)
+        admin_pass.connect("focus-in-event", on_adm_focus)
+
         self._admin_win.show_all()
 
     def _animate_admin_bg(self, da):
@@ -1268,54 +1384,69 @@ class LoginWindow(Gtk.Window):
         dialog = Gtk.Window(title="Admin Settings")
         dialog.set_default_size(800, 480)
         dialog.fullscreen()
-        dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+        dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.95, 0.96, 0.98, 1))
+
+        # Re-enforce fullscreen
+        def _enforce_fs():
+            dialog.fullscreen()
+            return True
+        GLib.timeout_add_seconds(1, _enforce_fs)
 
         # Make scrollable
         scroll_admin = Gtk.ScrolledWindow()
         scroll_admin.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         scroll_admin.add(box)
-        dialog.add(scroll_admin)
-        box.set_margin_start(15)
-        box.set_margin_end(15)
-        box.set_margin_top(5)
+        admin_main = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        admin_main.pack_start(scroll_admin, True, True, 0)
+        dialog.add(admin_main)
+        box.set_margin_start(20)
+        box.set_margin_end(20)
+        box.set_margin_top(10)
 
-        title = Gtk.Label(label="API Configuration")
-        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title = Gtk.Label(label="AquaGen Configuration")
+        title.modify_font(Pango.FontDescription("Sans bold 24"))
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
-        box.pack_start(title, False, False, 0)
+        box.pack_start(title, False, False, 4)
 
-        sub = Gtk.Label(label="Configure the username and password for AquaGen API")
-        sub.modify_font(Pango.FontDescription("Sans 9"))
+        sub = Gtk.Label(label="Configure your AquaGen login credentials")
+        sub.modify_font(Pango.FontDescription("Sans 16"))
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
         box.pack_start(sub, False, False, 4)
 
         sep = Gtk.Separator()
         box.pack_start(sep, False, False, 6)
 
-        # API Username
-        ul = Gtk.Label(label="API Username")
-        ul.modify_font(Pango.FontDescription("Sans bold 11"))
+        # Username
+        ul = Gtk.Label(label="Username")
+        ul.modify_font(Pango.FontDescription("Sans bold 20"))
         ul.set_halign(Gtk.Align.START)
         box.pack_start(ul, False, False, 0)
         api_user_entry = Gtk.Entry()
         api_user_entry.set_text(USERNAME)
-        api_user_entry.modify_font(Pango.FontDescription("Sans 12"))
-        box.pack_start(api_user_entry, False, False, 0)
+        api_user_entry.modify_font(Pango.FontDescription("Sans 18"))
+        box.pack_start(api_user_entry, False, False, 4)
 
-        # API Password
-        ppl = Gtk.Label(label="API Password")
-        ppl.modify_font(Pango.FontDescription("Sans bold 11"))
+        # Password
+        ppl = Gtk.Label(label="Password")
+        ppl.modify_font(Pango.FontDescription("Sans bold 20"))
         ppl.set_halign(Gtk.Align.START)
         box.pack_start(ppl, False, False, 0)
         api_pass_entry = Gtk.Entry()
         api_pass_entry.set_text(PASSWORD)
-        api_pass_entry.modify_font(Pango.FontDescription("Sans 12"))
-        box.pack_start(api_pass_entry, False, False, 0)
+        api_pass_entry.set_visibility(False)
+        api_pass_entry.modify_font(Pango.FontDescription("Sans 18"))
+        api_pass_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+        def _toggle_pass(entry, icon_pos, event):
+            vis = not entry.get_visibility()
+            entry.set_visibility(vis)
+            entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-reveal-symbolic" if vis else "view-conceal-symbolic")
+        api_pass_entry.connect("icon-press", _toggle_pass)
+        box.pack_start(api_pass_entry, False, False, 4)
 
         # Login Type
         ltl = Gtk.Label(label="Login Type")
-        ltl.modify_font(Pango.FontDescription("Sans bold 11"))
+        ltl.modify_font(Pango.FontDescription("Sans bold 20"))
         ltl.set_halign(Gtk.Align.START)
         box.pack_start(ltl, False, False, 0)
         lt_combo = Gtk.ComboBoxText()
@@ -1327,7 +1458,7 @@ class LoginWindow(Gtk.Window):
         # Language selection moved to header bar dropdown
 
         status = Gtk.Label(label="")
-        status.modify_font(Pango.FontDescription("Sans bold 11"))
+        status.modify_font(Pango.FontDescription("Sans bold 18"))
         box.pack_start(status, False, False, 4)
 
         def on_save(btn):
@@ -1375,39 +1506,282 @@ class LoginWindow(Gtk.Window):
         test_btn = Gtk.Button(label="Test Connection")
         test_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.8, 1))
         test_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        test_btn.modify_font(Pango.FontDescription("Sans bold 11"))
+        test_btn.modify_font(Pango.FontDescription("Sans bold 18"))
         test_btn.connect("clicked", on_test)
         btn_box.pack_start(test_btn, True, True, 0)
 
         save_btn = Gtk.Button(label="Save")
         save_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
         save_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        save_btn.modify_font(Pango.FontDescription("Sans bold 11"))
+        save_btn.modify_font(Pango.FontDescription("Sans bold 18"))
         save_btn.connect("clicked", on_save)
         btn_box.pack_start(save_btn, True, True, 0)
 
         box.pack_start(btn_box, False, False, 5)
 
         close_btn = Gtk.Button(label="Close")
-        close_btn.modify_font(Pango.FontDescription("Sans 10"))
-        close_btn.connect("clicked", lambda b: dialog.destroy())
+        close_btn.modify_font(Pango.FontDescription("Sans 18"))
         box.pack_start(close_btn, False, False, 0)
+
+        # GTK keyboard for admin settings
+        admin_kb_visible = [False]
+        admin_kb_box_ref = [None]
+        admin_kb_shift = [False]
+        admin_kb_letter_btns = []
+        admin_active = [api_user_entry]
+
+        def admin_kb_key(button, key):
+            entry = admin_active[0]
+            char = key.upper() if admin_kb_shift[0] and key.isalpha() else key
+            entry.do_insert_at_cursor(entry, char)
+            if admin_kb_shift[0]:
+                admin_kb_shift[0] = False
+                for btn, k in admin_kb_letter_btns:
+                    btn.set_label(k.lower())
+
+        def admin_kb_shift_cb(button):
+            admin_kb_shift[0] = not admin_kb_shift[0]
+            for btn, k in admin_kb_letter_btns:
+                btn.set_label(k.upper() if admin_kb_shift[0] else k.lower())
+            if admin_kb_shift[0]:
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+            else:
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+        def admin_kb_bksp(button):
+            entry = admin_active[0]
+            pos = entry.get_position()
+            if pos > 0:
+                text = entry.get_text()
+                entry.set_text(text[:pos-1] + text[pos:])
+                entry.set_position(pos - 1)
+
+        def show_admin_kb():
+            if admin_kb_visible[0]:
+                return
+            admin_kb_visible[0] = True
+            admin_kb_letter_btns.clear()
+            kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+            kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            cr.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cb = Gtk.Button(label="\u2715 Close")
+            cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+            cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            cb.modify_font(Pango.FontDescription("Sans bold 12"))
+            cb.connect("clicked", lambda b: hide_admin_kb())
+            cr.pack_end(cb, False, False, 4)
+            kb.pack_start(cr, False, False, 0)
+            for row in [["1","2","3","4","5","6","7","8","9","0"],
+                        ["q","w","e","r","t","y","u","i","o","p"],
+                        ["a","s","d","f","g","h","j","k","l","@"],
+                        ["z","x","c","v","b","n","m","!",".","_"]]:
+                rb = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
+                for key in row:
+                    b = Gtk.Button(label=key)
+                    b.modify_font(Pango.FontDescription("Sans bold 14"))
+                    b.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                    b.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                    b.set_size_request(-1, 55)
+                    b.connect("clicked", admin_kb_key, key)
+                    if key.isalpha():
+                        admin_kb_letter_btns.append((b, key))
+                    rb.pack_start(b, True, True, 0)
+                kb.pack_start(rb, False, False, 0)
+            ar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1)
+            sb = Gtk.Button(label="\u21e7")
+            sb.modify_font(Pango.FontDescription("Sans bold 14"))
+            sb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sb.set_size_request(80, 55)
+            sb.connect("clicked", admin_kb_shift_cb)
+            ar.pack_start(sb, False, False, 0)
+            for sym in ["#","$","-","+"]:
+                xb = Gtk.Button(label=sym)
+                xb.modify_font(Pango.FontDescription("Sans bold 14"))
+                xb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                xb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                xb.set_size_request(50, 55)
+                xb.connect("clicked", admin_kb_key, sym)
+                ar.pack_start(xb, False, False, 0)
+            sp = Gtk.Button(label="Space")
+            sp.modify_font(Pango.FontDescription("Sans bold 14"))
+            sp.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sp.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sp.set_size_request(-1, 55)
+            sp.connect("clicked", admin_kb_key, " ")
+            ar.pack_start(sp, True, True, 0)
+            bk = Gtk.Button(label="\u232b")
+            bk.modify_font(Pango.FontDescription("Sans bold 14"))
+            bk.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            bk.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            bk.set_size_request(80, 55)
+            bk.connect("clicked", admin_kb_bksp)
+            ar.pack_start(bk, False, False, 0)
+            kb.pack_start(ar, False, False, 0)
+            admin_main.pack_end(kb, False, False, 0)
+            kb.show_all()
+            admin_kb_box_ref[0] = kb
+
+        def hide_admin_kb():
+            if not admin_kb_visible[0]:
+                return
+            if admin_kb_box_ref[0]:
+                admin_kb_box_ref[0].destroy()
+                admin_kb_box_ref[0] = None
+            admin_kb_visible[0] = False
+
+        def on_admin_entry_focus(w, e):
+            admin_active[0] = w
+            show_admin_kb()
+
+        api_user_entry.connect("focus-in-event", on_admin_entry_focus)
+        api_pass_entry.connect("focus-in-event", on_admin_entry_focus)
+
+        def close_admin_dialog(b):
+            hide_admin_kb()
+            dialog.destroy()
+        close_btn.connect("clicked", close_admin_dialog)
 
         dialog.show_all()
 
-    def toggle_keyboard(self, button):
-        import subprocess
-        if self._kb_visible:
-            subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
-            button.set_label("\u2328  Keyboard")
-            self._kb_visible = False
+    def _show_login_kb(self):
+        if self._login_kb_visible:
+            return
+        self._login_kb_visible = True
+        self._login_kb_shift = False
+        self._login_kb_letter_btns = []
+        self._build_login_gtk_kb()
+
+    def _hide_login_kb(self):
+        if not self._login_kb_visible:
+            return
+        if hasattr(self, '_login_kb_box') and self._login_kb_box:
+            self._login_kb_box.destroy()
+            self._login_kb_box = None
+        self._login_kb_visible = False
+
+    def _build_login_gtk_kb(self):
+        """Build GTK keyboard at bottom of login page."""
+        self._login_kb_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+        self._login_kb_box.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+        # Close row
+        close_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        close_row.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+        kb_close = Gtk.Button(label="\u2715 Close")
+        kb_close.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+        kb_close.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        kb_close.modify_font(Pango.FontDescription("Sans bold 12"))
+        kb_close.connect("clicked", lambda b: self._hide_login_kb())
+        close_row.pack_end(kb_close, False, False, 4)
+        self._login_kb_box.pack_start(close_row, False, False, 0)
+
+        # Key rows
+        rows = [
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "@"],
+            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "_"],
+        ]
+        for row in rows:
+            row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
+            for key in row:
+                btn = Gtk.Button(label=key)
+                btn.modify_font(Pango.FontDescription("Sans bold 14"))
+                btn.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                btn.set_size_request(-1, 55)
+                btn.connect("clicked", self._login_kb_key, key)
+                if key.isalpha():
+                    self._login_kb_letter_btns.append((btn, key))
+                row_box.pack_start(btn, True, True, 0)
+            self._login_kb_box.pack_start(row_box, False, False, 0)
+
+        # Action row
+        action_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1)
+        shift_btn = Gtk.Button(label="\u21e7")
+        shift_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        shift_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        shift_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        shift_btn.set_size_request(80, 55)
+        shift_btn.connect("clicked", self._login_kb_shift_cb)
+        action_row.pack_start(shift_btn, False, False, 0)
+
+        for sym in ["#", "$", "-", "+"]:
+            sbtn = Gtk.Button(label=sym)
+            sbtn.modify_font(Pango.FontDescription("Sans bold 14"))
+            sbtn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sbtn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sbtn.set_size_request(50, 55)
+            sbtn.connect("clicked", self._login_kb_key, sym)
+            action_row.pack_start(sbtn, False, False, 0)
+
+        space_btn = Gtk.Button(label="Space")
+        space_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        space_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        space_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        space_btn.set_size_request(-1, 55)
+        space_btn.connect("clicked", self._login_kb_key, " ")
+        action_row.pack_start(space_btn, True, True, 0)
+
+        bksp_btn = Gtk.Button(label="\u232b")
+        bksp_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        bksp_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        bksp_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        bksp_btn.set_size_request(80, 55)
+        bksp_btn.connect("clicked", self._login_kb_bksp)
+        action_row.pack_start(bksp_btn, False, False, 0)
+
+        enter_btn = Gtk.Button(label="\u23ce")
+        enter_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        enter_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.2, 1))
+        enter_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        enter_btn.set_size_request(80, 55)
+        enter_btn.connect("clicked", self._login_kb_enter)
+        action_row.pack_start(enter_btn, False, False, 0)
+
+        self._login_kb_box.pack_start(action_row, False, False, 0)
+        self._login_main.pack_end(self._login_kb_box, False, False, 0)
+        self._login_kb_box.show_all()
+
+    def _login_kb_key(self, button, key):
+        entry = self._active_entry
+        char = key.upper() if self._login_kb_shift and key.isalpha() else key
+        entry.do_insert_at_cursor(entry, char)
+        if self._login_kb_shift:
+            self._login_kb_shift = False
+            for btn, k in self._login_kb_letter_btns:
+                btn.set_label(k.lower())
+
+    def _login_kb_shift_cb(self, button):
+        self._login_kb_shift = not self._login_kb_shift
+        for btn, k in self._login_kb_letter_btns:
+            btn.set_label(k.upper() if self._login_kb_shift else k.lower())
+        if self._login_kb_shift:
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
         else:
-            env = os.environ.copy()
-            env["WAYLAND_DISPLAY"] = "wayland-0"
-            env["XDG_RUNTIME_DIR"] = "/run/user/1000"
-            subprocess.Popen(["wvkbd-mobintl", "-L", "300"], env=env)
-            button.set_label("\u2328  Hide Keyboard")
-            self._kb_visible = True
+            button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+    def _login_kb_bksp(self, button):
+        entry = self._active_entry
+        pos = entry.get_position()
+        if pos > 0:
+            text = entry.get_text()
+            entry.set_text(text[:pos-1] + text[pos:])
+            entry.set_position(pos - 1)
+
+    def _login_kb_enter(self, button):
+        if self._active_entry == self.username_entry:
+            self.password_entry.grab_focus()
+            self._active_entry = self.password_entry
+        else:
+            self._hide_login_kb()
+            self.on_login(None)
 
     def on_login(self, widget):
         global USERNAME, PASSWORD, LOGGED_IN, LOGIN_TYPE
@@ -1447,8 +1821,7 @@ class LoginWindow(Gtk.Window):
             save_session()
             # Admin config already set by admin page
             # Kill keyboard if open
-            import subprocess
-            subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+            self._hide_login_kb()
             self.destroy()
             win = AlertsWindow()
             win.connect("destroy", lambda w: Gtk.main_quit() if LOGGED_IN else None)
@@ -1491,7 +1864,7 @@ class AlertsWindow(Gtk.Window):
         close_btn = Gtk.Button(label="\u2715")
         close_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.4, 0.4, 1))
         close_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-        close_btn.modify_font(Pango.FontDescription("Sans bold 16"))
+        close_btn.modify_font(Pango.FontDescription("Sans bold 18"))
         close_btn.set_relief(Gtk.ReliefStyle.NONE)
         close_btn.connect("clicked", lambda b: self._cancel_announce())
         close_row.pack_end(close_btn, False, False, 4)
@@ -1503,7 +1876,7 @@ class AlertsWindow(Gtk.Window):
         self.overlay_label.set_max_width_chars(80)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
+        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
         self.overlay_label.set_margin_start(30)
         self.overlay_label.set_margin_end(30)
         self.overlay_label.set_margin_top(10)
@@ -1639,7 +2012,7 @@ class AlertsWindow(Gtk.Window):
         self.announce_bar.get_style_context().add_class("announce-bar")
         self.announce_label = Gtk.Label(label="")
         self.announce_label.get_style_context().add_class("announce-text")
-        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 13"))
+        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 16"))
         self.announce_label.set_halign(Gtk.Align.START)
         self.announce_bar.pack_start(self.announce_label, True, True, 0)
         self.announce_bar.set_no_show_all(True)
@@ -1704,13 +2077,13 @@ class AlertsWindow(Gtk.Window):
         # AquaGPT Panda Mascot
         self._panda_event = Gtk.EventBox()
         self._panda_da = Gtk.DrawingArea()
-        self._panda_da.set_size_request(220, 150)
+        self._panda_da.set_size_request(250, 180)
 
         self._panda_da.connect("draw", self._draw_panda)
         self._panda_event.add(self._panda_da)
         self._panda_event.set_halign(Gtk.Align.END)
         self._panda_event.set_valign(Gtk.Align.END)
-        self._panda_event.set_size_request(220, 150)
+        self._panda_event.set_size_request(250, 180)
         self._panda_event.set_margin_end(10)
         self._panda_event.set_margin_bottom(30)
         self._panda_event.connect("button-press-event", self._open_chat)
@@ -1753,9 +2126,16 @@ class AlertsWindow(Gtk.Window):
         GLib.timeout_add_seconds(1, self._update_countdown)
         self._all_today_alerts = []
         self._all_offline_alerts = []
+        self._loading_phase = 0
+        self._loading_active = True
+        self._show_loading()
         GLib.timeout_add(3000, self.first_fetch)  # Wait 3s for network
         GLib.timeout_add_seconds(REFRESH_INTERVAL, self.refresh_alerts)
-        # Offline announced manually via button only
+        # Pre-cache welcome audio for AquaGPT
+        def _precache_welcome():
+            _tts_generate("Hi! I am AquaGPT, your water assistant. Ask me anything!",
+                         "en", "/tmp/aquabox_welcome.mp3", "/tmp/aquabox_welcome.wav")
+        threading.Thread(target=_precache_welcome, daemon=True).start()
 
 
     def _change_panda_msg(self):
@@ -1802,28 +2182,29 @@ class AlertsWindow(Gtk.Window):
         h = widget.get_allocated_height()
         a = self._panda_alpha
 
-        # Water drop logo with bounce
+        # Water drop logo with bounce (top area)
         bounce = _math.sin(self._panda_phase * 2) * 3
         logo_path = "/home/aquabox/Desktop/Aquabox/aquagpt-logo.png"
         if os.path.exists(logo_path) and not hasattr(self, "_aquagpt_pixbuf"):
-            self._aquagpt_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 40, 40, True)
+            self._aquagpt_pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 70, 70, True)
         if hasattr(self, "_aquagpt_pixbuf"):
-            lx = w - 50
-            ly = h - 90 + bounce
+            lw_logo = self._aquagpt_pixbuf.get_width()
+            lx = w - lw_logo - 10
+            ly = 5 + bounce
             cr.save()
             Gdk.cairo_set_source_pixbuf(cr, self._aquagpt_pixbuf, lx, ly)
             cr.paint_with_alpha(a)
             cr.restore()
 
-        # Message text with typing - no box, just floating text
+        # Message text with typing (middle area, below logo)
         msg = self._panda_current_msg[:self._panda_msg_char]
         if msg:
             cr.save()
             cr.select_font_face("Noto Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-            cr.set_font_size(11)
+            cr.set_font_size(13)
             ext = cr.text_extents(msg)
-            tx = w - ext.width - 15
-            ty = h - 45
+            tx = w - ext.width - 10
+            ty = 100
 
             # Text shadow
             cr.set_source_rgba(0, 0, 0, a * 0.15)
@@ -1834,13 +2215,16 @@ class AlertsWindow(Gtk.Window):
             cr.set_source_rgba(0.08, 0.3, 0.65, a * 0.8)
             cr.move_to(tx, ty)
             cr.show_text(msg)
-
-            # AquaGPT label
-            cr.set_source_rgba(0.1, 0.4, 0.8, a * 0.5)
-            cr.set_font_size(8)
-            cr.move_to(w - 55, h - 30)
-            cr.show_text("AquaGPT")
             cr.restore()
+
+        # AquaGPT label (bottom)
+        cr.save()
+        cr.select_font_face("Noto Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+        cr.set_source_rgba(0.1, 0.4, 0.8, a * 0.5)
+        cr.set_font_size(11)
+        cr.move_to(w - 75, h - 10)
+        cr.show_text("AquaGPT")
+        cr.restore()
 
 
     def _open_chat(self, widget, event):
@@ -1858,32 +2242,36 @@ class AlertsWindow(Gtk.Window):
         # Header
         header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         header.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.55, 1))
-        header.set_size_request(-1, 45)
+        header.set_size_request(-1, 60)
 
         # Logo in header
         logo_path = "/home/aquabox/Desktop/Aquabox/fluxgen-icon.jpg"
         if os.path.exists(logo_path):
-            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 30, 30, True)
+            pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 40, 40, True)
             logo_img = Gtk.Image.new_from_pixbuf(pb)
             logo_img.set_margin_start(10)
             header.pack_start(logo_img, False, False, 0)
 
         title = Gtk.Label(label="AquaGPT")
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title.modify_font(Pango.FontDescription("Sans bold 22"))
         header.pack_start(title, False, False, 0)
 
         subtitle = Gtk.Label(label="Your Water Assistant")
         subtitle.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.85, 1, 0.8))
-        subtitle.modify_font(Pango.FontDescription("Sans 10"))
+        subtitle.modify_font(Pango.FontDescription("Sans 16"))
         header.pack_start(subtitle, False, False, 0)
 
         close_btn = Gtk.Button(label="✕")
         close_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 0.5, 0.5, 1))
         close_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
-        close_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        close_btn.modify_font(Pango.FontDescription("Sans bold 18"))
         close_btn.set_relief(Gtk.ReliefStyle.NONE)
-        close_btn.connect("clicked", lambda b: self._chat_window.hide())
+        def _close_chat(b):
+            self._hide_chat_kb()
+            subprocess.run(["killall", "aplay"], capture_output=True)
+            self._chat_window.hide()
+        close_btn.connect("clicked", _close_chat)
         header.pack_end(close_btn, False, False, 5)
 
         main_box.pack_start(header, False, False, 0)
@@ -1900,8 +2288,9 @@ class AlertsWindow(Gtk.Window):
         scroll.add(self._chat_box)
         main_box.pack_start(scroll, True, True, 0)
 
-        # Welcome message
-        self._add_bot_message("Hi! I am AquaGPT, your water assistant. Ask me anything!")
+        # Welcome message - start typing immediately, speak in background
+        welcome_text = "Hi! I am AquaGPT, your water assistant. Ask me anything!"
+        self._add_bot_message(welcome_text, speak=True)
 
         # Input area
         input_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -1913,8 +2302,9 @@ class AlertsWindow(Gtk.Window):
 
         self._chat_entry = Gtk.Entry()
         self._chat_entry.set_placeholder_text("Type your question...")
-        self._chat_entry.modify_font(Pango.FontDescription("Sans 13"))
+        self._chat_entry.modify_font(Pango.FontDescription("Sans 18"))
         self._chat_entry.connect("activate", self._send_chat)
+        self._chat_entry.connect("focus-in-event", lambda w, e: self._show_chat_kb())
         input_box.pack_start(self._chat_entry, True, True, 0)
 
         # Mic button with image
@@ -1929,12 +2319,13 @@ class AlertsWindow(Gtk.Window):
         send_btn = Gtk.Button(label="Send")
         send_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.4, 0.75, 1))
         send_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        send_btn.modify_font(Pango.FontDescription("Sans bold 12"))
+        send_btn.modify_font(Pango.FontDescription("Sans bold 18"))
         send_btn.connect("clicked", self._send_chat)
         input_box.pack_start(send_btn, False, False, 0)
 
         main_box.pack_start(input_box, False, False, 0)
 
+        self._chat_kb_visible = False
         self._chat_window.add(main_box)
         self._chat_window.show_all()
 
@@ -1961,7 +2352,7 @@ class AlertsWindow(Gtk.Window):
         label.set_line_wrap(True)
         label.set_max_width_chars(50)
         label.set_halign(Gtk.Align.START)
-        label.modify_font(Pango.FontDescription("Noto Sans 11"))
+        label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -1987,8 +2378,13 @@ class AlertsWindow(Gtk.Window):
         if speak and text:
             def do_speak():
                 try:
-                    if _tts_generate(text, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
-                        subprocess.run(["aplay", "-D", "plughw:0,0", "-q", "/tmp/aquabox_chat.wav"], capture_output=True, timeout=30)
+                    # Use pre-cached welcome audio if available
+                    wav = "/tmp/aquabox_welcome.wav" if os.path.exists("/tmp/aquabox_welcome.wav") and "AquaGPT" in text else None
+                    if not wav:
+                        if _tts_generate(text, "en", "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
+                            wav = "/tmp/aquabox_chat.wav"
+                    if wav:
+                        subprocess.run(["aplay", "-D", "default", "-q", wav], capture_output=True, timeout=30)
                 except Exception as e:
                     print("[AquaBox Chat] Speak error: " + str(e))
             threading.Thread(target=do_speak, daemon=True).start()
@@ -2019,7 +2415,7 @@ class AlertsWindow(Gtk.Window):
         label.set_line_wrap(True)
         label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.END)
-        label.modify_font(Pango.FontDescription("Noto Sans 11"))
+        label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -2046,20 +2442,101 @@ class AlertsWindow(Gtk.Window):
         self._add_user_message(text)
         self._chat_entry.set_text("")
 
+        # Show thinking animation
+        thinking_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        thinking_box.set_margin_top(6)
+        thinking_box.set_margin_start(8)
+        thinking_box.set_margin_bottom(6)
+        icon_path = "/home/aquabox/Desktop/Aquabox/fluxgen-icon.jpg"
+        if os.path.exists(icon_path):
+            tpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(icon_path, 32, 32, True)
+            tavatar = Gtk.Image.new_from_pixbuf(tpb)
+        else:
+            tavatar = Gtk.Label(label="B")
+        thinking_box.pack_start(tavatar, False, False, 0)
+
+        # Animated canvas for thinking
+        thinking_bubble = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        thinking_bubble.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.91, 0.93, 0.97, 1))
+        thinking_da = Gtk.DrawingArea()
+        thinking_da.set_size_request(160, 44)
+        self._thinking_active = True
+        self._thinking_phase = 0.0
+
+        def draw_thinking(widget, cr):
+            w = widget.get_allocated_width()
+            h = widget.get_allocated_height()
+            t = self._thinking_phase
+
+            # Three dots with slow cascading wave bounce
+            for i in range(3):
+                delay = i * 0.6
+                wave = _math.sin(t * 1.8 - delay)
+                y_off = -max(0, wave) * 8
+
+                x = 25 + i * 22
+                y = h / 2 - 2 + y_off
+
+                # Shadow under dot
+                cr.set_source_rgba(0.15, 0.25, 0.45, 0.06)
+                cr.arc(x, h / 2 + 4, 6, 0, 2 * _math.pi)
+                cr.fill()
+
+                # Dot with color shift
+                progress = max(0, wave)
+                r = 0.2 + 0.1 * progress
+                g = 0.45 + 0.15 * progress
+                b = 0.8 + 0.1 * progress
+                alpha = 0.45 + 0.5 * progress
+                size = 5.5 + 1.5 * progress
+                cr.set_source_rgba(r, g, b, alpha)
+                cr.arc(x, y, size, 0, 2 * _math.pi)
+                cr.fill()
+
+                # Highlight
+                cr.set_source_rgba(0.6, 0.8, 1.0, alpha * 0.4)
+                cr.arc(x - 1.5, y - 1.5, size * 0.35, 0, 2 * _math.pi)
+                cr.fill()
+
+            # "AquaGPT is thinking" text
+            cr.select_font_face("Sans", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_NORMAL)
+            cr.set_font_size(10)
+            txt_alpha = 0.35 + 0.15 * _math.sin(t * 1.2)
+            cr.set_source_rgba(0.3, 0.4, 0.6, txt_alpha)
+            cr.move_to(88, h / 2 + 4)
+            cr.show_text("thinking...")
+
+        thinking_da.connect("draw", draw_thinking)
+        thinking_bubble.pack_start(thinking_da, False, False, 6)
+        thinking_box.pack_start(thinking_bubble, False, False, 0)
+        self._chat_box.pack_start(thinking_box, False, False, 0)
+        thinking_box.show_all()
+
+        def animate_thinking():
+            if not self._thinking_active:
+                return False
+            self._thinking_phase += 0.04
+            thinking_da.queue_draw()
+            return True
+        GLib.timeout_add(35, animate_thinking)
+
         # Get answer in background
         def get_answer():
             answer = self._get_ai_answer(text)
-            # Pre-generate audio first
             wav_path = None
             try:
-                if _tts_generate(answer, TTS_LANG, "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
+                if _tts_generate(answer, "en", "/tmp/aquabox_chat.mp3", "/tmp/aquabox_chat.wav"):
                     wav_path = "/tmp/aquabox_chat.wav"
             except: pass
-            # Show typing + play audio simultaneously
-            GLib.idle_add(lambda: self._add_bot_message(answer))
+            self._thinking_active = False
+            def show_answer():
+                thinking_box.destroy()
+                self._add_bot_message(answer)
+            GLib.idle_add(show_answer)
             if wav_path:
                 time.sleep(0.3)
-                subprocess.run(["aplay", "-D", "plughw:0,0", "-q", wav_path], capture_output=True, timeout=30)
+                subprocess.run(["aplay", "-D", "default", "-q", wav_path], capture_output=True, timeout=30)
         threading.Thread(target=get_answer, daemon=True).start()
 
     def _draw_mic_icon(self, widget, cr):
@@ -2092,6 +2569,143 @@ class AlertsWindow(Gtk.Window):
         button.set_label("...")
         self._add_bot_message("Listening... (Voice input coming soon)")
         button.set_label("Mic")
+
+    def _toggle_chat_kb(self):
+        if self._chat_kb_visible:
+            self._hide_chat_kb()
+        else:
+            self._show_chat_kb()
+
+    def _show_chat_kb(self):
+        if self._chat_kb_visible:
+            return
+        self._chat_kb_visible = True
+        self._chat_kb_shift = False
+        self._chat_kb_letter_btns = []
+        self._build_chat_gtk_kb()
+        pass  # keyboard shown
+
+    def _hide_chat_kb(self):
+        if not self._chat_kb_visible:
+            return
+        if hasattr(self, '_chat_kb_box') and self._chat_kb_box:
+            self._chat_kb_box.destroy()
+            self._chat_kb_box = None
+        pass  # keyboard hidden
+        self._chat_kb_visible = False
+
+    def _build_chat_gtk_kb(self):
+        """Build GTK keyboard embedded at bottom of chat."""
+        self._chat_kb_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+        self._chat_kb_box.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+        # Close row
+        close_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        close_row.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+        kb_close = Gtk.Button(label="\u2715 Close")
+        kb_close.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+        kb_close.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        kb_close.modify_font(Pango.FontDescription("Sans bold 12"))
+        kb_close.connect("clicked", lambda b: self._hide_chat_kb())
+        close_row.pack_end(kb_close, False, False, 4)
+        self._chat_kb_box.pack_start(close_row, False, False, 0)
+
+        # Key rows
+        rows = [
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+            ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "?"],
+            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "@"],
+        ]
+        for row in rows:
+            row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
+            for key in row:
+                btn = Gtk.Button(label=key)
+                btn.modify_font(Pango.FontDescription("Sans bold 14"))
+                btn.override_background_color(
+                    Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                btn.set_size_request(-1, 55)
+                btn.connect("clicked", self._chat_gtk_key, key)
+                if key.isalpha():
+                    self._chat_kb_letter_btns.append((btn, key))
+                row_box.pack_start(btn, True, True, 0)
+            self._chat_kb_box.pack_start(row_box, False, False, 0)
+
+        # Action row
+        action_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1)
+
+        shift_btn = Gtk.Button(label="\u21e7")
+        shift_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        shift_btn.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        shift_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        shift_btn.set_size_request(80, 55)
+        shift_btn.connect("clicked", self._chat_gtk_shift)
+        action_row.pack_start(shift_btn, False, False, 0)
+
+        space_btn = Gtk.Button(label="Space")
+        space_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        space_btn.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        space_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        space_btn.set_size_request(-1, 55)
+        space_btn.connect("clicked", self._chat_gtk_key, " ")
+        action_row.pack_start(space_btn, True, True, 0)
+
+        bksp_btn = Gtk.Button(label="\u232b")
+        bksp_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        bksp_btn.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        bksp_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        bksp_btn.set_size_request(80, 55)
+        bksp_btn.connect("clicked", self._chat_gtk_bksp)
+        action_row.pack_start(bksp_btn, False, False, 0)
+
+        send_btn = Gtk.Button(label="Send")
+        send_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        send_btn.override_background_color(
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.2, 1))
+        send_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        send_btn.set_size_request(80, 55)
+        send_btn.connect("clicked", lambda b: (self._send_chat(b), self._hide_chat_kb()))
+        action_row.pack_start(send_btn, False, False, 0)
+
+        self._chat_kb_box.pack_start(action_row, False, False, 0)
+
+        # Get the chat window's main container and pack keyboard at bottom
+        chat_container = self._chat_window.get_child()
+        chat_container.pack_end(self._chat_kb_box, False, False, 0)
+        self._chat_kb_box.show_all()
+
+    def _chat_gtk_key(self, button, key):
+        char = key.upper() if self._chat_kb_shift and key.isalpha() else key
+        self._chat_entry.do_insert_at_cursor(self._chat_entry, char)
+        if self._chat_kb_shift:
+            self._chat_kb_shift = False
+            for btn, k in self._chat_kb_letter_btns:
+                btn.set_label(k.lower())
+
+    def _chat_gtk_shift(self, button):
+        self._chat_kb_shift = not self._chat_kb_shift
+        for btn, k in self._chat_kb_letter_btns:
+            btn.set_label(k.upper() if self._chat_kb_shift else k.lower())
+        if self._chat_kb_shift:
+            button.override_background_color(
+                Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
+        else:
+            button.override_background_color(
+                Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+    def _chat_gtk_bksp(self, button):
+        pos = self._chat_entry.get_position()
+        if pos > 0:
+            text = self._chat_entry.get_text()
+            self._chat_entry.set_text(text[:pos-1] + text[pos:])
+            self._chat_entry.set_position(pos - 1)
 
     def _get_ai_answer(self, question):
         """Get answer using DuckDuckGo Instant Answer API."""
@@ -2192,6 +2806,8 @@ class AlertsWindow(Gtk.Window):
     def update_clock(self):
         self.clock_label.set_text(datetime.now().strftime("%I:%M:%S %p"))
         self.date_label.set_text(datetime.now().strftime("%d %b %Y, %A"))
+        # Re-enforce fullscreen if something knocked us out
+        self.fullscreen()
         return True
 
     def _update_countdown(self):
@@ -2204,6 +2820,110 @@ class AlertsWindow(Gtk.Window):
             f"Next: {self._countdown}s | "
             f"{datetime.now().strftime('%d %b %Y')}"
         )
+        return True
+
+    # ==================== Loading Animation ====================
+
+    def _show_loading(self):
+        """Show AquaGPT logo with breathing animation while loading."""
+        for child in self.alerts_container.get_children():
+            self.alerts_container.remove(child)
+
+        loading_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        loading_box.set_valign(Gtk.Align.CENTER)
+        loading_box.set_halign(Gtk.Align.CENTER)
+
+        logo_path = "/home/aquabox/Desktop/Aquabox/aquagpt-logo.png"
+        if os.path.exists(logo_path):
+            self._loading_logo = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 60, 60, True)
+        else:
+            self._loading_logo = None
+
+        self._loading_da = Gtk.DrawingArea()
+        self._loading_da.set_size_request(200, 120)
+        self._loading_da.connect("draw", self._draw_loading)
+        loading_box.pack_start(self._loading_da, False, False, 10)
+
+        self._loading_label = Gtk.Label(label="Fetching alerts")
+        self._loading_label.modify_font(Pango.FontDescription("Sans bold 18"))
+        self._loading_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.12, 0.3, 0.6, 1))
+        loading_box.pack_start(self._loading_label, False, False, 0)
+
+        sub = Gtk.Label(label="Connecting to AquaGen...")
+        sub.modify_font(Pango.FontDescription("Sans 15"))
+        sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.5, 0.65, 0.7))
+        loading_box.pack_start(sub, False, False, 0)
+
+        self.alerts_container.pack_start(loading_box, True, True, 0)
+        self.alerts_container.show_all()
+        GLib.timeout_add(40, self._tick_loading)
+        GLib.timeout_add(500, self._tick_loading_text)
+
+    def _draw_loading(self, widget, cr):
+        """Draw AquaGPT logo with slow breathing and water reflection."""
+        w = widget.get_allocated_width()
+        h = widget.get_allocated_height()
+        cx, cy = w / 2, h / 2 - 10
+        t = self._loading_phase
+
+        breathe = _math.sin(t * 0.8) * 4
+
+        # Shadow
+        cr.set_source_rgba(0.1, 0.2, 0.4, 0.08)
+        cr.save()
+        cr.scale(1.0, 0.3)
+        cr.arc(cx, (cy + 45) / 0.3, 28, 0, 2 * _math.pi)
+        cr.fill()
+        cr.restore()
+
+        # Logo with breathing
+        if self._loading_logo:
+            cr.save()
+            lw = self._loading_logo.get_width()
+            lh = self._loading_logo.get_height()
+            scale = 1.0 + 0.03 * _math.sin(t * 0.8)
+            cr.translate(cx, cy + breathe)
+            cr.scale(scale, scale)
+            cr.translate(-lw / 2, -lh / 2)
+            Gdk.cairo_set_source_pixbuf(cr, self._loading_logo, 0, 0)
+            cr.paint()
+            cr.restore()
+
+            # Reflection
+            cr.save()
+            ref_y = cy + breathe + lh / 2 + 6
+            cr.translate(cx, ref_y)
+            cr.scale(scale, -scale * 0.35)
+            cr.translate(-lw / 2, -lh / 2)
+            Gdk.cairo_set_source_pixbuf(cr, self._loading_logo, 0, 0)
+            cr.paint_with_alpha(0.1 + 0.03 * _math.sin(t * 0.6))
+            cr.restore()
+
+        # Water line
+        wave_y = cy + 48
+        cr.set_line_width(1)
+        cr.move_to(cx - 50, wave_y)
+        for x in range(int(cx - 50), int(cx + 51)):
+            y = wave_y + 1.5 * _math.sin((x - cx) * 0.08 + t * 0.6)
+            cr.line_to(x, y)
+        cr.set_source_rgba(0.3, 0.55, 0.85, 0.2)
+        cr.stroke()
+
+    def _tick_loading(self):
+        if not self._loading_active:
+            return False
+        self._loading_phase += 0.03
+        if hasattr(self, '_loading_da'):
+            self._loading_da.queue_draw()
+        return True
+
+    def _tick_loading_text(self):
+        if not self._loading_active:
+            return False
+        dots = ["", ".", "..", "..."]
+        idx = int(self._loading_phase * 2) % len(dots)
+        if hasattr(self, '_loading_label'):
+            self._loading_label.set_text(f"Fetching alerts{dots[idx]}")
         return True
 
     # ==================== WiFi & Volume Controls ====================
@@ -2707,10 +3427,15 @@ class AlertsWindow(Gtk.Window):
                 kb_btn.set_label("\u2328  Open Keyboard")
                 self._wifi_kb_visible = False
             else:
-                env = os.environ.copy()
-                env["XDG_RUNTIME_DIR"] = "/run/user/1000"
-                subprocess.Popen(["wvkbd-mobintl", "-L", "300"], env=env)
-                kb_btn.set_label("\u2328  Hide Keyboard")
+                env = {
+                    "WAYLAND_DISPLAY": "wayland-0",
+                    "XDG_RUNTIME_DIR": "/run/user/1000",
+                    "HOME": os.path.expanduser("~"),
+                    "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+                }
+                subprocess.Popen(["wvkbd-mobintl", "-L", "300", "-l", "full,special"],
+                                 env=env, start_new_session=True)
+                kb_btn.set_label("\u2715  Close Keyboard")
                 self._wifi_kb_visible = True
         kb_btn.connect("clicked", toggle_keyboard)
         page2.pack_start(kb_btn, False, False, 0)
@@ -2975,7 +3700,9 @@ class AlertsWindow(Gtk.Window):
     def on_refresh_clicked(self, button):
         global _announce_stop
         _announce_stop = False
-        self.refresh_label.set_text("Refreshing...")
+        self._loading_active = True
+        self._loading_phase = 0
+        self._show_loading()
         self._countdown = REFRESH_INTERVAL
         button.set_sensitive(False)
         def do_refresh():
@@ -3032,6 +3759,8 @@ class AlertsWindow(Gtk.Window):
         GLib.idle_add(self._render_alerts, data)
 
     def _render_alerts(self, data):
+        # Stop loading animation
+        self._loading_active = False
         # Clear old alerts
         for child in self.alerts_container.get_children():
             self.alerts_container.remove(child)
@@ -3106,7 +3835,7 @@ class AlertsWindow(Gtk.Window):
             else:
                 no_unread = Gtk.Label(label="All caught up! No unread alerts.")
                 no_unread.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.26, 0.77, 0.37, 0.8))
-                no_unread.modify_font(Pango.FontDescription("Sans 11"))
+                no_unread.modify_font(Pango.FontDescription("Sans 14"))
                 no_unread.set_margin_top(6)
                 no_unread.set_margin_bottom(6)
                 self.alerts_container.pack_start(no_unread, False, False, 0)
@@ -3133,7 +3862,7 @@ class AlertsWindow(Gtk.Window):
             else:
                 no_read = Gtk.Label(label="No read alerts yet.")
                 no_read.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.58, 0.64, 0.72, 0.7))
-                no_read.modify_font(Pango.FontDescription("Sans 11"))
+                no_read.modify_font(Pango.FontDescription("Sans 14"))
                 no_read.set_margin_top(6)
                 no_read.set_margin_bottom(6)
                 self.alerts_container.pack_start(no_read, False, False, 0)
@@ -3154,7 +3883,7 @@ class AlertsWindow(Gtk.Window):
 
             announce_off_btn = Gtk.Button(label="♪  Announce Offline Units")
             announce_off_btn.get_style_context().add_class("btn-announce")
-            announce_off_btn.modify_font(Pango.FontDescription("Sans bold 16"))
+            announce_off_btn.modify_font(Pango.FontDescription("Sans bold 18"))
             announce_off_btn.connect("clicked", self._on_announce_offline)
             off_btn_row.pack_start(announce_off_btn, True, True, 0)
             self.alerts_container.pack_start(off_btn_row, False, False, 0)
@@ -3372,6 +4101,8 @@ class AlertsWindow(Gtk.Window):
 
     def _on_announce_offline(self, button):
         """Announce all offline units."""
+        if _auto_announcing:
+            return
         alerts = self._all_offline_alerts
         if not alerts:
             return
@@ -3457,6 +4188,8 @@ class AlertsWindow(Gtk.Window):
 
     def _on_announce_all(self, button):
         """Announce all alerts one by one."""
+        if _auto_announcing:
+            return
         alerts = self._all_today_alerts
         if not alerts:
             return
@@ -3464,7 +4197,8 @@ class AlertsWindow(Gtk.Window):
         button.set_label(f"Announcing {len(alerts)} alerts...")
 
         def do_all():
-            import subprocess
+            global _auto_announcing
+            _auto_announcing = True
             _start_announcing()
             for i, alert in enumerate(alerts):
                 if _announce_stop:
@@ -3499,6 +4233,7 @@ class AlertsWindow(Gtk.Window):
                 time.sleep(0.5)
 
             self._batch_announcing = False
+            _auto_announcing = False
             _stop_announcing()
             # Process queued refresh
             if _refresh_queued:
@@ -3511,6 +4246,8 @@ class AlertsWindow(Gtk.Window):
 
     def _after_announce_all(self, button):
         """Update UI after announcing all - re-enable button."""
+        global _auto_announcing
+        _auto_announcing = False
         button.set_sensitive(True)
         button.set_label("\u266A  Announce All Alerts")
         button.get_style_context().remove_class("btn-done")
@@ -3536,6 +4273,8 @@ class AlertsWindow(Gtk.Window):
 
     def _on_announce(self, button, alert):
         """Announce alert via TTS with typing animation."""
+        if _auto_announcing:
+            return
         button.set_sensitive(False)
         button.set_label("Speaking...")
 
@@ -3547,6 +4286,8 @@ class AlertsWindow(Gtk.Window):
         text = title + ". " + t_body_s + ". " + t_status_s
 
         def do_announce():
+            global _auto_announcing
+            _auto_announcing = True
             _start_announcing()
             try:
                 import subprocess
@@ -3677,6 +4418,8 @@ class AlertsWindow(Gtk.Window):
 
     def _after_announce(self, button):
         """Update UI after announcement - re-enable button for reuse."""
+        global _auto_announcing
+        _auto_announcing = False
         button.set_sensitive(True)
         button.set_label("\u266A  Announce")
         button.get_style_context().remove_class("btn-done")
