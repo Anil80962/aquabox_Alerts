@@ -1475,7 +1475,7 @@ class LoginWindow(Gtk.Window):
 
             if save_admin_config(new_user, new_pass, new_lt, TTS_LANG):
                 save_session()
-                status.set_text("Saved! API credentials updated.")
+                status.set_text("Saved! Credentials updated.")
                 status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
             else:
                 status.set_text("Save failed!")
@@ -2460,7 +2460,7 @@ class AlertsWindow(Gtk.Window):
         thinking_bubble.override_background_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(0.91, 0.93, 0.97, 1))
         thinking_da = Gtk.DrawingArea()
-        thinking_da.set_size_request(160, 44)
+        thinking_da.set_size_request(220, 50)
         self._thinking_active = True
         self._thinking_phase = 0.0
 
@@ -2468,44 +2468,57 @@ class AlertsWindow(Gtk.Window):
             w = widget.get_allocated_width()
             h = widget.get_allocated_height()
             t = self._thinking_phase
+            cy = h / 2
 
-            # Three dots with slow cascading wave bounce
             for i in range(3):
-                delay = i * 0.6
-                wave = _math.sin(t * 1.8 - delay)
-                y_off = -max(0, wave) * 8
-
-                x = 25 + i * 22
-                y = h / 2 - 2 + y_off
-
-                # Shadow under dot
-                cr.set_source_rgba(0.15, 0.25, 0.45, 0.06)
-                cr.arc(x, h / 2 + 4, 6, 0, 2 * _math.pi)
-                cr.fill()
-
-                # Dot with color shift
+                delay = i * 0.55
+                wave = _math.sin(t * 1.6 - delay)
+                bounce = -max(0, wave) * 10
                 progress = max(0, wave)
-                r = 0.2 + 0.1 * progress
-                g = 0.45 + 0.15 * progress
-                b = 0.8 + 0.1 * progress
-                alpha = 0.45 + 0.5 * progress
-                size = 5.5 + 1.5 * progress
+
+                x = 28 + i * 26
+                y = cy + bounce
+
+                # Pulse ring (expanding when dot is up)
+                if progress > 0.3:
+                    ring_r = 8 + progress * 6
+                    ring_a = (progress - 0.3) * 0.15
+                    cr.set_source_rgba(0.2, 0.5, 0.9, ring_a)
+                    cr.set_line_width(1.2)
+                    cr.arc(x, y, ring_r, 0, 2 * _math.pi)
+                    cr.stroke()
+
+                # Shadow
+                shadow_scale = 1.0 - progress * 0.3
+                cr.set_source_rgba(0.1, 0.2, 0.4, 0.08 * shadow_scale)
+                cr.save()
+                cr.scale(1.0, 0.4)
+                cr.arc(x, (cy + 8) / 0.4, 7, 0, 2 * _math.pi)
+                cr.fill()
+                cr.restore()
+
+                # Dot with gradient feel
+                size = 6.5 + 2 * progress
+                r = 0.15 + 0.15 * progress
+                g = 0.4 + 0.2 * progress
+                b = 0.75 + 0.15 * progress
+                alpha = 0.5 + 0.5 * progress
                 cr.set_source_rgba(r, g, b, alpha)
                 cr.arc(x, y, size, 0, 2 * _math.pi)
                 cr.fill()
 
-                # Highlight
-                cr.set_source_rgba(0.6, 0.8, 1.0, alpha * 0.4)
-                cr.arc(x - 1.5, y - 1.5, size * 0.35, 0, 2 * _math.pi)
+                # Glass highlight
+                cr.set_source_rgba(0.7, 0.88, 1.0, alpha * 0.5)
+                cr.arc(x - size * 0.2, y - size * 0.25, size * 0.4, 0, 2 * _math.pi)
                 cr.fill()
 
-            # "AquaGPT is thinking" text
+            # "AquaGPT is thinking" text with fade
             cr.select_font_face("Sans", cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_NORMAL)
-            cr.set_font_size(10)
-            txt_alpha = 0.35 + 0.15 * _math.sin(t * 1.2)
-            cr.set_source_rgba(0.3, 0.4, 0.6, txt_alpha)
-            cr.move_to(88, h / 2 + 4)
-            cr.show_text("thinking...")
+            cr.set_font_size(12)
+            txt_alpha = 0.35 + 0.2 * _math.sin(t * 1.0)
+            cr.set_source_rgba(0.25, 0.35, 0.55, txt_alpha)
+            cr.move_to(105, cy + 5)
+            cr.show_text("AquaGPT is thinking...")
 
         thinking_da.connect("draw", draw_thinking)
         thinking_bubble.pack_start(thinking_da, False, False, 6)
@@ -2816,7 +2829,7 @@ class AlertsWindow(Gtk.Window):
             self._countdown -= 1
         ts = self._last_refresh_time or "--:--:--"
         self.refresh_label.set_text(
-            f"API Refreshed: {ts} | "
+            f"Refreshed: {ts} | "
             f"Next: {self._countdown}s | "
             f"{datetime.now().strftime('%d %b %Y')}"
         )
@@ -3417,28 +3430,125 @@ class AlertsWindow(Gtk.Window):
         p2_status.set_halign(Gtk.Align.START)
         p2_status.set_line_wrap(True)
 
-        # Keyboard button
+        # GTK Keyboard for WiFi password
         self._wifi_kb_visible = False
-        kb_btn = Gtk.Button(label="\u2328  Open Keyboard")
-        kb_btn.get_style_context().add_class("wifi-scan-btn")
-        def toggle_keyboard(b):
-            if self._wifi_kb_visible:
-                subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
-                kb_btn.set_label("\u2328  Open Keyboard")
-                self._wifi_kb_visible = False
+        self._wifi_kb_box = None
+        self._wifi_kb_shift = [False]
+        self._wifi_kb_letter_btns = []
+
+        def wifi_kb_key(button, key):
+            entry = self._wifi_pass_entry
+            char = key.upper() if self._wifi_kb_shift[0] and key.isalpha() else key
+            entry.do_insert_at_cursor(entry, char)
+            if self._wifi_kb_shift[0]:
+                self._wifi_kb_shift[0] = False
+                for b, k in self._wifi_kb_letter_btns:
+                    b.set_label(k.lower())
+
+        def wifi_kb_shift_cb(button):
+            self._wifi_kb_shift[0] = not self._wifi_kb_shift[0]
+            for b, k in self._wifi_kb_letter_btns:
+                b.set_label(k.upper() if self._wifi_kb_shift[0] else k.lower())
+            if self._wifi_kb_shift[0]:
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.2, 0.5, 0.9, 1))
             else:
-                env = {
-                    "WAYLAND_DISPLAY": "wayland-0",
-                    "XDG_RUNTIME_DIR": "/run/user/1000",
-                    "HOME": os.path.expanduser("~"),
-                    "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
-                }
-                subprocess.Popen(["wvkbd-mobintl", "-L", "300", "-l", "full,special"],
-                                 env=env, start_new_session=True)
-                kb_btn.set_label("\u2715  Close Keyboard")
-                self._wifi_kb_visible = True
-        kb_btn.connect("clicked", toggle_keyboard)
-        page2.pack_start(kb_btn, False, False, 0)
+                button.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+
+        def wifi_kb_bksp(button):
+            entry = self._wifi_pass_entry
+            pos = entry.get_position()
+            if pos > 0:
+                text = entry.get_text()
+                entry.set_text(text[:pos-1] + text[pos:])
+                entry.set_position(pos - 1)
+
+        def show_wifi_kb():
+            if self._wifi_kb_visible:
+                return
+            self._wifi_kb_visible = True
+            self._wifi_kb_letter_btns.clear()
+            # Move wifi panel to top
+            self._wifi_overlay.set_valign(Gtk.Align.START)
+            self._wifi_overlay.set_margin_top(5)
+            self._wifi_overlay.set_margin_bottom(0)
+            self._wifi_overlay.set_size_request(300, 200)
+
+            kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
+            kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            cr.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cb = Gtk.Button(label="\u2715 Close")
+            cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+            cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            cb.modify_font(Pango.FontDescription("Sans bold 12"))
+            cb.connect("clicked", lambda b: hide_wifi_kb())
+            cr.pack_end(cb, False, False, 4)
+            kb.pack_start(cr, False, False, 0)
+            for row in [["1","2","3","4","5","6","7","8","9","0"],
+                        ["q","w","e","r","t","y","u","i","o","p"],
+                        ["a","s","d","f","g","h","j","k","l","@"],
+                        ["z","x","c","v","b","n","m","!",".","_"]]:
+                rb = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
+                for key in row:
+                    b = Gtk.Button(label=key)
+                    b.modify_font(Pango.FontDescription("Sans bold 14"))
+                    b.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                    b.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                    b.set_size_request(-1, 55)
+                    b.connect("clicked", wifi_kb_key, key)
+                    if key.isalpha():
+                        self._wifi_kb_letter_btns.append((b, key))
+                    rb.pack_start(b, True, True, 0)
+                kb.pack_start(rb, False, False, 0)
+            ar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1)
+            sb = Gtk.Button(label="\u21e7")
+            sb.modify_font(Pango.FontDescription("Sans bold 14"))
+            sb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sb.set_size_request(80, 55)
+            sb.connect("clicked", wifi_kb_shift_cb)
+            ar.pack_start(sb, False, False, 0)
+            for sym in ["#","$","-","+"]:
+                xb = Gtk.Button(label=sym)
+                xb.modify_font(Pango.FontDescription("Sans bold 14"))
+                xb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+                xb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+                xb.set_size_request(50, 55)
+                xb.connect("clicked", wifi_kb_key, sym)
+                ar.pack_start(xb, False, False, 0)
+            sp = Gtk.Button(label="Space")
+            sp.modify_font(Pango.FontDescription("Sans bold 14"))
+            sp.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            sp.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            sp.set_size_request(-1, 55)
+            sp.connect("clicked", wifi_kb_key, " ")
+            ar.pack_start(sp, True, True, 0)
+            bk = Gtk.Button(label="\u232b")
+            bk.modify_font(Pango.FontDescription("Sans bold 14"))
+            bk.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+            bk.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            bk.set_size_request(80, 55)
+            bk.connect("clicked", wifi_kb_bksp)
+            ar.pack_start(bk, False, False, 0)
+            kb.pack_start(ar, False, False, 0)
+            self.main_box.pack_end(kb, False, False, 0)
+            kb.show_all()
+            self._wifi_kb_box = kb
+
+        def hide_wifi_kb():
+            if not self._wifi_kb_visible:
+                return
+            if self._wifi_kb_box:
+                self._wifi_kb_box.destroy()
+                self._wifi_kb_box = None
+            self._wifi_overlay.set_valign(Gtk.Align.END)
+            self._wifi_overlay.set_margin_top(0)
+            self._wifi_overlay.set_margin_bottom(40)
+            self._wifi_overlay.set_size_request(300, 350)
+            self._wifi_kb_visible = False
+
+        self._hide_wifi_kb_func = hide_wifi_kb
+        self._wifi_pass_entry.connect("focus-in-event", lambda w, e: show_wifi_kb())
 
         # Save button
         save_btn = Gtk.Button(label="\u2714  Save & Connect")
@@ -3556,9 +3666,9 @@ class AlertsWindow(Gtk.Window):
 
     def _close_wifi_popup(self):
         self._wifi_overlay.set_visible(False)
-        # Kill on-screen keyboard if open
-        subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
-        self._wifi_kb_visible = False
+        # Close GTK keyboard if open
+        if hasattr(self, '_hide_wifi_kb_func') and self._hide_wifi_kb_func:
+            self._hide_wifi_kb_func()
         # Restore panda
         if hasattr(self, '_panda_event'):
             self._panda_event.set_visible(True)
