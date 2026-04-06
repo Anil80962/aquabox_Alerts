@@ -3537,20 +3537,6 @@ class AlertsWindow(Gtk.Window):
 
             kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
             kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
-            cr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-            cr.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
-            cb = Gtk.Button(label="\u2715 Close")
-            cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
-            cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-            cb.modify_font(Pango.FontDescription("Sans bold 12"))
-            cb.set_can_focus(False)
-            def _close_wifi_kb(b):
-                self._wifi_kb_closing = True
-                hide_wifi_kb()
-                GLib.timeout_add(500, lambda: setattr(self, '_wifi_kb_closing', False) or False)
-            cb.connect("clicked", _close_wifi_kb)
-            cr.pack_end(cb, False, False, 4)
-            kb.pack_start(cr, False, False, 0)
             for row in [["1","2","3","4","5","6","7","8","9","0"],
                         ["q","w","e","r","t","y","u","i","o","p"],
                         ["a","s","d","f","g","h","j","k","l","@"],
@@ -3618,9 +3604,24 @@ class AlertsWindow(Gtk.Window):
             self._wifi_overlay.set_margin_bottom(40)
             self._wifi_overlay.set_size_request(300, 350)
             self._wifi_kb_visible = False
+            try:
+                wifi_kb_btn.set_label("\u2328  Keyboard")
+            except: pass
 
         self._hide_wifi_kb_func = hide_wifi_kb
-        self._wifi_pass_entry.connect("focus-in-event", lambda w, e: show_wifi_kb())
+
+        # Keyboard toggle button
+        wifi_kb_btn = Gtk.Button(label="\u2328  Keyboard")
+        wifi_kb_btn.get_style_context().add_class("wifi-scan-btn")
+        def toggle_wifi_kb(b):
+            if self._wifi_kb_visible:
+                hide_wifi_kb()
+                wifi_kb_btn.set_label("\u2328  Keyboard")
+            else:
+                show_wifi_kb()
+                wifi_kb_btn.set_label("\u2715  Close Keyboard")
+        wifi_kb_btn.connect("clicked", toggle_wifi_kb)
+        page2.pack_start(wifi_kb_btn, False, False, 0)
 
         # Save button
         save_btn = Gtk.Button(label="\u2714  Save & Connect")
