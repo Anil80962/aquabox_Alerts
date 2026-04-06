@@ -43,11 +43,17 @@ TRANSLATIONS = {
         "stock_lower": "Stock Level Lower limit reached",
         "daily_limit": "Daily Limit Reached",
         "daily_limit_90": "90 percent of the Daily Limit Reached",
+        "monthly_limit": "Monthly Limit Reached",
+        "monthly_limit_90": "90 percent of Monthly Limit Reached",
         "abnormal": "Abnormal water usage detected",
         "offline": "Device is offline",
         "online": "Device is back online",
         "at": "at",
         "current_stock": "Current Stock",
+        "stable_flow": "Stable flow pattern detected",
+        "avg_consumption": "Average consumption",
+        "no_level_variation": "No level variation detected for",
+        "days": "days",
         "upper_limit": "Upper Limit",
         "lower_limit": "Lower Limit",
     },
@@ -61,6 +67,8 @@ TRANSLATIONS = {
         "stock_lower": "నీటి మట్టం కింది పరిమితి చేరుకుంది",
         "daily_limit": "రోజువారీ పరిమితి చేరుకుంది",
         "daily_limit_90": "రోజువారీ పరిమితిలో 90 శాతం చేరుకుంది",
+        "monthly_limit": "నెలవారీ పరిమితి చేరుకుంది",
+        "monthly_limit_90": "నెలవారీ పరిమితిలో 90 శాతం చేరుకుంది",
         "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
         "offline": "పరికరం ఆఫ్‌లైన్‌లో ఉంది",
         "online": "పరికరం తిరిగి ఆన్‌లైన్‌లో ఉంది",
@@ -68,6 +76,10 @@ TRANSLATIONS = {
         "current_stock": "ప్రస్తుత నిల్వ",
         "upper_limit": "పై పరిమితి",
         "lower_limit": "కింది పరిమితి",
+        "stable_flow": "స్థిరమైన ప్రవాహ నమూనా గుర్తించబడింది",
+        "avg_consumption": "సగటు వినియోగం",
+        "no_level_variation": "నీటి మట్టంలో మార్పు లేదు",
+        "days": "రోజులు",
     },
     "hi": {
         "alert": "चेतावनी",
@@ -79,6 +91,8 @@ TRANSLATIONS = {
         "stock_lower": "जल स्तर निचली सीमा पर पहुंच गया",
         "daily_limit": "दैनिक सीमा पूरी हो गई",
         "daily_limit_90": "दैनिक सीमा का 90 प्रतिशत पूरा हो गया",
+        "monthly_limit": "मासिक सीमा पूरी हो गई",
+        "monthly_limit_90": "मासिक सीमा का 90 प्रतिशत पूरा हो गया",
         "abnormal": "असामान्य पानी का उपयोग पाया गया",
         "offline": "डिवाइस ऑफलाइन है",
         "online": "डिवाइस वापस ऑनलाइन है",
@@ -86,6 +100,10 @@ TRANSLATIONS = {
         "current_stock": "वर्तमान स्टॉक",
         "upper_limit": "ऊपरी सीमा",
         "lower_limit": "निचली सीमा",
+        "stable_flow": "स्थिर प्रवाह पैटर्न पाया गया",
+        "avg_consumption": "औसत खपत",
+        "no_level_variation": "जल स्तर में कोई बदलाव नहीं",
+        "days": "दिन",
     },
     "kn": {
         "alert": "ಎಚ್ಚರಿಕೆ",
@@ -97,6 +115,8 @@ TRANSLATIONS = {
         "stock_lower": "ನೀರಿನ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit": "ದೈನಂದಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit_90": "ದೈನಂದಿನ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
+        "monthly_limit": "ಮಾಸಿಕ ಮಿತಿ ತಲುಪಿದೆ",
+        "monthly_limit_90": "ಮಾಸಿಕ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
         "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
         "offline": "ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
         "online": "ಸಾಧನ ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
@@ -104,6 +124,10 @@ TRANSLATIONS = {
         "current_stock": "ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು",
         "upper_limit": "ಮೇಲಿನ ಮಿತಿ",
         "lower_limit": "ಕೆಳಗಿನ ಮಿತಿ",
+        "stable_flow": "ಸ್ಥಿರ ಹರಿವಿನ ಮಾದರಿ ಪತ್ತೆಯಾಗಿದೆ",
+        "avg_consumption": "ಸರಾಸರಿ ಬಳಕೆ",
+        "no_level_variation": "ನೀರಿನ ಮಟ್ಟದಲ್ಲಿ ಬದಲಾವಣೆ ಇಲ್ಲ",
+        "days": "ದಿನಗಳು",
     },
     "ml": {
         "alert": "മുന്നറിയിപ്പ്",
@@ -115,6 +139,8 @@ TRANSLATIONS = {
         "stock_lower": "ജല നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
         "daily_limit": "ദൈനംദിന പരിധി എത്തി",
         "daily_limit_90": "ദൈനംദിന പരിധിയുടെ 90 ശതമാനം എത്തി",
+        "monthly_limit": "മാസ പരിധി എത്തി",
+        "monthly_limit_90": "മാസ പരിധിയുടെ 90 ശതമാനം എത്തി",
         "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
         "offline": "ഉപകരണം ഓഫ്‌ലൈനിലാണ്",
         "online": "ഉപകരണം വീണ്ടും ഓൺലൈനിലാണ്",
@@ -122,6 +148,10 @@ TRANSLATIONS = {
         "current_stock": "നിലവിലെ സ്റ്റോക്ക്",
         "upper_limit": "ഉയർന്ന പരിധി",
         "lower_limit": "താഴ്ന്ന പരിധി",
+        "stable_flow": "സ്ഥിരമായ പ്രവാഹ രീതി കണ്ടെത്തി",
+        "avg_consumption": "ശരാശരി ഉപഭോഗം",
+        "no_level_variation": "ജല നിരപ്പിൽ മാറ്റമില്ല",
+        "days": "ദിവസങ്ങൾ",
     },
     "ta": {
         "alert": "எச்சரிக்கை",
@@ -133,6 +163,8 @@ TRANSLATIONS = {
         "stock_lower": "நீர் மட்டம் கீழ் வரம்பை எட்டியது",
         "daily_limit": "தினசரி வரம்பு எட்டியது",
         "daily_limit_90": "தினசரி வரம்பின் 90 சதவீதம் எட்டியது",
+        "monthly_limit": "மாத வரம்பு எட்டியது",
+        "monthly_limit_90": "மாத வரம்பின் 90 சதவீதம் எட்டியது",
         "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
         "offline": "சாதனம் ஆஃப்லைனில் உள்ளது",
         "online": "சாதனம் மீண்டும் ஆன்லைனில் உள்ளது",
@@ -140,25 +172,54 @@ TRANSLATIONS = {
         "current_stock": "தற்போதைய இருப்பு",
         "upper_limit": "மேல் வரம்பு",
         "lower_limit": "கீழ் வரம்பு",
+        "stable_flow": "நிலையான நீரோட்ட முறை கண்டறியப்பட்டது",
+        "avg_consumption": "சராசரி நுகர்வு",
+        "no_level_variation": "நீர் மட்டத்தில் மாற்றம் இல்லை",
+        "days": "நாட்கள்",
     },
 }
 
 
+def _make_units_readable(text):
+    """Replace abbreviations with full words for TTS clarity."""
+    import re
+    text = re.sub(r'(\d+\.?\d*)\s*kL\b', r'\1 kiloliters', text)
+    text = re.sub(r'(\d+\.?\d*)\s*KL\b', r'\1 kiloliters', text)
+    text = re.sub(r'(\d+\.?\d*)\s*L\b', r'\1 liters', text)
+    return text
+
+
 def translate_alert_text(title, body, status, lang):
     """Translate alert text to local language, keep location name in English."""
+    import re
     body = str(body)
     status = str(status)
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
+    # Make units readable
+    body = _make_units_readable(body)
+    status = _make_units_readable(status)
+
     # Body translations
     translated_body = body
-    if "filled" in body.lower():
-        # Extract percentage e.g. "90.84% filled"
+    if "Stable flow pattern" in body:
+        m = re.search(r'(\d+\.?\d*)\s*liters', body)
+        amount = m.group(1) + " liters" if m else ""
+        translated_body = t.get("stable_flow", "Stable flow pattern detected")
+        if amount:
+            translated_body += ". " + t.get("avg_consumption", "Average consumption") + ": " + amount
+    elif "No level variation" in body or "no_level_variation" in body.lower():
+        translated_body = t.get("no_level_variation", "No level variation detected for")
+    elif "filled" in body.lower():
         parts = body.split("%")
         if len(parts) > 1:
             translated_body = parts[0] + "% " + t["filled"]
         else:
             translated_body = body.replace("filled", t["filled"])
+    elif "Monthly Limit Reached" in body:
+        translated_body = t.get("monthly_limit", "Monthly Limit Reached")
+    elif "90% of the Monthly Limit" in body:
+        translated_body = t.get("monthly_limit_90", "90% of Monthly Limit Reached")
     elif "Daily Limit Reached" in body:
         translated_body = t["daily_limit"]
     elif "90% of the Daily Limit" in body:
@@ -169,18 +230,42 @@ def translate_alert_text(title, body, status, lang):
         translated_body = t["offline"]
     elif body.lower() == "online":
         translated_body = t["online"]
+    else:
+        # Try to detect numeric body (e.g. "2.0" for no-variation days)
+        try:
+            float(body)
+            translated_body = t.get("no_level_variation", "No level variation detected for") + " " + str(round(float(body))) + " " + t.get("days", "days")
+        except ValueError:
+            pass
 
     # Status translations
     translated_status = status
-    if "Upper limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
+    if "Stable flow pattern" in status:
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t.get("stable_flow", "Stable flow pattern detected")
+        if time_part:
+            translated_status += ", " + t["at"] + " " + time_part
+    elif "No level variation" in status:
+        m = re.search(r'for\s+([\d.]+)', status)
+        if m:
+            days = str(round(float(m.group(1))))
+            translated_status = t.get("no_level_variation", "No level variation detected for") + " " + days + " " + t.get("days", "days")
+        else:
+            translated_status = t.get("no_level_variation", "No level variation detected")
+    elif "Upper limit reached" in status:
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["stock_upper"] + (", " + t["at"] + " " + time_part if time_part else "")
     elif "Lower limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_lower"] + (" " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["stock_lower"] + (", " + t["at"] + " " + time_part if time_part else "")
+    elif "monthly consumption limit reached" in status.lower():
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t.get("monthly_limit", "Monthly Limit Reached") + (", " + t["at"] + " " + time_part if time_part else "")
     elif "daily consumption limit reached" in status.lower():
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["daily_limit"] + (" " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
+        translated_status = t["daily_limit"] + (", " + t["at"] + " " + time_part if time_part else "")
+    elif "90%" in status and "monthly" in status.lower():
+        translated_status = t.get("monthly_limit_90", "90% of Monthly Limit Reached")
     elif "90%" in status and "limit" in status.lower():
         translated_status = t["daily_limit_90"]
     elif "Abnormal" in status:
