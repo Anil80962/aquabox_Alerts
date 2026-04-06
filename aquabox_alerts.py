@@ -1819,14 +1819,21 @@ class LoginWindow(Gtk.Window):
             global LOGGED_IN, USERNAME, PASSWORD, LOGIN_TYPE
             LOGGED_IN = True
             save_session()
-            # Admin config already set by admin page
-            # Kill keyboard if open
             self._hide_login_kb()
-            self.destroy()
-            win = AlertsWindow()
-            win.connect("destroy", lambda w: Gtk.main_quit() if LOGGED_IN else None)
-            win.show_all()
+            # Show transition message
+            self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.12, 0.38, 0.75, 1))
+            self.error_label.set_text("Welcome! Loading alerts...")
+            # Delay window creation slightly for smooth transition
+            def _create_alerts_window():
+                self.hide()
+                win = AlertsWindow()
+                win.connect("destroy", lambda w: Gtk.main_quit() if LOGGED_IN else None)
+                win.show_all()
+                self.destroy()
+                return False
+            GLib.timeout_add(300, _create_alerts_window)
         else:
+            self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 1))
             self.error_label.set_text("Login failed. Check username/password.")
 
 class AlertsWindow(Gtk.Window):
@@ -3355,7 +3362,7 @@ class AlertsWindow(Gtk.Window):
 
         # Header
         header_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        title = Gtk.Label(label="\U0001F4F6  WiFi Settings")
+        title = Gtk.Label(label="WiFi Settings")
         title.get_style_context().add_class("wifi-ssid")
         title.set_halign(Gtk.Align.START)
         header_row.pack_start(title, True, True, 0)
@@ -3475,7 +3482,7 @@ class AlertsWindow(Gtk.Window):
         self._wifi_pass_entry.get_style_context().add_class("wifi-pass-entry")
         pass_row.pack_start(self._wifi_pass_entry, True, True, 0)
 
-        show_pass_btn = Gtk.Button(label="\U0001F441")
+        show_pass_btn = Gtk.Button(label="\u25C9")
         show_pass_btn.set_relief(Gtk.ReliefStyle.NONE)
         show_pass_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0, 0, 0, 0))
         def toggle_pass_vis(b):
@@ -3537,6 +3544,23 @@ class AlertsWindow(Gtk.Window):
 
             kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
             kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+
+            # Close button row
+            cr = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+            cr.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
+            cb = Gtk.Button(label="\u2715 Close")
+            cb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.15, 0.15, 0.9))
+            cb.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+            cb.modify_font(Pango.FontDescription("Sans bold 12"))
+            cb.set_can_focus(False)
+            def _do_close_wifi_kb(b):
+                self._wifi_kb_closing = True
+                hide_wifi_kb()
+                GLib.timeout_add(800, lambda: setattr(self, '_wifi_kb_closing', False) or False)
+            cb.connect("clicked", _do_close_wifi_kb)
+            cr.pack_end(cb, False, False, 4)
+            kb.pack_start(cr, False, False, 0)
+
             for row in [["1","2","3","4","5","6","7","8","9","0"],
                         ["q","w","e","r","t","y","u","i","o","p"],
                         ["a","s","d","f","g","h","j","k","l","@"],
@@ -3604,24 +3628,11 @@ class AlertsWindow(Gtk.Window):
             self._wifi_overlay.set_margin_bottom(40)
             self._wifi_overlay.set_size_request(300, 350)
             self._wifi_kb_visible = False
-            try:
-                wifi_kb_btn.set_label("\u2328  Keyboard")
-            except: pass
 
         self._hide_wifi_kb_func = hide_wifi_kb
 
-        # Keyboard toggle button
-        wifi_kb_btn = Gtk.Button(label="\u2328  Keyboard")
-        wifi_kb_btn.get_style_context().add_class("wifi-scan-btn")
-        def toggle_wifi_kb(b):
-            if self._wifi_kb_visible:
-                hide_wifi_kb()
-                wifi_kb_btn.set_label("\u2328  Keyboard")
-            else:
-                show_wifi_kb()
-                wifi_kb_btn.set_label("\u2715  Close Keyboard")
-        wifi_kb_btn.connect("clicked", toggle_wifi_kb)
-        page2.pack_start(wifi_kb_btn, False, False, 0)
+        # Auto-show keyboard when password field tapped
+        self._wifi_pass_entry.connect("focus-in-event", lambda w, e: show_wifi_kb())
 
         # Save button
         save_btn = Gtk.Button(label="\u2714  Save & Connect")
@@ -3682,7 +3693,7 @@ class AlertsWindow(Gtk.Window):
                         Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.06))
 
                     row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-                    lock_icon = "\U0001F512 " if net["locked"] else ""
+                    lock_icon = "\u26BF " if net["locked"] else ""
                     is_current = net.get("in_use", False)
                     name_text = f"{lock_icon}{net['ssid']}"
                     if is_current:
@@ -3773,7 +3784,7 @@ class AlertsWindow(Gtk.Window):
             pass
 
     def _on_speaker_clicked(self, button):
-        """Show volume slider popup."""
+        """Show volume slider popup — dark rounded card centered on screen."""
         if self._volume_popup and self._volume_popup.get_visible():
             self._volume_popup.destroy()
             self._volume_popup = None
@@ -3783,28 +3794,59 @@ class AlertsWindow(Gtk.Window):
         popup.set_transient_for(self)
         popup.set_decorated(False)
         popup.override_background_color(
-            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.12, 0.23, 0.35, 0.95))
+            Gtk.StateFlags.NORMAL, Gdk.RGBA(0.06, 0.08, 0.14, 0.95))
+        popup.set_size_request(420, 180)
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        box.set_margin_start(12)
-        box.set_margin_end(12)
-        box.set_margin_top(10)
-        box.set_margin_bottom(10)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=12)
+        box.set_margin_start(35)
+        box.set_margin_end(35)
+        box.set_margin_top(25)
+        box.set_margin_bottom(25)
 
-        title = Gtk.Label(label="\U0001F50A  Volume")
-        title.get_style_context().add_class("wifi-ssid")
-        title.set_halign(Gtk.Align.START)
-        box.pack_start(title, False, False, 0)
+        # Speaker icon + "Volume" title centered
+        title_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        title_box.set_halign(Gtk.Align.CENTER)
+        speaker_da = Gtk.DrawingArea()
+        speaker_da.set_size_request(30, 30)
+        def draw_speaker(widget, cr):
+            w = widget.get_allocated_width()
+            h = widget.get_allocated_height()
+            cr.set_source_rgba(1, 1, 1, 0.9)
+            cr.rectangle(w * 0.15, h * 0.3, w * 0.2, h * 0.4)
+            cr.fill()
+            cr.move_to(w * 0.35, h * 0.3)
+            cr.line_to(w * 0.55, h * 0.1)
+            cr.line_to(w * 0.55, h * 0.9)
+            cr.line_to(w * 0.35, h * 0.7)
+            cr.close_path()
+            cr.fill()
+            cr.set_line_width(2)
+            cr.set_line_cap(cairo.LINE_CAP_ROUND)
+            for r in [6, 11]:
+                cr.arc(w * 0.55, h * 0.5, r, -_math.pi * 0.35, _math.pi * 0.35)
+                cr.stroke()
+        speaker_da.connect("draw", draw_speaker)
+        title_box.pack_start(speaker_da, False, False, 0)
+        title = Gtk.Label(label="Volume")
+        title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0.95))
+        title.modify_font(Pango.FontDescription("Sans bold 24"))
+        title_box.pack_start(title, False, False, 0)
+        box.pack_start(title_box, False, False, 0)
 
+        # Slider — wide blue
         current_vol = self._get_volume()
-
-        vol_label = Gtk.Label(label=f"{current_vol}%")
-        vol_label.get_style_context().add_class("volume-label")
-
         scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 0, 100, 5)
         scale.set_value(current_vol)
-        scale.set_size_request(180, -1)
+        scale.set_size_request(350, 40)
         scale.set_draw_value(False)
+        box.pack_start(scale, False, False, 0)
+
+        # Percentage label centered
+        vol_label = Gtk.Label(label=f"{current_vol}%")
+        vol_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.6, 0.75, 0.95, 0.85))
+        vol_label.modify_font(Pango.FontDescription("Sans 22"))
+        vol_label.set_halign(Gtk.Align.CENTER)
+        box.pack_start(vol_label, False, False, 0)
 
         def on_volume_changed(s):
             val = int(s.get_value())
@@ -3812,16 +3854,9 @@ class AlertsWindow(Gtk.Window):
             self._set_volume(val)
 
         scale.connect("value-changed", on_volume_changed)
-
-        box.pack_start(scale, False, False, 0)
-        box.pack_start(vol_label, False, False, 0)
-
         popup.add(box)
 
-        # Position above the speaker button
-        btn_alloc = button.get_allocation()
-        win_pos = self.get_position()
-        popup.move(win_pos[0] + btn_alloc.x, win_pos[1] + btn_alloc.y - 110)
+        popup.move(5, 500)
         popup.show_all()
         self._volume_popup = popup
 
@@ -3853,14 +3888,17 @@ class AlertsWindow(Gtk.Window):
         USERNAME = ""
         PASSWORD = ""
         LOGGED_IN = False
-        import subprocess
         subprocess.run(["rm", "-f", CREDS_FILE], capture_output=True)
-        subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
         subprocess.run(["killall", "aplay"], capture_output=True)
-        login = LoginWindow()
-        login.connect("destroy", lambda w: None if LOGGED_IN else Gtk.main_quit())
-        login.show_all()
-        self.hide()
+        self.refresh_label.set_text("Logging out...")
+        def _create_login():
+            self.hide()
+            login = LoginWindow()
+            login.connect("destroy", lambda w: None if LOGGED_IN else Gtk.main_quit())
+            login.show_all()
+            self.destroy()
+            return False
+        GLib.timeout_add(200, _create_login)
         self.destroy()
 
     def _on_lang_changed(self, combo):
@@ -4543,7 +4581,7 @@ class AlertsWindow(Gtk.Window):
             except Exception:
                 pass
             self._typing_timer = None
-        self._typing_text = "\U0001F50A ANNOUNCING: " + text
+        self._typing_text = "\u266A ANNOUNCING: " + text
         self._typing_index = 0
         # Calculate speed: text must finish in 'duration' seconds
         # If no duration given, use 60 WPM default
