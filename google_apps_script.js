@@ -12,6 +12,7 @@
 // 3. "StatusUpdates" sheet - Row 1 headers:
 //    A1: Timestamp | B1: EmpID | C1: EmpName | D1: Role
 //    E1: SiteName | F1: WorkType | G1: ScopeOfWork | H1: Status | I1: Date
+//    J1: WorkDone | K1: CompletionPct | L1: WorkRemarks | M1: NextVisitRequired | N1: NextVisitDate
 //
 // 4. Extensions → Apps Script → paste this → Deploy as Web App
 //    Execute as: Me | Who has access: Anyone
@@ -60,7 +61,12 @@ function doGet(e) {
               workType: String(data[i][5]),
               scopeOfWork: String(data[i][6]),
               status: String(data[i][7]),
-              date: rowDate
+              date: rowDate,
+              workDone: String(data[i][9] || ""),
+              completionPct: String(data[i][10] || "0"),
+              workRemarks: String(data[i][11] || ""),
+              nextVisitRequired: String(data[i][12] || "No"),
+              nextVisitDate: String(data[i][13] || "")
             });
           }
         }
@@ -91,7 +97,12 @@ function doGet(e) {
                 workType: String(data[i][5]),
                 scopeOfWork: String(data[i][6]),
                 status: String(data[i][7]),
-                date: rowDate
+                date: rowDate,
+                workDone: String(data[i][9] || ""),
+                completionPct: String(data[i][10] || "0"),
+                workRemarks: String(data[i][11] || ""),
+                nextVisitRequired: String(data[i][12] || "No"),
+                nextVisitDate: String(data[i][13] || "")
               });
             }
           }
@@ -128,7 +139,7 @@ function doPost(e) {
       var sheet = ss.getSheetByName("StatusUpdates");
       if (!sheet) {
         sheet = ss.insertSheet("StatusUpdates");
-        sheet.appendRow(["Timestamp", "EmpID", "EmpName", "Role", "SiteName", "WorkType", "ScopeOfWork", "Status", "Date"]);
+        sheet.appendRow(["Timestamp", "EmpID", "EmpName", "Role", "SiteName", "WorkType", "ScopeOfWork", "Status", "Date", "WorkDone", "CompletionPct", "WorkRemarks", "NextVisitRequired", "NextVisitDate"]);
       }
       sheet.appendRow([
         new Date(),
@@ -139,7 +150,12 @@ function doPost(e) {
         e.parameter.workType || "",
         e.parameter.scopeOfWork || "",
         e.parameter.status || "",
-        e.parameter.date || ""
+        e.parameter.date || "",
+        "",
+        "0",
+        "",
+        "No",
+        ""
       ]);
     }
 
@@ -154,6 +170,32 @@ function doPost(e) {
         e.parameter.empName || "",
         e.parameter.role || ""
       ]);
+    }
+
+    else if (action === "updateWorkDone") {
+      var sheet = ss.getSheetByName("StatusUpdates");
+      if (sheet) {
+        var data = sheet.getDataRange().getValues();
+        var targetEmpId = e.parameter.empId || "";
+        var targetDate = e.parameter.date || "";
+        var found = false;
+        for (var i = data.length - 1; i >= 1; i--) {
+          if (String(data[i][1]) === targetEmpId && String(data[i][8]) === targetDate) {
+            // Update columns J-N (indices 10-14 in 1-based, 9-13 in 0-based)
+            sheet.getRange(i + 1, 10).setValue(e.parameter.workDone || "");
+            sheet.getRange(i + 1, 11).setValue(e.parameter.completionPct || "0");
+            sheet.getRange(i + 1, 12).setValue(e.parameter.workRemarks || "");
+            sheet.getRange(i + 1, 13).setValue(e.parameter.nextVisitRequired || "No");
+            sheet.getRange(i + 1, 14).setValue(e.parameter.nextVisitDate || "");
+            found = true;
+            break;
+          }
+        }
+        // If no matching row found, add headers if needed and note it
+        if (!found) {
+          // Could not find matching status entry to update
+        }
+      }
     }
 
     else if (action === "deleteEmployee") {

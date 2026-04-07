@@ -465,7 +465,7 @@
                 </div>
                 <div class="overview-table" id="dlPreviewBox" style="margin-top:24px; display:none;">
                     <table>
-                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th><th>Work Done</th><th>Completion %</th><th>Remarks</th></tr></thead>
                         <tbody id="dlPreviewBody"></tbody>
                     </table>
                 </div>
@@ -492,7 +492,7 @@
                 </div>
                 <div class="overview-table" id="dlSitePreviewBox" style="margin-top:24px; display:none;">
                     <table>
-                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th><th>Work Done</th><th>Completion %</th><th>Remarks</th></tr></thead>
                         <tbody id="dlSitePreviewBody"></tbody>
                     </table>
                 </div>
@@ -522,7 +522,7 @@
                 </div>
                 <div class="overview-table" id="dlWorkPreviewBox" style="margin-top:24px; display:none;">
                     <table>
-                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Scope of Work</th><th>Status</th><th>Date</th><th>Work Done</th><th>Completion %</th><th>Remarks</th></tr></thead>
                         <tbody id="dlWorkPreviewBody"></tbody>
                     </table>
                 </div>
@@ -1559,15 +1559,17 @@
             const box = document.getElementById("dlPreviewBox");
             const body = document.getElementById("dlPreviewBody");
             if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="8" class="no-data">No records found.</td></tr>';
+                body.innerHTML = '<tr><td colspan="11" class="no-data">No records found.</td></tr>';
                 box.style.display = "block";
                 return;
             }
+            mergeWorkDoneData(data);
             body.innerHTML = data.map((r, i) => `
                 <tr>
                     <td>${i+1}</td><td>${r.empName}</td><td>${r.role}</td><td>${r.siteName}</td>
                     <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
                     <td>${r.scopeOfWork}</td><td>${r.status}</td><td>${r.date}</td>
+                    <td>${r.workDone || '-'}</td><td>${r.completionPct || '0'}%</td><td>${r.workRemarks || '-'}</td>
                 </tr>
             `).join("");
             box.style.display = "block";
@@ -1581,14 +1583,16 @@
             }
             if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
 
-            const headers = ["Employee ID","Employee Name","Role","Site Name","Type of Work","Scope of Work","Status","Efficiency (%)","Date"];
+            mergeWorkDoneData(data);
+            const headers = ["Employee ID","Employee Name","Role","Site Name","Type of Work","Scope of Work","Status","Efficiency (%)","Date","Work Done","Completion %","Remarks"];
             const csvRows = [headers.join(",")];
             data.forEach(r => {
                 const eff = getEmpEfficiency(r.status, r.workType);
                 csvRows.push([
                     r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"',
                     '"'+r.siteName.replace(/"/g,'""')+'"', r.workType,
-                    '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date
+                    '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date,
+                    '"'+((r.workDone||"").replace(/"/g,'""'))+'"', r.completionPct||"0", '"'+((r.workRemarks||"").replace(/"/g,'""'))+'"'
                 ].join(","));
             });
 
@@ -1661,11 +1665,12 @@
             const box = document.getElementById("dlSitePreviewBox");
             const body = document.getElementById("dlSitePreviewBody");
             if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="7" class="no-data">No records found for this site.</td></tr>';
+                body.innerHTML = '<tr><td colspan="10" class="no-data">No records found for this site.</td></tr>';
                 box.style.display = "block";
                 return;
             }
-            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td><span class="badge ' + (r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office') + '">' + r.workType + '</span></td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td></tr>').join("");
+            mergeWorkDoneData(data);
+            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td><span class="badge ' + (r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office') + '">' + r.workType + '</span></td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td><td>' + (r.workDone||'-') + '</td><td>' + (r.completionPct||'0') + '%</td><td>' + (r.workRemarks||'-') + '</td></tr>').join("");
             box.style.display = "block";
             showToast("Found " + data.length + " record(s).", "success");
         }
@@ -1675,12 +1680,13 @@
             if (!data || data.length === 0) data = await fetchSiteReportData();
             if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
 
+            mergeWorkDoneData(data);
             const siteName = document.getElementById("dlSiteName").value.trim();
-            const headers = ["Employee ID","Employee Name","Role","Type of Work","Scope of Work","Status","Efficiency (%)","Date"];
+            const headers = ["Employee ID","Employee Name","Role","Type of Work","Scope of Work","Status","Efficiency (%)","Date","Work Done","Completion %","Remarks"];
             const csvRows = [headers.join(",")];
             data.forEach(r => {
                 const eff = getEmpEfficiency(r.status, r.workType);
-                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', r.workType, '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date].join(","));
+                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', r.workType, '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date, '"'+((r.workDone||"").replace(/"/g,'""'))+'"', r.completionPct||"0", '"'+((r.workRemarks||"").replace(/"/g,'""'))+'"'].join(","));
             });
 
             const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
@@ -1721,11 +1727,12 @@
             const box = document.getElementById("dlWorkPreviewBox");
             const body = document.getElementById("dlWorkPreviewBody");
             if (data.length === 0) {
-                body.innerHTML = '<tr><td colspan="7" class="no-data">No records found for this work type.</td></tr>';
+                body.innerHTML = '<tr><td colspan="10" class="no-data">No records found for this work type.</td></tr>';
                 box.style.display = "block";
                 return;
             }
-            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td>' + r.siteName + '</td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td></tr>').join("");
+            mergeWorkDoneData(data);
+            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td>' + r.siteName + '</td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td><td>' + (r.workDone||'-') + '</td><td>' + (r.completionPct||'0') + '%</td><td>' + (r.workRemarks||'-') + '</td></tr>').join("");
             box.style.display = "block";
             showToast("Found " + data.length + " record(s).", "success");
         }
@@ -1735,12 +1742,13 @@
             if (!data || data.length === 0) data = await fetchWorkTypeReportData();
             if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
 
+            mergeWorkDoneData(data);
             const workType = document.getElementById("dlWorkType").value;
-            const headers = ["Employee ID","Employee Name","Role","Site Name","Scope of Work","Status","Efficiency (%)","Date"];
+            const headers = ["Employee ID","Employee Name","Role","Site Name","Scope of Work","Status","Efficiency (%)","Date","Work Done","Completion %","Remarks"];
             const csvRows = [headers.join(",")];
             data.forEach(r => {
                 const eff = getEmpEfficiency(r.status, r.workType);
-                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', '"'+r.siteName.replace(/"/g,'""')+'"', '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date].join(","));
+                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', '"'+r.siteName.replace(/"/g,'""')+'"', '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date, '"'+((r.workDone||"").replace(/"/g,'""'))+'"', r.completionPct||"0", '"'+((r.workRemarks||"").replace(/"/g,'""'))+'"'].join(","));
             });
 
             const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
