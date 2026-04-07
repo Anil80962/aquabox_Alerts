@@ -934,14 +934,16 @@
 
             try {
                 const weekData = {};
-                for (const date of dates) {
-                    const result = await sheetFetch("action=getStatus&date=" + encodeURIComponent(date));
-                    const data = result.data || [];
-                    data.forEach(r => {
-                        if (!weekData[r.empName]) weekData[r.empName] = {};
-                        weekData[r.empName][date] = r.siteName || "-";
-                    });
-                }
+                const from = dates[0];
+                const to = dates[dates.length - 1];
+                const result = await sheetFetch("action=getStatusRange&empId=ALL&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to));
+                const allData = result.data || [];
+                allData.forEach(r => {
+                    if (!weekData[r.empName]) weekData[r.empName] = {};
+                    if (r.date && dates.includes(r.date)) {
+                        weekData[r.empName][r.date] = r.siteName || "-";
+                    }
+                });
 
                 const empNames = employees.map(e => e.name);
                 if (empNames.length === 0) {
