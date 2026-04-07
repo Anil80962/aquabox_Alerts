@@ -1,0 +1,1 @@
+console=serial0,115200 console=tty3 root=PARTUUID=c6cbd837-02 rootfstype=ext4 fsck.repair=yes rootwait quiet video=HDMI-A-1:800x480@60D loglevel=0 vt.global_cursor_default=0 logo.nologo cfg80211.ieee80211_regdom=IN systemd.show_status=0 rd.udev.log_level=0 splash plymouth.ignore-serial-consoles
