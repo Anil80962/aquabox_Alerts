@@ -242,6 +242,7 @@
 
         <div class="tabs" id="tabsContainer">
             <button class="tab-btn active" onclick="switchTab('update')">Update Status</button>
+            <button class="tab-btn" onclick="switchTab('weekly')">Weekly Overview</button>
             <button class="tab-btn" onclick="switchTab('overview')">Team Overview</button>
             <button class="tab-btn" id="downloadTab" onclick="switchTab('download')" style="display:none;">Download Report</button>
             <button class="tab-btn" id="manageTab" onclick="switchTab('manage')" style="display:none;">Manage Employees</button>
@@ -298,6 +299,26 @@
                         </div>
                     </div>
                     <button class="btn" id="submitBtn" onclick="submitStatus()">Submit Status Update</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- WEEKLY OVERVIEW TAB -->
+        <div class="tab-content" id="tabWeekly" style="display:none;">
+            <div class="overview-section">
+                <div class="overview-header">
+                    <div class="section-title" style="margin:0;">Weekly Overview</div>
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <label style="color:#555;font-weight:600;font-size:13px;">Week of:</label>
+                        <input type="date" id="weekStartDate" onchange="loadWeeklyOverview()" style="padding:8px 12px; border:2px solid #2c5364; border-radius:8px; font-size:14px; font-weight:600; color:#2c5364; outline:none;">
+                    </div>
+                </div>
+                <div style="overflow-x:auto; margin-top:16px;">
+                    <table class="overview-table" id="weeklyTable">
+                        <thead id="weeklyHead"><tr><th>Employee</th></tr></thead>
+                        <tbody id="weeklyBody"><tr><td class="no-data">Select a date to load weekly overview.</td></tr></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -666,14 +687,24 @@
         // ===== TABS =====
         function switchTab(tab) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-            ["tabUpdate","tabOverview","tabDownload","tabManage","tabUsers"].forEach(id => document.getElementById(id).style.display = "none");
+            ["tabUpdate","tabWeekly","tabOverview","tabDownload","tabManage","tabUsers"].forEach(id => document.getElementById(id).style.display = "none");
 
             if (tab === "update") {
                 document.querySelectorAll(".tab-btn")[0].classList.add("active");
                 document.getElementById("tabUpdate").style.display = "block";
                 renderEmployees();
-            } else if (tab === "overview") {
+            } else if (tab === "weekly") {
                 document.querySelectorAll(".tab-btn")[1].classList.add("active");
+                document.getElementById("tabWeekly").style.display = "block";
+                if (!document.getElementById("weekStartDate").value) {
+                    const today = new Date();
+                    const mon = new Date(today);
+                    mon.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+                    document.getElementById("weekStartDate").value = mon.toISOString().split("T")[0];
+                    loadWeeklyOverview();
+                }
+            } else if (tab === "overview") {
+                document.querySelectorAll(".tab-btn")[2].classList.add("active");
                 document.getElementById("tabOverview").style.display = "block";
                 loadOverview();
             } else if (tab === "download") {
@@ -787,6 +818,65 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = "Submit Status Update";
+            }
+        }
+
+
+        // ===== WEEKLY OVERVIEW =====
+        async function loadWeeklyOverview() {
+            const startStr = document.getElementById("weekStartDate").value;
+            if (!startStr) return;
+
+            const start = new Date(startStr);
+            const day = start.getDay();
+            const mon = new Date(start);
+            mon.setDate(start.getDate() - ((day + 6) % 7));
+
+            const dates = [];
+            const dateLabels = [];
+            const dayNames = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(mon);
+                d.setDate(mon.getDate() + i);
+                dates.push(d.toISOString().split("T")[0]);
+                dateLabels.push(dayNames[i] + "<br>" + d.getDate() + "/" + (d.getMonth()+1));
+            }
+
+            const head = document.getElementById("weeklyHead");
+            head.innerHTML = "<tr><th style='min-width:140px;position:sticky;left:0;background:#2c5364;z-index:2;'>Employee</th>" + dateLabels.map(d => "<th style='min-width:100px;text-align:center;'>" + d + "</th>").join("") + "</tr>";
+
+            const body = document.getElementById("weeklyBody");
+            body.innerHTML = '<tr><td colspan="' + (dates.length+1) + '" class="no-data"><span class="spinner spinner-dark"></span> Loading...</td></tr>';
+
+            try {
+                const weekData = {};
+                for (const date of dates) {
+                    const result = await sheetFetch("action=getStatus&date=" + encodeURIComponent(date));
+                    const data = result.data || [];
+                    data.forEach(r => {
+                        if (!weekData[r.empName]) weekData[r.empName] = {};
+                        weekData[r.empName][date] = r.siteName || "-";
+                    });
+                }
+
+                const empNames = employees.map(e => e.name);
+                if (empNames.length === 0) {
+                    body.innerHTML = '<tr><td colspan="' + (dates.length+1) + '" class="no-data">No employees found.</td></tr>';
+                    return;
+                }
+
+                body.innerHTML = empNames.map(name => {
+                    const cells = dates.map(date => {
+                        const site = (weekData[name] && weekData[name][date]) || "";
+                        const bg = site ? "#e3f2fd" : "";
+                        const style = bg ? "background:" + bg + ";font-weight:500;" : "color:#ccc;";
+                        return '<td style="text-align:center;font-size:12px;padding:10px 6px;' + style + '">' + (site || "-") + '</td>';
+                    }).join("");
+                    return '<tr><td style="font-weight:600;position:sticky;left:0;background:#fff;z-index:1;white-space:nowrap;">' + name + '</td>' + cells + '</tr>';
+                }).join("");
+
+            } catch (err) {
+                body.innerHTML = '<tr><td colspan="' + (dates.length+1) + '" class="no-data">Failed to load: ' + err.message + '</td></tr>';
             }
         }
 
