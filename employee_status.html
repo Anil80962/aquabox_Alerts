@@ -212,6 +212,12 @@
             .stats-row { grid-template-columns: 1fr 1fr; }
             .overview-header { flex-direction: column; align-items: flex-start; }
         }
+
+        .site-item { padding: 8px 12px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+        .site-item:hover { background: #e3f2fd; }
+        .site-item .site-id { color: #888; font-size: 11px; margin-left: 6px; }
+        .site-item.other-option { background: #fff8e1; font-weight: 600; color: #e65100; border-top: 2px solid #ffcc80; }
+        .site-item.other-option:hover { background: #ffecb3; }
     </style>
 </head>
 <body>
@@ -260,7 +266,18 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Site Name <span class="req">*</span></label>
-                            <input type="text" id="siteName" placeholder="Enter site name">
+                            <div style="position:relative;">
+                                <input type="text" id="siteSearch" placeholder="Search site name or ID..." autocomplete="off" oninput="filterSites()" onfocus="showSiteDropdown()">
+                                <input type="hidden" id="siteName">
+                                <input type="hidden" id="siteIndustryId">
+                                <div id="siteDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:200px;overflow-y:auto;background:#fff;border:2px solid #2c5364;border-top:none;border-radius:0 0 8px 8px;z-index:100;box-shadow:0 4px 15px rgba(0,0,0,0.15);"></div>
+                            </div>
+                            <div id="otherSiteForm" style="display:none;margin-top:8px;padding:12px;background:#f0f8ff;border-radius:8px;border:1px solid #b0d4f1;">
+                                <div style="font-size:12px;font-weight:600;color:#2c5364;margin-bottom:8px;">Add New Site</div>
+                                <input type="text" id="newSiteName" placeholder="Site name" style="margin-bottom:6px;">
+                                <input type="text" id="newSiteId" placeholder="Industry ID" style="margin-bottom:6px;">
+                                <button class="btn" onclick="saveNewSite()" style="padding:8px 16px;font-size:13px;">Save Site</button>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Type of Work <span class="req">*</span></label>
@@ -684,6 +701,70 @@
             document.getElementById("loginError").style.display = "none";
         }
 
+
+        // ===== SITE DATA =====
+        const DEFAULT_SITES = [{"name": "TITAN", "id": "ITJ1"}, {"name": "GKNMH", "id": "GKN1"}, {"name": "Amazon", "id": "AMZ1"}, {"name": "WONDERLA", "id": "WDL1"}, {"name": "TITAN UTTRAKHAND", "id": "I2101"}, {"name": "BOSCH", "id": "I2105"}, {"name": "Winner Dairy", "id": "I2102"}, {"name": "Embassy", "id": "I2107"}, {"name": "Thirumala", "id": "I2108"}, {"name": "Progressive Leather", "id": "I2109"}, {"name": "IKEA", "id": "I2106"}, {"name": "PCA", "id": "I2110"}, {"name": "KEMWELL", "id": "I2113"}, {"name": "MAHA AGRI", "id": "I2116"}, {"name": "HZL", "id": "ra"}, {"name": "ST. JOHNS", "id": "I2118"}, {"name": "RECIPHARM", "id": "I2111"}, {"name": "PIRAMAL", "id": "I2117"}, {"name": "ITC WINDSOR", "id": "I2115"}, {"name": "GRS FANTASY PARK", "id": "I2221"}, {"name": "Elcita", "id": "I2222"}, {"name": "ashokleyland", "id": "I2220"}, {"name": "Jay Jay Mills", "id": "JJM1"}, {"name": "TaeguTec", "id": "I2223"}, {"name": "adityaa milk", "id": "I2227"}, {"name": "Cycle Agarbathies", "id": "I2226"}, {"name": "SHRI VARALAKSHMI", "id": "I2112"}, {"name": "AFDIL", "id": "I2119"}, {"name": "ADWAITH TEXTILES", "id": "I2224"}, {"name": "VISAKA INDUSTRIES UDUMALPET", "id": "I2225"}, {"name": "Polo Amusement Pvt Ltd", "id": "I2228"}, {"name": "Lucro", "id": "I2229"}, {"name": "waycool", "id": "I2230"}, {"name": "Mahindra World City", "id": "I2231"}, {"name": "TSML Sukinda", "id": "I2233"}, {"name": "Schneider Electric", "id": "I2234"}, {"name": "MTR", "id": "I2235"}, {"name": "ARVIND LTD", "id": "I2236"}, {"name": "Food creations", "id": "I2238"}, {"name": "RL Fine Chem", "id": "I2239"}, {"name": "TSML Athagarh", "id": "I2240"}, {"name": "ACC Ltd", "id": "I2241"}, {"name": "Aquarelle Bannarghatta", "id": "I2242"}, {"name": "Somerset Therapeutics", "id": "I2243"}, {"name": "Lumax Industries", "id": "I2244"}, {"name": "Amrut", "id": "I2245"}, {"name": "Aditya Birla - CCL", "id": "I2246"}, {"name": "Elcita", "id": "I2247"}, {"name": "SEG Automotive", "id": "I2248"}, {"name": "Ranjitpura Mines", "id": "I2249"}, {"name": "Sami-Sabinsa Group", "id": "I2250"}, {"name": "Tokai Rubbers", "id": "I2251"}, {"name": "ITC Foods Malur", "id": "I2252"}, {"name": "Indian Oil Kanpur", "id": "I2253"}, {"name": "L&T Construction Equipment Limited", "id": "I2254"}, {"name": "Visaka Chennai", "id": "l2255"}, {"name": "Mahindra Homes Private Limited", "id": "l2256"}, {"name": "ACC ltd Kudithini", "id": "l2257"}, {"name": "Dairy Day Yelechanahalli", "id": "I2258"}, {"name": "Visaka Industries Haryana", "id": "I2259"}, {"name": "Aditya Birla Fashion and Retail Limited (Krishnagiri)", "id": "I2260"}, {"name": "Milma", "id": "I2261"}, {"name": "Himalaya Wellness Company", "id": "I2262"}, {"name": "Aquarelle Malavalli", "id": "I2263"}, {"name": "Sartorius", "id": "I2264"}, {"name": "Ikea Nagasandra", "id": "I2265"}, {"name": "ADITYA BIRLA RAMNAGAR", "id": "I2266"}, {"name": "HOLLINGSWORTH & VOSE", "id": "I2267"}, {"name": "KERN LEIBER", "id": "I2268"}, {"name": "RESOURCES PELLETS CONCENTRATES PRIVATE LIMITED", "id": "I2269"}, {"name": "ADITYA BIRLA ALPHA", "id": "I2270"}, {"name": "ITC PSPD", "id": "I2271"}, {"name": "Microsoft Hyderabad", "id": "I2272"}, {"name": "JSW", "id": "I2273"}, {"name": "Molex", "id": "I2274"}, {"name": "SLK", "id": "I2275"}, {"name": "Biocon", "id": "I2276"}, {"name": "Hero Jaipur", "id": "I2278"}, {"name": "Rakale", "id": "I2279"}, {"name": "True Blue", "id": "I2280"}, {"name": "Panjim Corporation", "id": "I2281"}, {"name": "IOCL Gopanari", "id": "I2282"}, {"name": "Saint Gobain Vadodhara", "id": "I2283"}, {"name": "Chennai Auto Ancillary Industrial Upgradation Company", "id": "I2284"}, {"name": "Coca Cola Gopalapuram", "id": "I2285"}, {"name": "Apollo Hospital", "id": "I2286"}, {"name": "AIG Hospital", "id": "I2287"}, {"name": "amul", "id": "I2288"}, {"name": "Sri Brill", "id": "I2289"}, {"name": "Milma Pathanamthitta", "id": "I2290"}, {"name": "Milma Kollam", "id": "I2291"}, {"name": "Sri Brill", "id": "I2292"}, {"name": "Sri Brill", "id": "I2293"}, {"name": "Dubai", "id": "PI205"}, {"name": "Godrej Chennai", "id": "I2294"}, {"name": "Mahindra World City", "id": "I2295"}, {"name": "Jockey", "id": "I2296"}, {"name": "SKF", "id": "I2297"}, {"name": "SKF Ahmedabad", "id": "I2298"}, {"name": "Tenex Health", "id": "I2299"}, {"name": "SUNFRESH AGRO IND. PVT LTD", "id": "I2300"}, {"name": "ABFCL", "id": "I2301"}, {"name": "TATA Power Trombay", "id": "I2302"}, {"name": "AmaraRaja", "id": "I2303"}, {"name": "Adani Green", "id": "I2304"}, {"name": "ITC Foods Hoskote", "id": "I2305"}, {"name": "Lora Smart City", "id": "I2306"}, {"name": "Tata Metalics", "id": "I2307"}, {"name": "Bidadi Industrial Association", "id": "I2308"}, {"name": "Knauf India Private Limited", "id": "I2309"}, {"name": "Ascendas IT Park Limitted", "id": "I2310"}, {"name": "Jubilant Food Works", "id": "I2311"}, {"name": "Fortis Hospital", "id": "I2312"}, {"name": "Squas Solutions", "id": "I2313"}, {"name": "Industrial Rubber Products", "id": "I2314"}, {"name": "Bhouma Envirotech Pvt. Ltd", "id": "I2315"}, {"name": "Embassy Paragon", "id": "I2316"}, {"name": "Kristal Beryl", "id": "I2317"}, {"name": "Aditya Birla CML", "id": "I2318"}, {"name": "Care Hospital Hitech city", "id": "I2319"}, {"name": "ACE", "id": "I2320"}, {"name": "HCCB Coca Cola", "id": "I2321"}, {"name": "UNIPICK foods Pvt Ltd", "id": "I2322"}, {"name": "BTM Old Office", "id": "TI2103"}, {"name": "Kadambaas", "id": "I2323"}, {"name": "Care Hospital Raipur", "id": "I2324"}, {"name": "Care Hospital Malkpet", "id": "I2325"}, {"name": "Care Hospital Indore", "id": "I2326"}, {"name": "Care Hospital Bhubaneswar", "id": "I2327"}, {"name": "Sri Sathya Sai Hospital", "id": "I2328"}, {"name": "Cipla", "id": "I2329"}, {"name": "Aquarelle Mauritius", "id": "I2330"}, {"name": "Cupid Limited", "id": "I2331"}, {"name": "Aquarelle Madagascar", "id": "I2332"}, {"name": "Aquarelle Tanjombato", "id": "I2333"}, {"name": "IOCL Durgapur", "id": "I2334"}, {"name": "Xindia Steels Ltd", "id": "I2335"}, {"name": "Care Hospital Nampally", "id": "I2336"}, {"name": "Care Hospital Banjara Copc", "id": "I2337"}, {"name": "TKL Knits India Private Limited", "id": "I2338"}, {"name": "Care Hospital Banjara Hills IP", "id": "I2339"}, {"name": "Maruthi Suzuki Haryana", "id": "I2340"}, {"name": "Shell Raheja", "id": "I2341"}, {"name": "AL Tasnim", "id": "I2342"}, {"name": "Clean International", "id": "I2343"}, {"name": "Control S", "id": "I2344"}, {"name": "Ace Designers", "id": "I2345"}, {"name": "Kirloskar Ferrous Industries", "id": "I2346"}, {"name": "Care Groups", "id": "I2347"}, {"name": "St Martha's Hospital", "id": "I2348"}, {"name": "Care hospital Musheerabad", "id": "I2349"}, {"name": "Brembo Brakes", "id": "I2350"}, {"name": "Favorich infrab private limited", "id": "I2351"}, {"name": "Aditya Birla Groups", "id": "I2352"}, {"name": "Godrej & Boyce Mfg. Co. Ltd. (Dahej)", "id": "I2353"}, {"name": "Retas", "id": "I2354"}, {"name": "Saft India", "id": "I2355"}, {"name": "SKMEPL(Sandur)", "id": "I2356"}, {"name": "AdaniConneX Data Center", "id": "I2357"}, {"name": "Padmini", "id": "I2358"}, {"name": "Pebbal Bay", "id": "I2359"}, {"name": "Aquarelle Andhra", "id": "I2360"}, {"name": "Chamber of Commerce and Industry, Makkah", "id": "I2361"}, {"name": "TATA Motors Ahmedabad", "id": "I2362"}, {"name": "Tata Motors Township", "id": "I2363"}, {"name": "VANNGEN ENGINEERING", "id": "I2364"}, {"name": "Biocon PoC", "id": "I2365"}, {"name": "HCCB Nemam", "id": "I2366"}, {"name": "Rabindranath", "id": "I2367"}, {"name": "Bhate & Raje constructions Co. Pvt. Ltd.", "id": "I2368"}, {"name": "Powerica", "id": "I2369"}, {"name": "zulekha hospital sharjah", "id": "I2370"}, {"name": "Sri Sarvaraya Sugars Limited", "id": "I2371"}, {"name": "zulekha hospital dubai", "id": "I2372"}, {"name": "Emerson Process Management Chennai Private Limited", "id": "I2373"}, {"name": "BANGALORE WATER SUPPLY AND SEWERAGE BOARD", "id": "I2374"}, {"name": "Aditya Birla Garments Limited pulivendula", "id": "I2375"}, {"name": "CapitalandITPL", "id": "I2376"}, {"name": "Fluxgen Bhive ENergy", "id": "I2377"}, {"name": "SKF Haridwar", "id": "I2379"}, {"name": "Aditya Birla Ware House", "id": "I2380"}, {"name": "Ashok Leyland, Chennai", "id": "I2381"}, {"name": "DehradunePoc", "id": "I2382"}, {"name": "Laguna Clothing Private limited", "id": "I2383"}, {"name": "Manipal Hospital (Yelachenahalli - Nanotech)", "id": "I2384"}, {"name": "Aquarell Head Quarters", "id": "I2385"}, {"name": "KUWSDB Shimoga", "id": "I2386"}, {"name": "Premier Energies Photovoltaic Private Limited", "id": "I2387"}, {"name": "Adani Airport", "id": "I2388"}, {"name": "FCRI (Testing)", "id": "I2389"}, {"name": "Zulekha Groups", "id": "I2390"}, {"name": "Microsoft shree padamavathi", "id": "I2391"}, {"name": "SKF Groups", "id": "I2392"}, {"name": "GravityWater", "id": "I2393"}, {"name": "Medreich", "id": "I2394"}, {"name": "Navjyoti India Foundation", "id": "I2395"}, {"name": "Aldee Water Pvt.Ltd", "id": "I2396"}, {"name": "Toitbrewery", "id": "I2397"}, {"name": "MITSUBISHI ELEVATOR INDIA PRIVATE LIMITED", "id": "I2399"}, {"name": "Aquagen Demo", "id": "DEMOAQ"}, {"name": "Radha Kunj", "id": "I2400"}, {"name": "Wipro Santoor Soap Factory", "id": "I2401"}, {"name": "Aruvikkara", "id": "I2402"}, {"name": "Nanotech Manipal Hospital ( Yelahanka)", "id": "I2403"}, {"name": "Brigade Atmosphere", "id": "I2404"}, {"name": "DTC DUBAI", "id": "I2406"}, {"name": "Raichur Lake", "id": "I2407"}, {"name": "Atlantis Palm", "id": "I2408"}, {"name": "Care Hospital Vishakapatnam", "id": "I2409"}, {"name": "Loams", "id": "I2411"}, {"name": "BRBNMPL Salboni", "id": "I2412"}, {"name": "Indo MIM Limited", "id": "I2413"}, {"name": "Well Lab", "id": "I2414"}, {"name": "Brigade BCV Developers", "id": "I2415"}, {"name": "Brigade Oasis", "id": "I2416"}, {"name": "Medreich Limited", "id": "I2417"}, {"name": "Sami Sabinsa Group Ltd.", "id": "I2419"}, {"name": "Friends Of Lake", "id": "I2420"}, {"name": "Adani Green Gandhigram", "id": "I2421"}, {"name": "Ruby Hall Clinic", "id": "I2422"}, {"name": "Mohan Lake", "id": "I2423"}, {"name": "Purity Agro", "id": "I2424"}, {"name": "Adani Guwahati", "id": "I2425"}, {"name": "Tata Steel Jamshedpur", "id": "I2426"}, {"name": "Mashreq Global Network", "id": "I2427"}, {"name": "Madiwala lake", "id": "I2428"}, {"name": "SRI GARUDAVAHINI ENTERPRISES", "id": "I2429"}, {"name": "Test user", "id": "I2430"}, {"name": "Care Hospital Vishakapatnam", "id": "I2432"}, {"name": "JSW Vasind", "id": "I2433"}];
+        let allSites = [...DEFAULT_SITES, ...JSON.parse(localStorage.getItem("customSites") || "[]")];
+
+        function showSiteDropdown() { filterSites(); document.getElementById("siteDropdown").style.display = "block"; }
+
+        document.addEventListener("click", function(e) {
+            const dd = document.getElementById("siteDropdown");
+            const search = document.getElementById("siteSearch");
+            if (dd && !dd.contains(e.target) && e.target !== search) dd.style.display = "none";
+        });
+
+        function filterSites() {
+            const query = document.getElementById("siteSearch").value.toLowerCase();
+            const dd = document.getElementById("siteDropdown");
+            const filtered = allSites.filter(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
+            let html = filtered.slice(0, 50).map(s => {
+                const safeName = s.name.replace(/'/g, "&#39;");
+                return '<div class="site-item" onmousedown="selectSite(this)" data-name="' + safeName + '" data-id="' + s.id + '">' + s.name + ' <span class="site-id">[' + s.id + ']</span></div>';
+            }).join("");
+            if (filtered.length > 50) html += '<div style="padding:6px 12px;color:#888;font-size:11px;">Showing 50 of ' + filtered.length + ' results...</div>';
+            html += '<div class="site-item other-option" onmousedown="selectOther()">+ Other (Add New Site)</div>';
+            dd.innerHTML = html;
+        }
+
+        function selectSite(el) {
+            const name = el.getAttribute("data-name").replace(/&#39;/g, "'");
+            const id = el.getAttribute("data-id");
+            document.getElementById("siteSearch").value = name + " [" + id + "]";
+            document.getElementById("siteName").value = name;
+            document.getElementById("siteIndustryId").value = id;
+            document.getElementById("siteDropdown").style.display = "none";
+            document.getElementById("otherSiteForm").style.display = "none";
+        }
+
+        function selectOther() {
+            document.getElementById("siteSearch").value = "";
+            document.getElementById("siteName").value = "";
+                document.getElementById("siteSearch").value = "";
+                document.getElementById("siteIndustryId").value = "";
+            document.getElementById("siteIndustryId").value = "";
+            document.getElementById("siteDropdown").style.display = "none";
+            document.getElementById("otherSiteForm").style.display = "block";
+            document.getElementById("newSiteName").focus();
+        }
+
+        function saveNewSite() {
+            const name = document.getElementById("newSiteName").value.trim();
+            const id = document.getElementById("newSiteId").value.trim();
+            if (!name || !id) { showToast("Please enter both site name and industry ID.", "error"); return; }
+            const custom = JSON.parse(localStorage.getItem("customSites") || "[]");
+            custom.push({name: name, id: id});
+            localStorage.setItem("customSites", JSON.stringify(custom));
+            allSites.push({name: name, id: id});
+            document.getElementById("siteSearch").value = name + " [" + id + "]";
+            document.getElementById("siteName").value = name;
+            document.getElementById("siteIndustryId").value = id;
+            document.getElementById("newSiteName").value = "";
+            document.getElementById("newSiteId").value = "";
+            document.getElementById("otherSiteForm").style.display = "none";
+            showToast("Site '" + name + "' added!", "success");
+        }
+
         // ===== TABS =====
         function switchTab(tab) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -772,6 +853,7 @@
         // ===== SUBMIT STATUS =====
         async function submitStatus() {
             const siteName = document.getElementById("siteName").value.trim();
+            const industryId = document.getElementById("siteIndustryId").value.trim();
             const workType = document.getElementById("workType").value;
             const scope = document.getElementById("scopeOfWork").value.trim();
             const fromDate = document.getElementById("statusDate").value;
@@ -809,6 +891,8 @@
                 renderEmployees();
                 updateFormVisibility();
                 document.getElementById("siteName").value = "";
+                document.getElementById("siteSearch").value = "";
+                document.getElementById("siteIndustryId").value = "";
                 document.getElementById("workType").value = "";
                 document.getElementById("scopeOfWork").value = "";
                 document.getElementById("empStatus").value = "On Site";
