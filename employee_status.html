@@ -444,6 +444,63 @@
                         <tbody id="dlPreviewBody"></tbody>
                     </table>
                 </div>
+
+                <!-- SITE-WISE REPORT -->
+                <div class="add-emp-form" style="margin-top:30px;">
+                    <h3>Site-wise Report</h3>
+                    <div class="form-group">
+                        <label>Site Name <span class="req">*</span></label>
+                        <div style="position:relative;">
+                            <input type="text" id="dlSiteSearch" placeholder="Search site name or ID..." autocomplete="off" oninput="filterDlSites()" onfocus="showDlSiteDropdown()">
+                            <input type="hidden" id="dlSiteName">
+                            <div id="dlSiteDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:200px;overflow-y:auto;background:#fff;border:2px solid #2c5364;border-top:none;border-radius:0 0 8px 8px;z-index:100;box-shadow:0 4px 15px rgba(0,0,0,0.15);"></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>From Date <span class="req">*</span></label><input type="date" id="dlSiteFromDate"></div>
+                        <div class="form-group"><label>To Date <span class="req">*</span></label><input type="date" id="dlSiteToDate"></div>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn" onclick="previewSiteReport()" style="flex:1;">Preview</button>
+                        <button class="add-btn" onclick="downloadSiteCSV()" style="flex:1; padding:12px 24px; font-size:15px;">Download CSV</button>
+                    </div>
+                </div>
+                <div class="overview-table" id="dlSitePreviewBox" style="margin-top:24px; display:none;">
+                    <table>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <tbody id="dlSitePreviewBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- WORK TYPE REPORT -->
+                <div class="add-emp-form" style="margin-top:30px;">
+                    <h3>Work Type Report</h3>
+                    <div class="form-group">
+                        <label>Type of Work <span class="req">*</span></label>
+                        <select id="dlWorkType">
+                            <option value="">-- Select Type --</option>
+                            <option value="Project">Project</option>
+                            <option value="Service">Service</option>
+                            <option value="Office Work">Office Work</option>
+                            <option value="BMS Integration">BMS Integration</option>
+                            <option value="Site Survey">Site Survey</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>From Date <span class="req">*</span></label><input type="date" id="dlWorkFromDate"></div>
+                        <div class="form-group"><label>To Date <span class="req">*</span></label><input type="date" id="dlWorkToDate"></div>
+                    </div>
+                    <div style="display:flex; gap:12px;">
+                        <button class="btn" onclick="previewWorkTypeReport()" style="flex:1;">Preview</button>
+                        <button class="add-btn" onclick="downloadWorkTypeCSV()" style="flex:1; padding:12px 24px; font-size:15px;">Download CSV</button>
+                    </div>
+                </div>
+                <div class="overview-table" id="dlWorkPreviewBox" style="margin-top:24px; display:none;">
+                    <table>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Role</th><th>Site Name</th><th>Scope of Work</th><th>Status</th><th>Date</th></tr></thead>
+                        <tbody id="dlWorkPreviewBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -1392,6 +1449,155 @@
             link.click();
             URL.revokeObjectURL(url);
             showToast(`Downloaded ${data.length} record(s).`, "success");
+        }
+
+
+        // ===== SITE-WISE REPORT =====
+        function showDlSiteDropdown() { filterDlSites(); document.getElementById("dlSiteDropdown").style.display = "block"; }
+
+        document.addEventListener("click", function(e) {
+            const dd = document.getElementById("dlSiteDropdown");
+            const search = document.getElementById("dlSiteSearch");
+            if (dd && !dd.contains(e.target) && e.target !== search) dd.style.display = "none";
+        });
+
+        function filterDlSites() {
+            const query = document.getElementById("dlSiteSearch").value.toLowerCase();
+            const dd = document.getElementById("dlSiteDropdown");
+            const filtered = allSites.filter(s => s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query));
+            let html = filtered.slice(0, 50).map(s => {
+                const safeName = s.name.replace(/'/g, "&#39;");
+                return '<div class="site-item" onmousedown="selectDlSite(this)" data-name="' + safeName + '" data-id="' + s.id + '">' + s.name + ' <span class="site-id">[' + s.id + ']</span></div>';
+            }).join("");
+            if (filtered.length > 50) html += '<div style="padding:6px 12px;color:#888;font-size:11px;">Showing 50 of ' + filtered.length + ' results...</div>';
+            dd.innerHTML = html;
+        }
+
+        function selectDlSite(el) {
+            const name = el.getAttribute("data-name").replace(/&#39;/g, "'");
+            const id = el.getAttribute("data-id");
+            document.getElementById("dlSiteSearch").value = name + " [" + id + "]";
+            document.getElementById("dlSiteName").value = name;
+            document.getElementById("dlSiteDropdown").style.display = "none";
+        }
+
+        let siteReportData = [];
+        async function fetchSiteReportData() {
+            const siteName = document.getElementById("dlSiteName").value.trim();
+            const from = document.getElementById("dlSiteFromDate").value;
+            const to = document.getElementById("dlSiteToDate").value;
+            if (!siteName || !from || !to) { showToast("Select site and date range.", "error"); return null; }
+            if (from > to) { showToast("From date cannot be after To date.", "error"); return null; }
+
+            showLoading("Fetching site report...");
+            try {
+                const result = await sheetFetch("action=getStatusRange&empId=ALL&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to));
+                hideLoading();
+                siteReportData = (result.data || []).filter(r => r.siteName && r.siteName.toLowerCase() === siteName.toLowerCase());
+                return siteReportData;
+            } catch (err) {
+                hideLoading();
+                showToast("Failed to fetch report.", "error");
+                return null;
+            }
+        }
+
+        async function previewSiteReport() {
+            const data = await fetchSiteReportData();
+            if (!data) return;
+            const box = document.getElementById("dlSitePreviewBox");
+            const body = document.getElementById("dlSitePreviewBody");
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="no-data">No records found for this site.</td></tr>';
+                box.style.display = "block";
+                return;
+            }
+            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td><span class="badge ' + (r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office') + '">' + r.workType + '</span></td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td></tr>').join("");
+            box.style.display = "block";
+            showToast("Found " + data.length + " record(s).", "success");
+        }
+
+        async function downloadSiteCSV() {
+            let data = siteReportData;
+            if (!data || data.length === 0) data = await fetchSiteReportData();
+            if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
+
+            const siteName = document.getElementById("dlSiteName").value.trim();
+            const headers = ["Employee ID","Employee Name","Role","Type of Work","Scope of Work","Status","Efficiency (%)","Date"];
+            const csvRows = [headers.join(",")];
+            data.forEach(r => {
+                const eff = getEmpEfficiency(r.status, r.workType);
+                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', r.workType, '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date].join(","));
+            });
+
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Site_" + siteName.replace(/[^a-zA-Z0-9]/g,"_") + "_" + document.getElementById("dlSiteFromDate").value + "_to_" + document.getElementById("dlSiteToDate").value + ".csv";
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("Downloaded " + data.length + " record(s).", "success");
+        }
+
+        // ===== WORK TYPE REPORT =====
+        let workTypeReportData = [];
+        async function fetchWorkTypeReportData() {
+            const workType = document.getElementById("dlWorkType").value;
+            const from = document.getElementById("dlWorkFromDate").value;
+            const to = document.getElementById("dlWorkToDate").value;
+            if (!workType || !from || !to) { showToast("Select work type and date range.", "error"); return null; }
+            if (from > to) { showToast("From date cannot be after To date.", "error"); return null; }
+
+            showLoading("Fetching work type report...");
+            try {
+                const result = await sheetFetch("action=getStatusRange&empId=ALL&from=" + encodeURIComponent(from) + "&to=" + encodeURIComponent(to));
+                hideLoading();
+                workTypeReportData = (result.data || []).filter(r => r.workType === workType);
+                return workTypeReportData;
+            } catch (err) {
+                hideLoading();
+                showToast("Failed to fetch report.", "error");
+                return null;
+            }
+        }
+
+        async function previewWorkTypeReport() {
+            const data = await fetchWorkTypeReportData();
+            if (!data) return;
+            const box = document.getElementById("dlWorkPreviewBox");
+            const body = document.getElementById("dlWorkPreviewBody");
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="no-data">No records found for this work type.</td></tr>';
+                box.style.display = "block";
+                return;
+            }
+            body.innerHTML = data.map((r, i) => '<tr><td>' + (i+1) + '</td><td>' + r.empName + '</td><td>' + r.role + '</td><td>' + r.siteName + '</td><td>' + r.scopeOfWork + '</td><td>' + r.status + '</td><td>' + r.date + '</td></tr>').join("");
+            box.style.display = "block";
+            showToast("Found " + data.length + " record(s).", "success");
+        }
+
+        async function downloadWorkTypeCSV() {
+            let data = workTypeReportData;
+            if (!data || data.length === 0) data = await fetchWorkTypeReportData();
+            if (!data || data.length === 0) { showToast("No records to download.", "error"); return; }
+
+            const workType = document.getElementById("dlWorkType").value;
+            const headers = ["Employee ID","Employee Name","Role","Site Name","Scope of Work","Status","Efficiency (%)","Date"];
+            const csvRows = [headers.join(",")];
+            data.forEach(r => {
+                const eff = getEmpEfficiency(r.status, r.workType);
+                csvRows.push([r.empId, '"'+r.empName.replace(/"/g,'""')+'"', '"'+r.role.replace(/"/g,'""')+'"', '"'+r.siteName.replace(/"/g,'""')+'"', '"'+r.scopeOfWork.replace(/"/g,'""')+'"', r.status, eff, r.date].join(","));
+            });
+
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "WorkType_" + workType.replace(/[^a-zA-Z0-9]/g,"_") + "_" + document.getElementById("dlWorkFromDate").value + "_to_" + document.getElementById("dlWorkToDate").value + ".csv";
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast("Downloaded " + data.length + " record(s).", "success");
         }
 
         // ===== MANAGE USERS (Super Admin Only) =====
