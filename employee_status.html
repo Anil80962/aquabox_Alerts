@@ -279,8 +279,8 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Date <span class="req">*</span></label>
-                            <input type="date" id="statusDate">
+                            <label style="display:flex;align-items:center;gap:10px;">Date <span class="req">*</span> <span style="font-weight:400;font-size:12px;"><input type="checkbox" id="multiDayCheck" onchange="toggleMultiDay()"> Multiple Days</span></label>
+                            <div id="singleDateWrap"><input type="date" id="statusDate"></div><div id="multiDateWrap" style="display:none;"><div style="display:flex;gap:8px;"><div style="flex:1;"><label style="font-size:11px;color:#888;">From</label><input type="date" id="fromDate" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;outline:none;"></div><div style="flex:1;"><label style="font-size:11px;color:#888;">To</label><input type="date" id="toDate" style="width:100%;padding:10px 12px;border:2px solid #e0e0e0;border-radius:8px;font-size:14px;outline:none;"></div></div></div>
                         </div>
                         <div class="form-group">
                             <label>Status</label>
@@ -733,25 +733,45 @@
             }
         }
 
+        function toggleMultiDay() {
+            const multi = document.getElementById("multiDayCheck").checked;
+            document.getElementById("singleDateWrap").style.display = multi ? "none" : "block";
+            document.getElementById("multiDateWrap").style.display = multi ? "block" : "none";
+        }
         // ===== SUBMIT STATUS =====
         async function submitStatus() {
             const siteName = document.getElementById("siteName").value.trim();
             const workType = document.getElementById("workType").value;
             const scope = document.getElementById("scopeOfWork").value.trim();
-            const date = document.getElementById("statusDate").value;
+            const isMultiDay = document.getElementById("multiDayCheck").checked;
             const status = document.getElementById("empStatus").value;
-
-            if (!siteName || !workType || !scope || !date) { showToast("Please fill all required fields.", "error"); return; }
+            let dates = [];
+            if (isMultiDay) {
+                const from = document.getElementById("fromDate").value;
+                const to = document.getElementById("toDate").value;
+                if (!siteName || !workType || !scope || !from || !to) { showToast("Please fill all required fields.", "error"); return; }
+                if (from > to) { showToast("From date must be before To date.", "error"); return; }
+                let d = new Date(from);
+                const end = new Date(to);
+                while (d <= end) { dates.push(d.toISOString().split("T")[0]); d.setDate(d.getDate() + 1); }
+            } else {
+                const date = document.getElementById("statusDate").value;
+                if (!siteName || !workType || !scope || !date) { showToast("Please fill all required fields.", "error"); return; }
+                dates = [date];
+            }
             if (selectedEmployees.size === 0) { showToast("Please select at least one employee.", "error"); return; }
 
             const btn = document.getElementById("submitBtn");
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span> Submitting...';
 
-            const rows = [...selectedEmployees].map(id => {
-                const emp = employees.find(e => e.id === id);
-                return { action: "submitStatus", empId: emp.id, empName: emp.name, role: emp.role, siteName, workType, scopeOfWork: scope, status, date };
-            });
+            const rows = [];
+            for (const date of dates) {
+                for (const id of [...selectedEmployees]) {
+                    const emp = employees.find(e => e.id === id);
+                    rows.push({ action: "submitStatus", empId: emp.id, empName: emp.name, role: emp.role, siteName, workType, scopeOfWork: scope, status, date });
+                }
+            }
 
             try {
                 for (const row of rows) { await formPost(row); }
@@ -763,6 +783,8 @@
                 document.getElementById("workType").value = "";
                 document.getElementById("scopeOfWork").value = "";
                 document.getElementById("empStatus").value = "On Site";
+                document.getElementById("multiDayCheck").checked = false;
+                toggleMultiDay();
             } catch (err) {
                 showToast("Failed to submit.", "error");
             } finally {
