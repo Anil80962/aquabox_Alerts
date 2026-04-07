@@ -219,6 +219,9 @@
         .site-item.other-option { background: #fff8e1; font-weight: 600; color: #e65100; border-top: 2px solid #ffcc80; }
         .site-item.other-option:hover { background: #ffecb3; }
 
+        .overview-table { overflow-x: auto; }
+        .overview-table table { width: 100%; table-layout: auto; }
+        .overview-table td, .overview-table th { white-space: normal; word-wrap: break-word; }
         .work-done-btn { padding: 4px 10px; border: 1px solid #2c5364; background: #fff; color: #2c5364; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
         .work-done-btn:hover { background: #2c5364; color: #fff; }
         .work-done-btn.has-data { background: #e8f5e9; border-color: #27ae60; color: #27ae60; }
@@ -379,9 +382,9 @@
                     <div class="stat-card"><div class="stat-num" id="statProject">0</div><div class="stat-label">Projects</div></div>
                     <div class="stat-card"><div class="stat-num" id="statService">0</div><div class="stat-label">Service</div></div>
                 </div>
-                <div class="overview-table">
-                    <table>
-                        <thead><tr><th>#</th><th>Employee Name</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th style="min-width:120px;">Work Done</th></tr></thead>
+                <div class="overview-table" style="overflow-x:auto;">
+                    <table style="min-width:900px;">
+                        <thead><tr><th>#</th><th style="min-width:130px;">Employee Name</th><th style="min-width:100px;">Site Name</th><th style="min-width:100px;">Type of Work</th><th style="min-width:120px;">Scope of Work</th><th style="min-width:80px;">Status</th><th style="min-width:200px;">Work Done</th></tr></thead>
                         <tbody id="overviewBody"><tr><td colspan="6" class="no-data">Loading...</td></tr></tbody>
                     </table>
                 </div>
@@ -1129,10 +1132,21 @@
                             <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
                             <td>${r.scopeOfWork}</td>
                             <td>${r.status}</td>
-                            <td>
-                                <button class="work-done-btn ${r.workDone ? 'has-data' : ''}" onclick="openWorkDoneModal(${i})" title="${r.workDone ? 'View/Edit Work Done' : 'Add Work Done'}">
-                                    ${r.workDone ? '&#9989; Done' : '&#9998; Update'}
-                                </button>
+                            <td style="min-width:180px;">
+                                ${r.workDone ? `
+                                    <div style="font-size:12px;color:#333;margin-bottom:4px;max-width:200px;word-wrap:break-word;">${r.workDone.length > 60 ? r.workDone.substring(0,60) + '...' : r.workDone}</div>
+                                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                        <div style="flex:1;background:#e0e0e0;border-radius:10px;height:6px;overflow:hidden;">
+                                            <div style="width:${r.completionPct || 0}%;height:100%;background:${(r.completionPct||0) >= 70 ? '#27ae60' : (r.completionPct||0) >= 40 ? '#f39c12' : '#e74c3c'};border-radius:10px;"></div>
+                                        </div>
+                                        <span style="font-size:11px;font-weight:600;color:#555;">${r.completionPct || 0}%</span>
+                                    </div>
+                                    ${r.workRemarks ? '<div style="font-size:11px;color:#888;margin-bottom:4px;"><em>' + (r.workRemarks.length > 40 ? r.workRemarks.substring(0,40) + '...' : r.workRemarks) + '</em></div>' : ''}
+                                    ${r.nextVisitRequired === 'Yes' ? '<div style="font-size:11px;color:#e65100;margin-bottom:4px;">&#128197; Next: ' + (r.nextVisitDate || 'TBD') + '</div>' : ''}
+                                    <button class="work-done-btn has-data" onclick="openWorkDoneModal(${i})" style="font-size:11px;padding:3px 8px;">&#9998; Edit</button>
+                                ` : `
+                                    <button class="work-done-btn" onclick="openWorkDoneModal(${i})">&#9998; Update</button>
+                                `}
                             </td>
                         </tr>
                     `).join("");
