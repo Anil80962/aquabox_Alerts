@@ -218,6 +218,28 @@
         .site-item .site-id { color: #888; font-size: 11px; margin-left: 6px; }
         .site-item.other-option { background: #fff8e1; font-weight: 600; color: #e65100; border-top: 2px solid #ffcc80; }
         .site-item.other-option:hover { background: #ffecb3; }
+
+        .work-done-btn { padding: 4px 10px; border: 1px solid #2c5364; background: #fff; color: #2c5364; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+        .work-done-btn:hover { background: #2c5364; color: #fff; }
+        .work-done-btn.has-data { background: #e8f5e9; border-color: #27ae60; color: #27ae60; }
+        .work-done-btn.has-data:hover { background: #27ae60; color: #fff; }
+        .wd-modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+        .wd-modal { background:#fff; border-radius:16px; padding:28px; width:90%; max-width:500px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; overflow-y:auto; }
+        .wd-modal h3 { margin:0 0 6px; color:#1a1a2e; font-size:18px; }
+        .wd-modal .wd-subtitle { color:#888; font-size:13px; margin-bottom:20px; }
+        .wd-modal label { display:block; font-weight:600; color:#333; font-size:13px; margin-bottom:4px; margin-top:14px; }
+        .wd-modal textarea { width:100%; padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; resize:vertical; min-height:80px; outline:none; font-family:inherit; }
+        .wd-modal textarea:focus { border-color:#2c5364; }
+        .wd-modal select, .wd-modal input[type="date"] { width:100%; padding:10px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:14px; outline:none; }
+        .wd-modal select:focus, .wd-modal input[type="date"]:focus { border-color:#2c5364; }
+        .wd-range-track { width:100%; margin-top:4px; }
+        .wd-range-label { display:flex; justify-content:space-between; font-size:11px; color:#888; margin-top:2px; }
+        .wd-modal .wd-toggle { display:flex; align-items:center; gap:10px; margin-top:6px; }
+        .wd-modal .wd-toggle label { margin:0; font-weight:400; }
+        .wd-btn-row { display:flex; gap:10px; margin-top:20px; }
+        .wd-btn-row .btn { flex:1; }
+        .wd-btn-cancel { flex:1; padding:12px; background:#f5f5f5; border:2px solid #ddd; color:#666; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; }
+        .wd-btn-cancel:hover { background:#eee; }
     </style>
 </head>
 <body>
@@ -359,7 +381,7 @@
                 </div>
                 <div class="overview-table">
                     <table>
-                        <thead><tr><th>#</th><th>Employee Name</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th></tr></thead>
+                        <thead><tr><th>#</th><th>Employee Name</th><th>Site Name</th><th>Type of Work</th><th>Scope of Work</th><th>Status</th><th style="min-width:120px;">Work Done</th></tr></thead>
                         <tbody id="overviewBody"><tr><td colspan="6" class="no-data">Loading...</td></tr></tbody>
                     </table>
                 </div>
@@ -822,6 +844,68 @@
             showToast("Site '" + name + "' added!", "success");
         }
 
+
+        // ===== WORK DONE UPDATE =====
+        let wdCurrentIndex = -1;
+
+        function openWorkDoneModal(idx) {
+            const r = window._overviewData[idx];
+            if (!r) return;
+            wdCurrentIndex = idx;
+            document.getElementById("wdSubtitle").innerHTML = '<strong>' + r.empName + '</strong> &mdash; ' + r.siteName + ' &mdash; ' + r.date;
+            document.getElementById("wdDescription").value = r.workDone || "";
+            document.getElementById("wdCompletion").value = r.completionPct || 0;
+            document.getElementById("wdCompVal").textContent = (r.completionPct || 0) + "%";
+            document.getElementById("wdRemarks").value = r.workRemarks || "";
+            document.getElementById("wdNextVisit").value = r.nextVisitRequired || "No";
+            document.getElementById("wdNextDateWrap").style.display = (r.nextVisitRequired === "Yes") ? "block" : "none";
+            document.getElementById("wdNextDate").value = r.nextVisitDate || "";
+            document.getElementById("wdModalOverlay").style.display = "flex";
+        }
+
+        function closeWorkDoneModal() {
+            document.getElementById("wdModalOverlay").style.display = "none";
+            wdCurrentIndex = -1;
+        }
+
+        async function submitWorkDone() {
+            const desc = document.getElementById("wdDescription").value.trim();
+            if (!desc) { showToast("Please enter work done description.", "error"); return; }
+
+            const r = window._overviewData[wdCurrentIndex];
+            const data = {
+                action: "updateWorkDone",
+                empId: r.empId,
+                empName: r.empName,
+                date: r.date,
+                siteName: r.siteName,
+                workDone: desc,
+                completionPct: document.getElementById("wdCompletion").value,
+                workRemarks: document.getElementById("wdRemarks").value.trim(),
+                nextVisitRequired: document.getElementById("wdNextVisit").value,
+                nextVisitDate: document.getElementById("wdNextDate").value || ""
+            };
+
+            showLoading("Saving work done...");
+            try {
+                await formPost(data);
+                // Update local data
+                r.workDone = desc;
+                r.completionPct = data.completionPct;
+                r.workRemarks = data.workRemarks;
+                r.nextVisitRequired = data.nextVisitRequired;
+                r.nextVisitDate = data.nextVisitDate;
+                hideLoading();
+                closeWorkDoneModal();
+                showToast("Work done updated for " + r.empName + "!", "success");
+                // Refresh the overview to show updated button
+                loadOverview();
+            } catch (err) {
+                hideLoading();
+                showToast("Failed to save.", "error");
+            }
+        }
+
         // ===== TABS =====
         function switchTab(tab) {
             document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -1027,15 +1111,16 @@
         async function loadOverview() {
             const date = document.getElementById("overviewDate").value;
             const body = document.getElementById("overviewBody");
-            body.innerHTML = '<tr><td colspan="6" class="no-data"><span class="spinner spinner-dark"></span> Loading from Google Sheet...</td></tr>';
+            body.innerHTML = '<tr><td colspan="7" class="no-data"><span class="spinner spinner-dark"></span> Loading from Google Sheet...</td></tr>';
 
             try {
                 const result = await sheetFetch("action=getStatus&date=" + encodeURIComponent(date));
                 const data = result.data || [];
 
                 if (data.length === 0) {
-                    body.innerHTML = '<tr><td colspan="6" class="no-data">No status updates for this date.</td></tr>';
+                    body.innerHTML = '<tr><td colspan="7" class="no-data">No status updates for this date.</td></tr>';
                 } else {
+                    window._overviewData = data;
                     body.innerHTML = data.map((r, i) => `
                         <tr>
                             <td>${i+1}</td>
@@ -1044,6 +1129,11 @@
                             <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
                             <td>${r.scopeOfWork}</td>
                             <td>${r.status}</td>
+                            <td>
+                                <button class="work-done-btn ${r.workDone ? 'has-data' : ''}" onclick="openWorkDoneModal(${i})" title="${r.workDone ? 'View/Edit Work Done' : 'Add Work Done'}">
+                                    ${r.workDone ? '&#9989; Done' : '&#9998; Update'}
+                                </button>
+                            </td>
                         </tr>
                     `).join("");
                 }
@@ -1057,7 +1147,7 @@
                 calculateEfficiency(data);
 
             } catch (err) {
-                body.innerHTML = '<tr><td colspan="6" class="no-data">Failed to load: ' + err.message + '</td></tr>';
+                body.innerHTML = '<tr><td colspan="7" class="no-data">Failed to load: ' + err.message + '</td></tr>';
                 showToast("Overview error: " + err.message, "error");
             }
         }
@@ -1676,5 +1766,42 @@
             setTimeout(() => toast.classList.remove("show"), 3000);
         }
     </script>
+
+    <!-- WORK DONE MODAL -->
+    <div class="wd-modal-overlay" id="wdModalOverlay" onclick="if(event.target===this)closeWorkDoneModal()">
+        <div class="wd-modal">
+            <h3>Update Work Done</h3>
+            <div class="wd-subtitle" id="wdSubtitle"></div>
+
+            <label>Work Done Description <span class="req">*</span></label>
+            <textarea id="wdDescription" placeholder="Describe what work was completed at the site..."></textarea>
+
+            <label>Completion %</label>
+            <input type="range" id="wdCompletion" min="0" max="100" value="0" class="wd-range-track" oninput="document.getElementById('wdCompVal').textContent=this.value+'%'">
+            <div class="wd-range-label"><span>0%</span><span id="wdCompVal" style="font-weight:600;color:#2c5364;">0%</span><span>100%</span></div>
+
+            <label>Remarks</label>
+            <textarea id="wdRemarks" placeholder="Any blockers, issues, or notes..." style="min-height:50px;"></textarea>
+
+            <label>Next Visit Required?</label>
+            <div class="wd-toggle">
+                <select id="wdNextVisit" onchange="document.getElementById('wdNextDateWrap').style.display=this.value==='Yes'?'block':'none'">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </div>
+
+            <div id="wdNextDateWrap" style="display:none;">
+                <label>Next Visit Date</label>
+                <input type="date" id="wdNextDate">
+            </div>
+
+            <div class="wd-btn-row">
+                <button class="wd-btn-cancel" onclick="closeWorkDoneModal()">Cancel</button>
+                <button class="btn" onclick="submitWorkDone()">Save Work Done</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
