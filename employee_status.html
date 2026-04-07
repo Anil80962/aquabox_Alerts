@@ -871,17 +871,39 @@
             wdCurrentIndex = -1;
         }
 
+        function getWorkDoneStore() {
+            return JSON.parse(localStorage.getItem("workDoneData") || "{}");
+        }
+
+        function saveWorkDoneStore(store) {
+            localStorage.setItem("workDoneData", JSON.stringify(store));
+        }
+
+        function getWorkDoneKey(empId, date) {
+            return empId + "_" + date;
+        }
+
+        function mergeWorkDoneData(data) {
+            const store = getWorkDoneStore();
+            data.forEach(r => {
+                const key = getWorkDoneKey(r.empId, r.date);
+                if (store[key]) {
+                    r.workDone = store[key].workDone || r.workDone || "";
+                    r.completionPct = store[key].completionPct || r.completionPct || "0";
+                    r.workRemarks = store[key].workRemarks || r.workRemarks || "";
+                    r.nextVisitRequired = store[key].nextVisitRequired || r.nextVisitRequired || "No";
+                    r.nextVisitDate = store[key].nextVisitDate || r.nextVisitDate || "";
+                }
+            });
+            return data;
+        }
+
         async function submitWorkDone() {
             const desc = document.getElementById("wdDescription").value.trim();
             if (!desc) { showToast("Please enter work done description.", "error"); return; }
 
             const r = window._overviewData[wdCurrentIndex];
-            const data = {
-                action: "updateWorkDone",
-                empId: r.empId,
-                empName: r.empName,
-                date: r.date,
-                siteName: r.siteName,
+            const wdInfo = {
                 workDone: desc,
                 completionPct: document.getElementById("wdCompletion").value,
                 workRemarks: document.getElementById("wdRemarks").value.trim(),
@@ -889,20 +911,36 @@
                 nextVisitDate: document.getElementById("wdNextDate").value || ""
             };
 
+            const data = {
+                action: "updateWorkDone",
+                empId: r.empId,
+                empName: r.empName,
+                date: r.date,
+                siteName: r.siteName,
+                ...wdInfo
+            };
+
             showLoading("Saving work done...");
             try {
                 await formPost(data);
-                // Update local data
-                r.workDone = desc;
-                r.completionPct = data.completionPct;
-                r.workRemarks = data.workRemarks;
-                r.nextVisitRequired = data.nextVisitRequired;
-                r.nextVisitDate = data.nextVisitDate;
+
+                // Save to localStorage
+                const store = getWorkDoneStore();
+                store[getWorkDoneKey(r.empId, r.date)] = wdInfo;
+                saveWorkDoneStore(store);
+
+                // Update local data in place
+                r.workDone = wdInfo.workDone;
+                r.completionPct = wdInfo.completionPct;
+                r.workRemarks = wdInfo.workRemarks;
+                r.nextVisitRequired = wdInfo.nextVisitRequired;
+                r.nextVisitDate = wdInfo.nextVisitDate;
+
                 hideLoading();
                 closeWorkDoneModal();
                 showToast("Work done updated for " + r.empName + "!", "success");
-                // Refresh the overview to show updated button
-                loadOverview();
+                // Re-render the table without re-fetching
+                renderOverviewTable(window._overviewData);
             } catch (err) {
                 hideLoading();
                 showToast("Failed to save.", "error");
@@ -1110,6 +1148,52 @@
             }
         }
 
+
+        function renderOverviewTable(data) {
+            const body = document.getElementById("overviewBody");
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="no-data">No status updates for this date.</td></tr>';
+            } else {
+                body.innerHTML = data.map((r, i) => {
+                    const wd = r.workDone || "";
+                    const pct = parseInt(r.completionPct) || 0;
+                    const rem = r.workRemarks || "";
+                    const nv = r.nextVisitRequired || "No";
+                    const nvd = r.nextVisitDate || "";
+                    const pctColor = pct >= 70 ? '#27ae60' : pct >= 40 ? '#f39c12' : '#e74c3c';
+
+                    let wdCell = '';
+                    if (wd) {
+                        wdCell = '<div style="font-size:12px;color:#333;margin-bottom:4px;max-width:200px;word-wrap:break-word;">' + (wd.length > 60 ? wd.substring(0,60) + '...' : wd) + '</div>';
+                        wdCell += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><div style="flex:1;background:#e0e0e0;border-radius:10px;height:6px;overflow:hidden;"><div style="width:' + pct + '%;height:100%;background:' + pctColor + ';border-radius:10px;"></div></div><span style="font-size:11px;font-weight:600;color:#555;">' + pct + '%</span></div>';
+                        if (rem) wdCell += '<div style="font-size:11px;color:#888;margin-bottom:4px;"><em>' + (rem.length > 40 ? rem.substring(0,40) + '...' : rem) + '</em></div>';
+                        if (nv === 'Yes') wdCell += '<div style="font-size:11px;color:#e65100;margin-bottom:4px;">&#128197; Next: ' + (nvd || 'TBD') + '</div>';
+                        wdCell += '<button class="work-done-btn has-data" onclick="openWorkDoneModal(' + i + ')" style="font-size:11px;padding:3px 8px;">&#9998; Edit</button>';
+                    } else {
+                        wdCell = '<button class="work-done-btn" onclick="openWorkDoneModal(' + i + ')">&#9998; Update</button>';
+                    }
+
+                    const wt = r.workType || "";
+                    const wtBadge = wt === 'Project' ? 'badge-project' : wt === 'Service' ? 'badge-service' : 'badge-office';
+
+                    return '<tr>' +
+                        '<td>' + (i+1) + '</td>' +
+                        '<td><strong>' + (r.empName||'') + '</strong><br><span style="color:#888;font-size:11px;">' + (r.role||'') + '</span></td>' +
+                        '<td>' + (r.siteName||'-') + '</td>' +
+                        '<td>' + (wt ? '<span class="badge ' + wtBadge + '">' + wt + '</span>' : '-') + '</td>' +
+                        '<td>' + (r.scopeOfWork||'-') + '</td>' +
+                        '<td>' + (r.status||'-') + '</td>' +
+                        '<td style="min-width:180px;">' + wdCell + '</td>' +
+                    '</tr>';
+                }).join("");
+            }
+
+            document.getElementById("statTotal").textContent = employees.length;
+            document.getElementById("statOnSite").textContent = data.filter(r => r.status === "On Site").length;
+            document.getElementById("statProject").textContent = data.filter(r => r.workType === "Project").length;
+            document.getElementById("statService").textContent = data.filter(r => r.workType === "Service").length;
+        }
+
         // ===== OVERVIEW (fetches from Google Sheet) =====
         async function loadOverview() {
             const date = document.getElementById("overviewDate").value;
@@ -1118,44 +1202,9 @@
 
             try {
                 const result = await sheetFetch("action=getStatus&date=" + encodeURIComponent(date));
-                const data = result.data || [];
-
-                if (data.length === 0) {
-                    body.innerHTML = '<tr><td colspan="7" class="no-data">No status updates for this date.</td></tr>';
-                } else {
-                    window._overviewData = data;
-                    body.innerHTML = data.map((r, i) => `
-                        <tr>
-                            <td>${i+1}</td>
-                            <td><strong>${r.empName}</strong><br><span style="color:#888;font-size:11px;">${r.role}</span></td>
-                            <td>${r.siteName}</td>
-                            <td><span class="badge ${r.workType==='Project'?'badge-project':r.workType==='Service'?'badge-service':'badge-office'}">${r.workType}</span></td>
-                            <td>${r.scopeOfWork}</td>
-                            <td>${r.status}</td>
-                            <td style="min-width:180px;">
-                                ${r.workDone ? `
-                                    <div style="font-size:12px;color:#333;margin-bottom:4px;max-width:200px;word-wrap:break-word;">${r.workDone.length > 60 ? r.workDone.substring(0,60) + '...' : r.workDone}</div>
-                                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-                                        <div style="flex:1;background:#e0e0e0;border-radius:10px;height:6px;overflow:hidden;">
-                                            <div style="width:${r.completionPct || 0}%;height:100%;background:${(r.completionPct||0) >= 70 ? '#27ae60' : (r.completionPct||0) >= 40 ? '#f39c12' : '#e74c3c'};border-radius:10px;"></div>
-                                        </div>
-                                        <span style="font-size:11px;font-weight:600;color:#555;">${r.completionPct || 0}%</span>
-                                    </div>
-                                    ${r.workRemarks ? '<div style="font-size:11px;color:#888;margin-bottom:4px;"><em>' + (r.workRemarks.length > 40 ? r.workRemarks.substring(0,40) + '...' : r.workRemarks) + '</em></div>' : ''}
-                                    ${r.nextVisitRequired === 'Yes' ? '<div style="font-size:11px;color:#e65100;margin-bottom:4px;">&#128197; Next: ' + (r.nextVisitDate || 'TBD') + '</div>' : ''}
-                                    <button class="work-done-btn has-data" onclick="openWorkDoneModal(${i})" style="font-size:11px;padding:3px 8px;">&#9998; Edit</button>
-                                ` : `
-                                    <button class="work-done-btn" onclick="openWorkDoneModal(${i})">&#9998; Update</button>
-                                `}
-                            </td>
-                        </tr>
-                    `).join("");
-                }
-
-                document.getElementById("statTotal").textContent = employees.length;
-                document.getElementById("statOnSite").textContent = data.filter(r => r.status === "On Site").length;
-                document.getElementById("statProject").textContent = data.filter(r => r.workType === "Project").length;
-                document.getElementById("statService").textContent = data.filter(r => r.workType === "Service").length;
+                const data = mergeWorkDoneData(result.data || []);
+                window._overviewData = data;
+                renderOverviewTable(data);
 
                 // Calculate efficiency
                 calculateEfficiency(data);
