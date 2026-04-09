@@ -611,12 +611,12 @@ window { background-color: #ffffff; }
 }
 .header-title {
     color: white;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 .header-sub {
     color: #93c5fd;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .stats-bar {
@@ -633,12 +633,12 @@ window { background-color: #ffffff; }
 }
 .stat-num {
     color: #1565c0;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 .stat-label {
     color: #555555;
-    font-size: 28px;
+    font-size: 20px;
 }
 .stat-num-unread { color: #f87171; }
 .stat-num-read { color: #4ade80; }
@@ -656,27 +656,27 @@ window { background-color: #ffffff; }
     border-left-style: solid;
 }
 .alert-title {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 .alert-body {
-    font-size: 28px;
+    font-size: 20px;
     margin-top: 2px;
 }
 .alert-time {
-    font-size: 28px;
+    font-size: 20px;
     color: #64748b;
     margin-top: 2px;
 }
 .alert-detail {
-    font-size: 28px;
+    font-size: 20px;
     margin-top: 3px;
     padding: 4px 6px;
     border-radius: 4px;
     background-color: rgba(0,0,0,0.05);
 }
 .alert-badge {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 9px;
@@ -686,11 +686,11 @@ window { background-color: #ffffff; }
 
 .unread-dot {
     color: #ef4444;
-    font-size: 28px;
+    font-size: 20px;
 }
 .read-check {
     color: #22c55e;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .alert-actions {
@@ -703,7 +703,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -714,7 +714,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -725,7 +725,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 20px;
     padding: 4px 12px;
     min-height: 29px;
 }
@@ -733,12 +733,12 @@ window { background-color: #ffffff; }
 
 .alert-expander {
     color: #64748b;
-    font-size: 28px;
+    font-size: 20px;
     padding-top: 4px;
 }
 .alert-expander title {
     color: #64748b;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .offline-card {
@@ -750,17 +750,17 @@ window { background-color: #ffffff; }
 }
 .offline-title {
     color: #c62828;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 .offline-body {
     color: #555555;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .section-header {
     color: #333333;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     padding: 8px 12px 4px;
 }
@@ -772,7 +772,7 @@ window { background-color: #ffffff; }
 }
 .refresh-text {
     color: #ffffff;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .announce-bar {
@@ -782,7 +782,7 @@ window { background-color: #ffffff; }
 }
 .announce-text {
     color: #60a5fa;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     font-family: monospace;
 }
@@ -795,18 +795,18 @@ window { background-color: #ffffff; }
 }
 .announce-overlay-icon {
     color: #60a5fa;
-    font-size: 28px;
+    font-size: 20px;
 }
 .announce-overlay-text {
     color: #ffffff;
-    font-size: 28px;
+    font-size: 20px;
     font-family: monospace;
     font-weight: bold;
     min-height: 66px;
 }
 .announce-overlay-title {
     color: #94a3b8;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -818,7 +818,7 @@ window { background-color: #ffffff; }
     border: 1px solid #1e40af;
     border-radius: 6px;
     padding: 2px 6px;
-    font-size: 28px;
+    font-size: 20px;
     min-height: 24px;
 }
 
@@ -839,17 +839,17 @@ window { background-color: #ffffff; }
 
 .header-clock {
     color: white;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
 }
 .header-date {
     color: #93c5fd;
-    font-size: 28px;
+    font-size: 20px;
 }
 
 .no-alerts {
     color: #2e7d32;
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     padding: 44px;
 }
@@ -1495,7 +1495,7 @@ class LoginWindow(Gtk.Window):
         box.pack_start(title, False, False, 4)
 
         sub = Gtk.Label(label="Configure your AquaGen login credentials")
-        sub.modify_font(Pango.FontDescription("Sans 16"))
+        sub.modify_font(Pango.FontDescription("Sans 11"))
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
         box.pack_start(sub, False, False, 4)
 
@@ -1965,10 +1965,10 @@ class AlertsWindow(Gtk.Window):
         # Typing text label
         self.overlay_label = Gtk.Label(label="")
         self.overlay_label.set_line_wrap(True)
-        self.overlay_label.set_max_width_chars(80)
+        self.overlay_label.set_max_width_chars(45)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
+        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
         self.overlay_label.set_margin_start(30)
         self.overlay_label.set_margin_end(30)
         self.overlay_label.set_margin_top(10)
@@ -2346,12 +2346,12 @@ class AlertsWindow(Gtk.Window):
 
         title = Gtk.Label(label="AquaGPT")
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        title.modify_font(Pango.FontDescription("Sans bold 22"))
+        title.modify_font(Pango.FontDescription("Sans bold 16"))
         header.pack_start(title, False, False, 0)
 
         subtitle = Gtk.Label(label="Your Water Assistant")
         subtitle.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.85, 1, 0.8))
-        subtitle.modify_font(Pango.FontDescription("Sans 16"))
+        subtitle.modify_font(Pango.FontDescription("Sans 11"))
         header.pack_start(subtitle, False, False, 0)
 
         close_btn = Gtk.Button(label="✕")
@@ -2394,7 +2394,7 @@ class AlertsWindow(Gtk.Window):
 
         self._chat_entry = Gtk.Entry()
         self._chat_entry.set_placeholder_text("Type your question...")
-        self._chat_entry.modify_font(Pango.FontDescription("Sans 18"))
+        self._chat_entry.modify_font(Pango.FontDescription("Sans 14"))
         self._chat_entry.connect("activate", self._send_chat)
         self._chat_entry.connect("focus-in-event", lambda w, e: self._show_chat_kb())
         input_box.pack_start(self._chat_entry, True, True, 0)
@@ -2442,9 +2442,9 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label="")
         label.set_line_wrap(True)
-        label.set_max_width_chars(50)
+        label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.START)
-        label.modify_font(Pango.FontDescription("Noto Sans 18"))
+        label.modify_font(Pango.FontDescription("Noto Sans 13"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -2507,7 +2507,7 @@ class AlertsWindow(Gtk.Window):
         label.set_line_wrap(True)
         label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.END)
-        label.modify_font(Pango.FontDescription("Noto Sans 18"))
+        label.modify_font(Pango.FontDescription("Noto Sans 13"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
