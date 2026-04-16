@@ -82,6 +82,9 @@ TRANSLATIONS = {
         "power_factor_low": "Power factor is low",
         "energy_daily_limit": "Daily energy consumption limit reached",
         "energy_monthly_limit": "Monthly energy consumption limit reached",
+        # Generic / safe range
+        "crossed_safe_range": "Crossed the safe range border",
+        "exceeded_threshold": "Exceeded threshold limit",
     },
     "te": {
         # General
@@ -132,6 +135,9 @@ TRANSLATIONS = {
         "power_factor_low": "పవర్ ఫ్యాక్టర్ తక్కువగా ఉంది",
         "energy_daily_limit": "రోజువారీ విద్యుత్ వినియోగ పరిమితి చేరుకుంది",
         "energy_monthly_limit": "నెలవారీ విద్యుత్ వినియోగ పరిమితి చేరుకుంది",
+        # Generic / safe range
+        "crossed_safe_range": "సురక్షిత పరిమితి దాటింది",
+        "exceeded_threshold": "పరిమితి దాటింది",
     },
     "hi": {
         # General
@@ -182,6 +188,9 @@ TRANSLATIONS = {
         "power_factor_low": "पावर फैक्टर कम है",
         "energy_daily_limit": "दैनिक ऊर्जा खपत सीमा पूरी हो गई",
         "energy_monthly_limit": "मासिक ऊर्जा खपत सीमा पूरी हो गई",
+        # Generic / safe range
+        "crossed_safe_range": "सुरक्षित सीमा पार हो गई",
+        "exceeded_threshold": "सीमा पार हो गई",
     },
     "kn": {
         # General
@@ -232,6 +241,9 @@ TRANSLATIONS = {
         "power_factor_low": "ಪವರ್ ಫ್ಯಾಕ್ಟರ್ ಕಡಿಮೆಯಾಗಿದೆ",
         "energy_daily_limit": "ದೈನಂದಿನ ವಿದ್ಯುತ್ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
         "energy_monthly_limit": "ಮಾಸಿಕ ವಿದ್ಯುತ್ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
+        # Generic / safe range
+        "crossed_safe_range": "ಸುರಕ್ಷಿತ ಮಿತಿ ದಾಟಿದೆ",
+        "exceeded_threshold": "ಮಿತಿ ದಾಟಿದೆ",
     },
     "ml": {
         # General
@@ -282,6 +294,9 @@ TRANSLATIONS = {
         "power_factor_low": "പവർ ഫാക്ടർ താഴ്ന്നിരിക്കുന്നു",
         "energy_daily_limit": "ദൈനംദിന വൈദ്യുത ഉപഭോഗ പരിധി എത്തി",
         "energy_monthly_limit": "മാസ വൈദ്യുത ഉപഭോഗ പരിധി എത്തി",
+        # Generic / safe range
+        "crossed_safe_range": "സുരക്ഷിത പരിധി കടന്നു",
+        "exceeded_threshold": "പരിധി കടന്നു",
     },
     "ta": {
         # General
@@ -332,6 +347,9 @@ TRANSLATIONS = {
         "power_factor_low": "திறன் காரணி குறைவாக உள்ளது",
         "energy_daily_limit": "தினசரி மின் நுகர்வு வரம்பு எட்டியது",
         "energy_monthly_limit": "மாதாந்திர மின் நுகர்வு வரம்பு எட்டியது",
+        # Generic / safe range
+        "crossed_safe_range": "பாதுகாப்பான வரம்பை தாண்டியது",
+        "exceeded_threshold": "வரம்பு தாண்டியது",
     },
 }
 
@@ -447,6 +465,13 @@ def translate_alert_text(title, body, status, lang):
     elif "energy" in bl and ("limit" in bl or "threshold" in bl):
         translated_body = t["energy_threshold"]
 
+    elif "crossed" in bl and "safe" in bl:
+        translated_body = t["crossed_safe_range"]
+    elif "safe range" in bl:
+        translated_body = t["crossed_safe_range"]
+    elif "exceeded" in bl and "threshold" in bl:
+        translated_body = t["exceeded_threshold"]
+
     # ── Status translation ────────────────────────────────────────────────────
     translated_status = status
     sl = status.lower()
@@ -506,6 +531,13 @@ def translate_alert_text(title, body, status, lang):
         translated_status = t["energy_monthly_limit"] + _time_suffix(status)
     elif "energy" in sl and ("limit" in sl or "threshold" in sl or "exceed" in sl):
         translated_status = t["energy_threshold"] + _time_suffix(status)
+
+    elif "crossed" in sl and "safe" in sl:
+        translated_status = t["crossed_safe_range"]
+    elif "safe range" in sl:
+        translated_status = t["crossed_safe_range"]
+    elif "exceeded" in sl and "threshold" in sl:
+        translated_status = t["exceeded_threshold"]
 
     # Title stays in English (location name)
     return title, translated_body, translated_status
