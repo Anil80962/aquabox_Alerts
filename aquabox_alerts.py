@@ -43,17 +43,11 @@ TRANSLATIONS = {
         "stock_lower": "Stock Level Lower limit reached",
         "daily_limit": "Daily Limit Reached",
         "daily_limit_90": "90 percent of the Daily Limit Reached",
-        "monthly_limit": "Monthly Limit Reached",
-        "monthly_limit_90": "90 percent of Monthly Limit Reached",
         "abnormal": "Abnormal water usage detected",
         "offline": "Device is offline",
         "online": "Device is back online",
         "at": "at",
         "current_stock": "Current Stock",
-        "stable_flow": "Stable flow pattern detected",
-        "avg_consumption": "Average consumption",
-        "no_level_variation": "No level variation detected for",
-        "days": "days",
         "upper_limit": "Upper Limit",
         "lower_limit": "Lower Limit",
     },
@@ -67,8 +61,6 @@ TRANSLATIONS = {
         "stock_lower": "నీటి మట్టం కింది పరిమితి చేరుకుంది",
         "daily_limit": "రోజువారీ పరిమితి చేరుకుంది",
         "daily_limit_90": "రోజువారీ పరిమితిలో 90 శాతం చేరుకుంది",
-        "monthly_limit": "నెలవారీ పరిమితి చేరుకుంది",
-        "monthly_limit_90": "నెలవారీ పరిమితిలో 90 శాతం చేరుకుంది",
         "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
         "offline": "పరికరం ఆఫ్‌లైన్‌లో ఉంది",
         "online": "పరికరం తిరిగి ఆన్‌లైన్‌లో ఉంది",
@@ -76,10 +68,6 @@ TRANSLATIONS = {
         "current_stock": "ప్రస్తుత నిల్వ",
         "upper_limit": "పై పరిమితి",
         "lower_limit": "కింది పరిమితి",
-        "stable_flow": "స్థిరమైన ప్రవాహ నమూనా గుర్తించబడింది",
-        "avg_consumption": "సగటు వినియోగం",
-        "no_level_variation": "నీటి మట్టంలో మార్పు లేదు",
-        "days": "రోజులు",
     },
     "hi": {
         "alert": "चेतावनी",
@@ -91,8 +79,6 @@ TRANSLATIONS = {
         "stock_lower": "जल स्तर निचली सीमा पर पहुंच गया",
         "daily_limit": "दैनिक सीमा पूरी हो गई",
         "daily_limit_90": "दैनिक सीमा का 90 प्रतिशत पूरा हो गया",
-        "monthly_limit": "मासिक सीमा पूरी हो गई",
-        "monthly_limit_90": "मासिक सीमा का 90 प्रतिशत पूरा हो गया",
         "abnormal": "असामान्य पानी का उपयोग पाया गया",
         "offline": "डिवाइस ऑफलाइन है",
         "online": "डिवाइस वापस ऑनलाइन है",
@@ -100,10 +86,6 @@ TRANSLATIONS = {
         "current_stock": "वर्तमान स्टॉक",
         "upper_limit": "ऊपरी सीमा",
         "lower_limit": "निचली सीमा",
-        "stable_flow": "स्थिर प्रवाह पैटर्न पाया गया",
-        "avg_consumption": "औसत खपत",
-        "no_level_variation": "जल स्तर में कोई बदलाव नहीं",
-        "days": "दिन",
     },
     "kn": {
         "alert": "ಎಚ್ಚರಿಕೆ",
@@ -115,8 +97,6 @@ TRANSLATIONS = {
         "stock_lower": "ನೀರಿನ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit": "ದೈನಂದಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "daily_limit_90": "ದೈನಂದಿನ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
-        "monthly_limit": "ಮಾಸಿಕ ಮಿತಿ ತಲುಪಿದೆ",
-        "monthly_limit_90": "ಮಾಸಿಕ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
         "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
         "offline": "ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
         "online": "ಸಾಧನ ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
@@ -124,10 +104,6 @@ TRANSLATIONS = {
         "current_stock": "ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು",
         "upper_limit": "ಮೇಲಿನ ಮಿತಿ",
         "lower_limit": "ಕೆಳಗಿನ ಮಿತಿ",
-        "stable_flow": "ಸ್ಥಿರ ಹರಿವಿನ ಮಾದರಿ ಪತ್ತೆಯಾಗಿದೆ",
-        "avg_consumption": "ಸರಾಸರಿ ಬಳಕೆ",
-        "no_level_variation": "ನೀರಿನ ಮಟ್ಟದಲ್ಲಿ ಬದಲಾವಣೆ ಇಲ್ಲ",
-        "days": "ದಿನಗಳು",
     },
     "ml": {
         "alert": "മുന്നറിയിപ്പ്",
@@ -139,8 +115,6 @@ TRANSLATIONS = {
         "stock_lower": "ജല നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
         "daily_limit": "ദൈനംദിന പരിധി എത്തി",
         "daily_limit_90": "ദൈനംദിന പരിധിയുടെ 90 ശതമാനം എത്തി",
-        "monthly_limit": "മാസ പരിധി എത്തി",
-        "monthly_limit_90": "മാസ പരിധിയുടെ 90 ശതമാനം എത്തി",
         "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
         "offline": "ഉപകരണം ഓഫ്‌ലൈനിലാണ്",
         "online": "ഉപകരണം വീണ്ടും ഓൺലൈനിലാണ്",
@@ -148,10 +122,6 @@ TRANSLATIONS = {
         "current_stock": "നിലവിലെ സ്റ്റോക്ക്",
         "upper_limit": "ഉയർന്ന പരിധി",
         "lower_limit": "താഴ്ന്ന പരിധി",
-        "stable_flow": "സ്ഥിരമായ പ്രവാഹ രീതി കണ്ടെത്തി",
-        "avg_consumption": "ശരാശരി ഉപഭോഗം",
-        "no_level_variation": "ജല നിരപ്പിൽ മാറ്റമില്ല",
-        "days": "ദിവസങ്ങൾ",
     },
     "ta": {
         "alert": "எச்சரிக்கை",
@@ -163,8 +133,6 @@ TRANSLATIONS = {
         "stock_lower": "நீர் மட்டம் கீழ் வரம்பை எட்டியது",
         "daily_limit": "தினசரி வரம்பு எட்டியது",
         "daily_limit_90": "தினசரி வரம்பின் 90 சதவீதம் எட்டியது",
-        "monthly_limit": "மாத வரம்பு எட்டியது",
-        "monthly_limit_90": "மாத வரம்பின் 90 சதவீதம் எட்டியது",
         "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
         "offline": "சாதனம் ஆஃப்லைனில் உள்ளது",
         "online": "சாதனம் மீண்டும் ஆன்லைனில் உள்ளது",
@@ -172,54 +140,25 @@ TRANSLATIONS = {
         "current_stock": "தற்போதைய இருப்பு",
         "upper_limit": "மேல் வரம்பு",
         "lower_limit": "கீழ் வரம்பு",
-        "stable_flow": "நிலையான நீரோட்ட முறை கண்டறியப்பட்டது",
-        "avg_consumption": "சராசரி நுகர்வு",
-        "no_level_variation": "நீர் மட்டத்தில் மாற்றம் இல்லை",
-        "days": "நாட்கள்",
     },
 }
 
 
-def _make_units_readable(text):
-    """Replace abbreviations with full words for TTS clarity."""
-    import re
-    text = re.sub(r'(\d+\.?\d*)\s*kL\b', r'\1 kiloliters', text)
-    text = re.sub(r'(\d+\.?\d*)\s*KL\b', r'\1 kiloliters', text)
-    text = re.sub(r'(\d+\.?\d*)\s*L\b', r'\1 liters', text)
-    return text
-
-
 def translate_alert_text(title, body, status, lang):
     """Translate alert text to local language, keep location name in English."""
-    import re
     body = str(body)
     status = str(status)
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
-    # Make units readable
-    body = _make_units_readable(body)
-    status = _make_units_readable(status)
-
     # Body translations
     translated_body = body
-    if "Stable flow pattern" in body:
-        m = re.search(r'(\d+\.?\d*)\s*liters', body)
-        amount = m.group(1) + " liters" if m else ""
-        translated_body = t.get("stable_flow", "Stable flow pattern detected")
-        if amount:
-            translated_body += ". " + t.get("avg_consumption", "Average consumption") + ": " + amount
-    elif "No level variation" in body or "no_level_variation" in body.lower():
-        translated_body = t.get("no_level_variation", "No level variation detected for")
-    elif "filled" in body.lower():
+    if "filled" in body.lower():
+        # Extract percentage e.g. "90.84% filled"
         parts = body.split("%")
         if len(parts) > 1:
             translated_body = parts[0] + "% " + t["filled"]
         else:
             translated_body = body.replace("filled", t["filled"])
-    elif "Monthly Limit Reached" in body:
-        translated_body = t.get("monthly_limit", "Monthly Limit Reached")
-    elif "90% of the Monthly Limit" in body:
-        translated_body = t.get("monthly_limit_90", "90% of Monthly Limit Reached")
     elif "Daily Limit Reached" in body:
         translated_body = t["daily_limit"]
     elif "90% of the Daily Limit" in body:
@@ -230,42 +169,18 @@ def translate_alert_text(title, body, status, lang):
         translated_body = t["offline"]
     elif body.lower() == "online":
         translated_body = t["online"]
-    else:
-        # Try to detect numeric body (e.g. "2.0" for no-variation days)
-        try:
-            float(body)
-            translated_body = t.get("no_level_variation", "No level variation detected for") + " " + str(round(float(body))) + " " + t.get("days", "days")
-        except ValueError:
-            pass
 
     # Status translations
     translated_status = status
-    if "Stable flow pattern" in status:
-        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
-        translated_status = t.get("stable_flow", "Stable flow pattern detected")
-        if time_part:
-            translated_status += ", " + t["at"] + " " + time_part
-    elif "No level variation" in status:
-        m = re.search(r'for\s+([\d.]+)', status)
-        if m:
-            days = str(round(float(m.group(1))))
-            translated_status = t.get("no_level_variation", "No level variation detected for") + " " + days + " " + t.get("days", "days")
-        else:
-            translated_status = t.get("no_level_variation", "No level variation detected")
-    elif "Upper limit reached" in status:
-        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
-        translated_status = t["stock_upper"] + (", " + t["at"] + " " + time_part if time_part else "")
+    if "Upper limit reached" in status:
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
     elif "Lower limit reached" in status:
-        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
-        translated_status = t["stock_lower"] + (", " + t["at"] + " " + time_part if time_part else "")
-    elif "monthly consumption limit reached" in status.lower():
-        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
-        translated_status = t.get("monthly_limit", "Monthly Limit Reached") + (", " + t["at"] + " " + time_part if time_part else "")
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["stock_lower"] + (" " + t["at"] + " " + time_part if time_part else "")
     elif "daily consumption limit reached" in status.lower():
-        time_part = status.split(" at ")[-1].strip() if " at " in status else ""
-        translated_status = t["daily_limit"] + (", " + t["at"] + " " + time_part if time_part else "")
-    elif "90%" in status and "monthly" in status.lower():
-        translated_status = t.get("monthly_limit_90", "90% of Monthly Limit Reached")
+        time_part = status.split("at")[-1].strip() if "at" in status else ""
+        translated_status = t["daily_limit"] + (" " + t["at"] + " " + time_part if time_part else "")
     elif "90%" in status and "limit" in status.lower():
         translated_status = t["daily_limit_90"]
     elif "Abnormal" in status:
@@ -611,12 +526,12 @@ window { background-color: #ffffff; }
 }
 .header-title {
     color: white;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .header-sub {
     color: #93c5fd;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .stats-bar {
@@ -633,12 +548,12 @@ window { background-color: #ffffff; }
 }
 .stat-num {
     color: #1565c0;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .stat-label {
     color: #555555;
-    font-size: 20px;
+    font-size: 28px;
 }
 .stat-num-unread { color: #f87171; }
 .stat-num-read { color: #4ade80; }
@@ -656,27 +571,27 @@ window { background-color: #ffffff; }
     border-left-style: solid;
 }
 .alert-title {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .alert-body {
-    font-size: 20px;
+    font-size: 28px;
     margin-top: 2px;
 }
 .alert-time {
-    font-size: 20px;
+    font-size: 28px;
     color: #64748b;
     margin-top: 2px;
 }
 .alert-detail {
-    font-size: 20px;
+    font-size: 28px;
     margin-top: 3px;
     padding: 4px 6px;
     border-radius: 4px;
     background-color: rgba(0,0,0,0.05);
 }
 .alert-badge {
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 9px;
@@ -686,11 +601,11 @@ window { background-color: #ffffff; }
 
 .unread-dot {
     color: #ef4444;
-    font-size: 20px;
+    font-size: 28px;
 }
 .read-check {
     color: #22c55e;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .alert-actions {
@@ -703,7 +618,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -714,7 +629,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -725,7 +640,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 20px;
+    font-size: 28px;
     padding: 4px 12px;
     min-height: 29px;
 }
@@ -733,12 +648,12 @@ window { background-color: #ffffff; }
 
 .alert-expander {
     color: #64748b;
-    font-size: 20px;
+    font-size: 28px;
     padding-top: 4px;
 }
 .alert-expander title {
     color: #64748b;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .offline-card {
@@ -750,17 +665,17 @@ window { background-color: #ffffff; }
 }
 .offline-title {
     color: #c62828;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .offline-body {
     color: #555555;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .section-header {
     color: #333333;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 8px 12px 4px;
 }
@@ -772,7 +687,7 @@ window { background-color: #ffffff; }
 }
 .refresh-text {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .announce-bar {
@@ -782,7 +697,7 @@ window { background-color: #ffffff; }
 }
 .announce-text {
     color: #60a5fa;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     font-family: monospace;
 }
@@ -795,18 +710,18 @@ window { background-color: #ffffff; }
 }
 .announce-overlay-icon {
     color: #60a5fa;
-    font-size: 20px;
+    font-size: 28px;
 }
 .announce-overlay-text {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 28px;
     font-family: monospace;
     font-weight: bold;
     min-height: 66px;
 }
 .announce-overlay-title {
     color: #94a3b8;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -818,7 +733,7 @@ window { background-color: #ffffff; }
     border: 1px solid #1e40af;
     border-radius: 6px;
     padding: 2px 6px;
-    font-size: 20px;
+    font-size: 28px;
     min-height: 24px;
 }
 
@@ -839,17 +754,17 @@ window { background-color: #ffffff; }
 
 .header-clock {
     color: white;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
 }
 .header-date {
     color: #93c5fd;
-    font-size: 20px;
+    font-size: 28px;
 }
 
 .no-alerts {
     color: #2e7d32;
-    font-size: 20px;
+    font-size: 28px;
     font-weight: bold;
     padding: 44px;
 }
@@ -1495,7 +1410,7 @@ class LoginWindow(Gtk.Window):
         box.pack_start(title, False, False, 4)
 
         sub = Gtk.Label(label="Configure your AquaGen login credentials")
-        sub.modify_font(Pango.FontDescription("Sans 11"))
+        sub.modify_font(Pango.FontDescription("Sans 16"))
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
         box.pack_start(sub, False, False, 4)
 
@@ -1965,10 +1880,10 @@ class AlertsWindow(Gtk.Window):
         # Typing text label
         self.overlay_label = Gtk.Label(label="")
         self.overlay_label.set_line_wrap(True)
-        self.overlay_label.set_max_width_chars(45)
+        self.overlay_label.set_max_width_chars(80)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
+        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
         self.overlay_label.set_margin_start(30)
         self.overlay_label.set_margin_end(30)
         self.overlay_label.set_margin_top(10)
@@ -2346,12 +2261,12 @@ class AlertsWindow(Gtk.Window):
 
         title = Gtk.Label(label="AquaGPT")
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        title.modify_font(Pango.FontDescription("Sans bold 16"))
+        title.modify_font(Pango.FontDescription("Sans bold 22"))
         header.pack_start(title, False, False, 0)
 
         subtitle = Gtk.Label(label="Your Water Assistant")
         subtitle.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.7, 0.85, 1, 0.8))
-        subtitle.modify_font(Pango.FontDescription("Sans 11"))
+        subtitle.modify_font(Pango.FontDescription("Sans 16"))
         header.pack_start(subtitle, False, False, 0)
 
         close_btn = Gtk.Button(label="✕")
@@ -2394,7 +2309,7 @@ class AlertsWindow(Gtk.Window):
 
         self._chat_entry = Gtk.Entry()
         self._chat_entry.set_placeholder_text("Type your question...")
-        self._chat_entry.modify_font(Pango.FontDescription("Sans 14"))
+        self._chat_entry.modify_font(Pango.FontDescription("Sans 18"))
         self._chat_entry.connect("activate", self._send_chat)
         self._chat_entry.connect("focus-in-event", lambda w, e: self._show_chat_kb())
         input_box.pack_start(self._chat_entry, True, True, 0)
@@ -2442,9 +2357,9 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label="")
         label.set_line_wrap(True)
-        label.set_max_width_chars(40)
+        label.set_max_width_chars(50)
         label.set_halign(Gtk.Align.START)
-        label.modify_font(Pango.FontDescription("Noto Sans 13"))
+        label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -2507,7 +2422,7 @@ class AlertsWindow(Gtk.Window):
         label.set_line_wrap(True)
         label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.END)
-        label.modify_font(Pango.FontDescription("Noto Sans 13"))
+        label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -3037,63 +2952,70 @@ class AlertsWindow(Gtk.Window):
 
     def _check_wifi_status(self):
         """Periodically check WiFi, auto-reconnect, restart Tailscale, and refresh on recovery."""
+        # Use nmcli to check actual WiFi state (iwgetid not available on this system)
         try:
-            out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
-            connected = len(out.stdout.strip()) > 0
+            out = subprocess.run(
+                ["nmcli", "-t", "-f", "GENERAL.STATE,GENERAL.CONNECTION", "device", "show", "wlan0"],
+                capture_output=True, text=True, timeout=3
+            )
+            state_line = out.stdout.strip()
+            connected = "GENERAL.STATE:100" in state_line  # 100 = fully connected
+            is_connecting = any(x in state_line for x in ["GENERAL.STATE:40", "GENERAL.STATE:50", "GENERAL.STATE:60", "GENERAL.STATE:70", "GENERAL.STATE:80", "GENERAL.STATE:90"])
+            # Save SSID when connected
+            if connected:
+                try:
+                    ssid_out = subprocess.run(
+                        ["nmcli", "-t", "-f", "GENERAL.CONNECTION", "device", "show", "wlan0"],
+                        capture_output=True, text=True, timeout=3
+                    )
+                    ssid = ssid_out.stdout.strip().split(":")[-1].replace("netplan-wlan0-", "")
+                    if ssid:
+                        self._last_ssid = ssid
+                except: pass
         except Exception:
             connected = False
+            is_connecting = False
 
-        # Also check internet connectivity (not just WiFi link)
+        # Check internet only when WiFi is connected
+        internet = False
         if connected:
             try:
-                import requests
                 requests.get("https://prod-aquagen.azurewebsites.net", timeout=5)
                 internet = True
             except Exception:
-                internet = False
-        else:
-            internet = False
+                pass
 
         was_disconnected = not self._wifi_connected
 
-        if not connected:
-            # Try multiple reconnect methods
-            try:
-                # Try nmcli first
-                subprocess.run(
-                    ["sudo", "nmcli", "device", "wifi", "rescan"],
-                    capture_output=True, timeout=5
-                )
-                subprocess.run(
-                    ["sudo", "nmcli", "connection", "up", "netplan-wlan0-" + self._last_ssid] if hasattr(self, '_last_ssid') and self._last_ssid else
-                    ["sudo", "nmcli", "device", "connect", "wlan0"],
-                    capture_output=True, timeout=10
-                )
-            except Exception:
-                pass
-            try:
-                # Also try wpa_cli
-                subprocess.run(
-                    ["sudo", "wpa_cli", "-i", "wlan0", "reconnect"],
-                    capture_output=True, timeout=5
-                )
-            except Exception:
-                pass
+        if not connected and not is_connecting:
+            # Truly disconnected — wait 3 cycles (15s) before attempting reconnect
+            if not hasattr(self, '_reconnect_count'):
+                self._reconnect_count = 0
+            self._reconnect_count += 1
+            if self._reconnect_count >= 3:
+                self._reconnect_count = 0
+                try:
+                    subprocess.run(
+                        ["sudo", "nmcli", "connection", "up", "netplan-wlan0-" + self._last_ssid] if hasattr(self, '_last_ssid') and self._last_ssid else
+                        ["sudo", "nmcli", "device", "connect", "wlan0"],
+                        capture_output=True, timeout=10
+                    )
+                    print(f"[{now()}] WiFi reconnect attempted")
+                except Exception:
+                    pass
             GLib.idle_add(self.refresh_label.set_text, "WiFi disconnected - reconnecting...")
-            print(f"[{now()}] WiFi disconnected - attempting reconnect...")
+            print(f"[{now()}] WiFi disconnected - waiting before reconnect ({getattr(self,'_reconnect_count',0)}/3)...")
+        elif is_connecting:
+            print(f"[{now()}] WiFi connecting - waiting for DHCP...")
         else:
-            # Save current SSID for reconnect
-            try:
-                out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
-                self._last_ssid = out.stdout.strip()
-            except: pass
+            self._reconnect_count = 0
 
         if connected != self._wifi_connected:
             self._wifi_connected = connected
-            self._wifi_icon.queue_draw()
+            GLib.idle_add(self._wifi_icon.queue_draw)
 
         if connected and internet and was_disconnected:
-            # Just reconnected with internet - restart Tailscale and refresh
+            # Just reconnected - restart Tailscale and refresh alerts
             print(f"[{now()}] WiFi + Internet restored! Restarting Tailscale...")
             subprocess.run(["sudo", "systemctl", "restart", "tailscaled"],
                            capture_output=True, timeout=15)
@@ -3107,7 +3029,7 @@ class AlertsWindow(Gtk.Window):
             token_time = 0
             threading.Thread(target=self._fetch_and_update, daemon=True).start()
 
-        # Periodically restart Tailscale if WiFi is up but no internet (every 5 min)
+        # Periodically restart Tailscale if WiFi connected but no internet (every 5 min)
         if connected and not internet:
             self._tailscale_restart_count += 1
             if self._tailscale_restart_count >= 60:  # 60 * 5s = 5 minutes
@@ -3168,44 +3090,33 @@ class AlertsWindow(Gtk.Window):
             cr.stroke()
 
     def _get_wifi_info(self):
-        """Get current WiFi SSID and signal strength."""
+        """Get current WiFi SSID and signal strength using nmcli."""
         ssid = ""
         signal = ""
         try:
-            out = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
-            ssid = out.stdout.strip()
-        except Exception:
-            ssid = "Unknown"
-        try:
+            # Get active SSID from nmcli
             out = subprocess.run(
-                ["iwconfig", "wlan0"], capture_output=True, text=True, timeout=3
+                ["nmcli", "-t", "-f", "active,ssid,signal", "dev", "wifi"],
+                capture_output=True, text=True, timeout=3
             )
-            for line in out.stdout.split("\n"):
-                if "Signal level" in line:
-                    import re
-                    m = re.search(r"Signal level[=:]?\s*(-?\d+)", line)
-                    if m:
-                        dbm = int(m.group(1))
-                        if dbm <= -80:
-                            signal = f"{dbm} dBm (Weak)"
-                        elif dbm <= -60:
-                            signal = f"{dbm} dBm (Fair)"
-                        elif dbm <= -40:
-                            signal = f"{dbm} dBm (Good)"
+            for line in out.stdout.strip().split("\n"):
+                parts = line.split(":")
+                if len(parts) >= 3 and parts[0].strip().lower() == "yes":
+                    ssid = parts[1].strip()
+                    sig_val = parts[2].strip()
+                    if sig_val.isdigit():
+                        pct = int(sig_val)
+                        if pct >= 80:
+                            signal = f"{pct}% (Excellent)"
+                        elif pct >= 60:
+                            signal = f"{pct}% (Good)"
+                        elif pct >= 40:
+                            signal = f"{pct}% (Fair)"
                         else:
-                            signal = f"{dbm} dBm (Excellent)"
-                    break
-                elif "Link Quality" in line:
-                    import re
-                    m = re.search(r"Link Quality[=:]?\s*(\d+)/(\d+)", line)
-                    if m:
-                        qual = int(m.group(1))
-                        max_q = int(m.group(2))
-                        pct = int(qual / max_q * 100)
-                        signal = f"{pct}% ({qual}/{max_q})"
+                            signal = f"{pct}% (Weak)"
                     break
         except Exception:
-            signal = "N/A"
+            pass
         return ssid or "Not connected", signal or "N/A"
 
     def _scan_wifi_networks(self):
@@ -3243,7 +3154,7 @@ class AlertsWindow(Gtk.Window):
             print(f"[{now()}] WiFi scan error: {e}")
         return networks
 
-    def _connect_to_wifi(self, ssid, password, status_label):
+    def _connect_to_wifi(self, ssid, password, status_label, on_done=None):
         """Connect to a WiFi network in background thread."""
         def _status(text, r=0.59, g=0.75, b=0.98):
             GLib.idle_add(lambda: status_label.set_text(text))
@@ -3325,18 +3236,27 @@ class AlertsWindow(Gtk.Window):
                     _status(f"Error: {e}", 0.95, 0.2, 0.2)
                     return
 
-            # Wait for connection
-            for i in range(15):
+            # Wait for connection using nmcli (iwgetid not available)
+            for i in range(20):
                 _time.sleep(1)
                 _status(f"Connecting to {ssid}... ({i+1}s)")
-                chk = subprocess.run(["iwgetid", "-r"], capture_output=True, text=True, timeout=3)
-                if chk.stdout.strip() == ssid:
+                try:
+                    chk = subprocess.run(
+                        ["nmcli", "-t", "-f", "GENERAL.STATE,GENERAL.CONNECTION", "device", "show", "wlan0"],
+                        capture_output=True, text=True, timeout=3
+                    )
+                    wifi_ok = "GENERAL.STATE:100" in chk.stdout
+                except Exception:
+                    wifi_ok = False
+                if wifi_ok:
                     # Get IP via DHCP
                     subprocess.run(["sudo", "dhclient", "wlan0"], capture_output=True, timeout=10)
                     _status(f"Connected to {ssid}!", 0.26, 0.85, 0.37)
                     self._wifi_connected = True
                     self._last_ssid = ssid
                     GLib.idle_add(self._wifi_icon.queue_draw)
+                    if on_done:
+                        GLib.idle_add(on_done)
                     # Close GTK keyboard if open
                     if hasattr(self, '_hide_wifi_kb_func') and self._hide_wifi_kb_func:
                         GLib.idle_add(self._hide_wifi_kb_func)
@@ -3357,6 +3277,8 @@ class AlertsWindow(Gtk.Window):
                     return
 
             _status("Failed to connect. Check password.", 0.95, 0.2, 0.2)
+            if on_done:
+                GLib.idle_add(on_done)
 
         threading.Thread(target=do_connect, daemon=True).start()
 
@@ -3729,16 +3651,28 @@ class AlertsWindow(Gtk.Window):
         def on_save(btn):
             ssid = selected_net["ssid"]
             if not ssid:
+                p2_status.set_text("Please select a network first!")
+                p2_status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.95, 0.2, 0.2, 1))
                 return
             password = self._wifi_pass_entry.get_text()
             if selected_net["locked"] and not password:
                 p2_status.set_text("Please enter the password!")
                 p2_status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.95, 0.2, 0.2, 1))
                 return
+            # Immediate feedback
+            save_btn.set_sensitive(False)
+            save_btn.set_label("⏳  Connecting...")
+            p2_status.set_text(f"Connecting to {ssid}...")
+            p2_status.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.59, 0.75, 0.98, 1))
             # Kill keyboard before connecting
             subprocess.run(["killall", "wvkbd-mobintl"], capture_output=True)
+            if hasattr(self, '_hide_wifi_kb_func') and self._hide_wifi_kb_func:
+                self._hide_wifi_kb_func()
             self._wifi_kb_visible = False
-            self._connect_to_wifi(ssid, password, p2_status)
+            def _restore_btn():
+                save_btn.set_sensitive(True)
+                save_btn.set_label("✔  Save & Connect")
+            self._connect_to_wifi(ssid, password, p2_status, _restore_btn)
 
         save_btn.connect("clicked", on_save)
         self._wifi_pass_entry.connect("activate", on_save)
