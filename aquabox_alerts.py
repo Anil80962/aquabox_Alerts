@@ -34,112 +34,304 @@ TTS_LANG = "en"  # en=English, te=Telugu, hi=Hindi, kn=Kannada, ta=Tamil
 # Translations for TTS announcements
 TRANSLATIONS = {
     "en": {
-        "alert": "Alert",
-        "of": "of",
-        "unread_alert": "Unread alert",
-        "offline_unit": "Offline unit",
-        "filled": "filled",
-        "stock_upper": "Stock Level Upper limit reached",
-        "stock_lower": "Stock Level Lower limit reached",
-        "daily_limit": "Daily Limit Reached",
-        "daily_limit_90": "90 percent of the Daily Limit Reached",
-        "abnormal": "Abnormal water usage detected",
+        # General
+        "alert": "Alert", "of": "of", "at": "at",
+        "unread_alert": "Unread alert", "offline_unit": "Offline unit",
+        "consumption": "Consumption", "limit": "Limit", "exceeded": "Exceeded",
+        # Device status
         "offline": "Device is offline",
         "online": "Device is back online",
-        "at": "at",
+        # Tank / stock level
+        "filled": "filled",
+        "stock_upper": "Tank level upper limit reached",
+        "stock_lower": "Tank level lower limit reached",
         "current_stock": "Current Stock",
-        "upper_limit": "Upper Limit",
-        "lower_limit": "Lower Limit",
+        "upper_limit": "Upper Limit", "lower_limit": "Lower Limit",
+        # Unit / daily threshold
+        "daily_limit": "Daily consumption limit reached",
+        "daily_limit_90": "90% of daily consumption limit reached",
+        "daily_limit_125": "Daily consumption exceeded 125% of limit",
+        # Hourly threshold
+        "hourly_threshold": "Hourly consumption limit exceeded",
+        # Monthly threshold
+        "monthly_limit_90": "90% of monthly consumption limit reached",
+        "monthly_limit": "Monthly consumption limit reached",
+        # Category monthly threshold
+        "cat_month_threshold": "Category monthly consumption limit exceeded",
+        # Water quality
+        "quality_threshold": "Water quality parameter exceeded limit",
+        "ph_high": "pH level is high",
+        "ph_low": "pH level is low",
+        "turbidity_high": "Turbidity level is high",
+        "tds_high": "TDS level is high",
+        "chlorine_high": "Chlorine level is high",
+        "chlorine_low": "Chlorine level is low",
+        # Flow rate
+        "flow_rate_normal": "Flow rate is back to normal range",
+        "flow_rate_above": "Flow rate exceeded upper limit",
+        "flow_rate_below": "Flow rate is below lower limit",
+        # Stable flow
+        "stable_flow": "Stable flow pattern detected",
+        # Abnormal usage
+        "abnormal": "Abnormal water usage detected",
+        # Energy
+        "energy_threshold": "Energy parameter exceeded limit",
+        "voltage_high": "Voltage is high",
+        "voltage_low": "Voltage is low",
+        "current_high": "Current is high",
+        "power_factor_low": "Power factor is low",
+        "energy_daily_limit": "Daily energy consumption limit reached",
+        "energy_monthly_limit": "Monthly energy consumption limit reached",
     },
     "te": {
-        "alert": "హెచ్చరిక",
-        "of": "లో",
-        "unread_alert": "చదవని హెచ్చరిక",
-        "offline_unit": "ఆఫ్‌లైన్ యూనిట్",
-        "filled": "నిండింది",
-        "stock_upper": "నీటి మట్టం పై పరిమితి చేరుకుంది",
-        "stock_lower": "నీటి మట్టం కింది పరిమితి చేరుకుంది",
-        "daily_limit": "రోజువారీ పరిమితి చేరుకుంది",
-        "daily_limit_90": "రోజువారీ పరిమితిలో 90 శాతం చేరుకుంది",
-        "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
+        # General
+        "alert": "హెచ్చరిక", "of": "లో", "at": "సమయం",
+        "unread_alert": "చదవని హెచ్చరిక", "offline_unit": "ఆఫ్‌లైన్ యూనిట్",
+        "consumption": "వినియోగం", "limit": "పరిమితి", "exceeded": "మించింది",
+        # Device status
         "offline": "పరికరం ఆఫ్‌లైన్‌లో ఉంది",
         "online": "పరికరం తిరిగి ఆన్‌లైన్‌లో ఉంది",
-        "at": "సమయం",
+        # Tank / stock level
+        "filled": "నిండింది",
+        "stock_upper": "ట్యాంక్ మట్టం పై పరిమితి చేరుకుంది",
+        "stock_lower": "ట్యాంక్ మట్టం కింది పరిమితి చేరుకుంది",
         "current_stock": "ప్రస్తుత నిల్వ",
-        "upper_limit": "పై పరిమితి",
-        "lower_limit": "కింది పరిమితి",
+        "upper_limit": "పై పరిమితి", "lower_limit": "కింది పరిమితి",
+        # Unit / daily threshold
+        "daily_limit": "రోజువారీ వినియోగ పరిమితి చేరుకుంది",
+        "daily_limit_90": "రోజువారీ వినియోగ పరిమితిలో 90% చేరుకుంది",
+        "daily_limit_125": "రోజువారీ వినియోగ పరిమితి 125% దాటింది",
+        # Hourly threshold
+        "hourly_threshold": "గంట వినియోగ పరిమితి మించింది",
+        # Monthly threshold
+        "monthly_limit_90": "నెలవారీ వినియోగ పరిమితిలో 90% చేరుకుంది",
+        "monthly_limit": "నెలవారీ వినియోగ పరిమితి చేరుకుంది",
+        # Category monthly threshold
+        "cat_month_threshold": "వర్గం నెలవారీ వినియోగ పరిమితి మించింది",
+        # Water quality
+        "quality_threshold": "నీటి నాణ్యత పరామితి పరిమితి మించింది",
+        "ph_high": "pH స్థాయి ఎక్కువగా ఉంది",
+        "ph_low": "pH స్థాయి తక్కువగా ఉంది",
+        "turbidity_high": "నీటి మైలిన స్థాయి ఎక్కువగా ఉంది",
+        "tds_high": "TDS స్థాయి ఎక్కువగా ఉంది",
+        "chlorine_high": "క్లోరిన్ స్థాయి ఎక్కువగా ఉంది",
+        "chlorine_low": "క్లోరిన్ స్థాయి తక్కువగా ఉంది",
+        # Flow rate
+        "flow_rate_normal": "ప్రవాహ రేటు సాధారణ స్థాయికి వచ్చింది",
+        "flow_rate_above": "ప్రవాహ రేటు పై పరిమితి మించింది",
+        "flow_rate_below": "ప్రవాహ రేటు కింది పరిమితి కంటే తక్కువగా ఉంది",
+        # Stable flow
+        "stable_flow": "స్థిర ప్రవాహ నమూనా గుర్తించబడింది",
+        # Abnormal usage
+        "abnormal": "అసాధారణ నీటి వినియోగం గుర్తించబడింది",
+        # Energy
+        "energy_threshold": "శక్తి పరామితి పరిమితి మించింది",
+        "voltage_high": "వోల్టేజ్ ఎక్కువగా ఉంది",
+        "voltage_low": "వోల్టేజ్ తక్కువగా ఉంది",
+        "current_high": "విద్యుత్ ప్రవాహం ఎక్కువగా ఉంది",
+        "power_factor_low": "పవర్ ఫ్యాక్టర్ తక్కువగా ఉంది",
+        "energy_daily_limit": "రోజువారీ విద్యుత్ వినియోగ పరిమితి చేరుకుంది",
+        "energy_monthly_limit": "నెలవారీ విద్యుత్ వినియోగ పరిమితి చేరుకుంది",
     },
     "hi": {
-        "alert": "चेतावनी",
-        "of": "में से",
-        "unread_alert": "अपठित चेतावनी",
-        "offline_unit": "ऑफलाइन यूनिट",
-        "filled": "भरा हुआ",
-        "stock_upper": "जल स्तर ऊपरी सीमा पर पहुंच गया",
-        "stock_lower": "जल स्तर निचली सीमा पर पहुंच गया",
-        "daily_limit": "दैनिक सीमा पूरी हो गई",
-        "daily_limit_90": "दैनिक सीमा का 90 प्रतिशत पूरा हो गया",
-        "abnormal": "असामान्य पानी का उपयोग पाया गया",
+        # General
+        "alert": "चेतावनी", "of": "में से", "at": "बजे",
+        "unread_alert": "अपठित चेतावनी", "offline_unit": "ऑफलाइन यूनिट",
+        "consumption": "खपत", "limit": "सीमा", "exceeded": "पार हो गई",
+        # Device status
         "offline": "डिवाइस ऑफलाइन है",
         "online": "डिवाइस वापस ऑनलाइन है",
-        "at": "बजे",
+        # Tank / stock level
+        "filled": "भरा हुआ",
+        "stock_upper": "टैंक स्तर ऊपरी सीमा पर पहुंच गया",
+        "stock_lower": "टैंक स्तर निचली सीमा पर पहुंच गया",
         "current_stock": "वर्तमान स्टॉक",
-        "upper_limit": "ऊपरी सीमा",
-        "lower_limit": "निचली सीमा",
+        "upper_limit": "ऊपरी सीमा", "lower_limit": "निचली सीमा",
+        # Unit / daily threshold
+        "daily_limit": "दैनिक खपत सीमा पूरी हो गई",
+        "daily_limit_90": "दैनिक खपत सीमा का 90% पूरा हो गया",
+        "daily_limit_125": "दैनिक खपत सीमा का 125% पार हो गया",
+        # Hourly threshold
+        "hourly_threshold": "प्रति घंटा खपत सीमा पार हो गई",
+        # Monthly threshold
+        "monthly_limit_90": "मासिक खपत सीमा का 90% पूरा हो गया",
+        "monthly_limit": "मासिक खपत सीमा पूरी हो गई",
+        # Category monthly threshold
+        "cat_month_threshold": "श्रेणी मासिक खपत सीमा पार हो गई",
+        # Water quality
+        "quality_threshold": "जल गुणवत्ता मानक सीमा पार हो गई",
+        "ph_high": "pH स्तर अधिक है",
+        "ph_low": "pH स्तर कम है",
+        "turbidity_high": "पानी की गंदगी अधिक है",
+        "tds_high": "TDS स्तर अधिक है",
+        "chlorine_high": "क्लोरीन स्तर अधिक है",
+        "chlorine_low": "क्लोरीन स्तर कम है",
+        # Flow rate
+        "flow_rate_normal": "प्रवाह दर सामान्य स्थिति में आ गई",
+        "flow_rate_above": "प्रवाह दर ऊपरी सीमा से अधिक है",
+        "flow_rate_below": "प्रवाह दर निचली सीमा से कम है",
+        # Stable flow
+        "stable_flow": "स्थिर प्रवाह पैटर्न पाया गया",
+        # Abnormal usage
+        "abnormal": "असामान्य पानी का उपयोग पाया गया",
+        # Energy
+        "energy_threshold": "ऊर्जा मानक सीमा पार हो गई",
+        "voltage_high": "वोल्टेज अधिक है",
+        "voltage_low": "वोल्टेज कम है",
+        "current_high": "करंट अधिक है",
+        "power_factor_low": "पावर फैक्टर कम है",
+        "energy_daily_limit": "दैनिक ऊर्जा खपत सीमा पूरी हो गई",
+        "energy_monthly_limit": "मासिक ऊर्जा खपत सीमा पूरी हो गई",
     },
     "kn": {
-        "alert": "ಎಚ್ಚರಿಕೆ",
-        "of": "ರಲ್ಲಿ",
-        "unread_alert": "ಓದದ ಎಚ್ಚರಿಕೆ",
-        "offline_unit": "ಆಫ್‌ಲೈನ್ ಘಟಕ",
-        "filled": "ತುಂಬಿದೆ",
-        "stock_upper": "ನೀರಿನ ಮಟ್ಟ ಮೇಲಿನ ಮಿತಿ ತಲುಪಿದೆ",
-        "stock_lower": "ನೀರಿನ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
-        "daily_limit": "ದೈನಂದಿನ ಮಿತಿ ತಲುಪಿದೆ",
-        "daily_limit_90": "ದೈನಂದಿನ ಮಿತಿಯ 90 ಶೇಕಡಾ ತಲುಪಿದೆ",
-        "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
+        # General
+        "alert": "ಎಚ್ಚರಿಕೆ", "of": "ರಲ್ಲಿ", "at": "ಸಮಯ",
+        "unread_alert": "ಓದದ ಎಚ್ಚರಿಕೆ", "offline_unit": "ಆಫ್‌ಲೈನ್ ಘಟಕ",
+        "consumption": "ಬಳಕೆ", "limit": "ಮಿತಿ", "exceeded": "ಮೀರಿದೆ",
+        # Device status
         "offline": "ಸಾಧನ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
         "online": "ಸಾಧನ ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿದೆ",
-        "at": "ಸಮಯ",
+        # Tank / stock level
+        "filled": "ತುಂಬಿದೆ",
+        "stock_upper": "ಟ್ಯಾಂಕ್ ಮಟ್ಟ ಮೇಲಿನ ಮಿತಿ ತಲುಪಿದೆ",
+        "stock_lower": "ಟ್ಯಾಂಕ್ ಮಟ್ಟ ಕೆಳಗಿನ ಮಿತಿ ತಲುಪಿದೆ",
         "current_stock": "ಪ್ರಸ್ತುತ ದಾಸ್ತಾನು",
-        "upper_limit": "ಮೇಲಿನ ಮಿತಿ",
-        "lower_limit": "ಕೆಳಗಿನ ಮಿತಿ",
+        "upper_limit": "ಮೇಲಿನ ಮಿತಿ", "lower_limit": "ಕೆಳಗಿನ ಮಿತಿ",
+        # Unit / daily threshold
+        "daily_limit": "ದೈನಂದಿನ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
+        "daily_limit_90": "ದೈನಂದಿನ ಬಳಕೆ ಮಿತಿಯ 90% ತಲುಪಿದೆ",
+        "daily_limit_125": "ದೈನಂದಿನ ಬಳಕೆ ಮಿತಿಯ 125% ಮೀರಿದೆ",
+        # Hourly threshold
+        "hourly_threshold": "ಗಂಟೆಯ ಬಳಕೆ ಮಿತಿ ಮೀರಿದೆ",
+        # Monthly threshold
+        "monthly_limit_90": "ಮಾಸಿಕ ಬಳಕೆ ಮಿತಿಯ 90% ತಲುಪಿದೆ",
+        "monthly_limit": "ಮಾಸಿಕ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
+        # Category monthly threshold
+        "cat_month_threshold": "ವರ್ಗ ಮಾಸಿಕ ಬಳಕೆ ಮಿತಿ ಮೀರಿದೆ",
+        # Water quality
+        "quality_threshold": "ನೀರಿನ ಗುಣಮಟ್ಟ ನಿಯತಾಂಕ ಮಿತಿ ಮೀರಿದೆ",
+        "ph_high": "pH ಮಟ್ಟ ಹೆಚ್ಚಾಗಿದೆ",
+        "ph_low": "pH ಮಟ್ಟ ಕಡಿಮೆಯಾಗಿದೆ",
+        "turbidity_high": "ನೀರಿನ ಕಲ್ಮಶ ಮಟ್ಟ ಹೆಚ್ಚಾಗಿದೆ",
+        "tds_high": "TDS ಮಟ್ಟ ಹೆಚ್ಚಾಗಿದೆ",
+        "chlorine_high": "ಕ್ಲೋರಿನ್ ಮಟ್ಟ ಹೆಚ್ಚಾಗಿದೆ",
+        "chlorine_low": "ಕ್ಲೋರಿನ್ ಮಟ್ಟ ಕಡಿಮೆಯಾಗಿದೆ",
+        # Flow rate
+        "flow_rate_normal": "ಹರಿವಿನ ಪ್ರಮಾಣ ಸಾಮಾನ್ಯ ಸ್ಥಿತಿಗೆ ಮರಳಿದೆ",
+        "flow_rate_above": "ಹರಿವಿನ ಪ್ರಮಾಣ ಮೇಲಿನ ಮಿತಿ ಮೀರಿದೆ",
+        "flow_rate_below": "ಹರಿವಿನ ಪ್ರಮಾಣ ಕೆಳಗಿನ ಮಿತಿಗಿಂತ ಕಡಿಮೆಯಾಗಿದೆ",
+        # Stable flow
+        "stable_flow": "ಸ್ಥಿರ ಹರಿವಿನ ಮಾದರಿ ಪತ್ತೆಯಾಗಿದೆ",
+        # Abnormal usage
+        "abnormal": "ಅಸಹಜ ನೀರಿನ ಬಳಕೆ ಪತ್ತೆಯಾಗಿದೆ",
+        # Energy
+        "energy_threshold": "ಶಕ್ತಿ ನಿಯತಾಂಕ ಮಿತಿ ಮೀರಿದೆ",
+        "voltage_high": "ವೋಲ್ಟೇಜ್ ಹೆಚ್ಚಾಗಿದೆ",
+        "voltage_low": "ವೋಲ್ಟೇಜ್ ಕಡಿಮೆಯಾಗಿದೆ",
+        "current_high": "ವಿದ್ಯುತ್ ಪ್ರವಾಹ ಹೆಚ್ಚಾಗಿದೆ",
+        "power_factor_low": "ಪವರ್ ಫ್ಯಾಕ್ಟರ್ ಕಡಿಮೆಯಾಗಿದೆ",
+        "energy_daily_limit": "ದೈನಂದಿನ ವಿದ್ಯುತ್ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
+        "energy_monthly_limit": "ಮಾಸಿಕ ವಿದ್ಯುತ್ ಬಳಕೆ ಮಿತಿ ತಲುಪಿದೆ",
     },
     "ml": {
-        "alert": "മുന്നറിയിപ്പ്",
-        "of": "ൽ",
-        "unread_alert": "വായിക്കാത്ത മുന്നറിയിപ്പ്",
-        "offline_unit": "ഓഫ്‌ലൈൻ യൂണിറ്റ്",
-        "filled": "നിറഞ്ഞു",
-        "stock_upper": "ജല നിരപ്പ് ഉയർന്ന പരിധി എത്തി",
-        "stock_lower": "ജല നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
-        "daily_limit": "ദൈനംദിന പരിധി എത്തി",
-        "daily_limit_90": "ദൈനംദിന പരിധിയുടെ 90 ശതമാനം എത്തി",
-        "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
+        # General
+        "alert": "മുന്നറിയിപ്പ്", "of": "ൽ", "at": "സമയം",
+        "unread_alert": "വായിക്കാത്ത മുന്നറിയിപ്പ്", "offline_unit": "ഓഫ്‌ലൈൻ യൂണിറ്റ്",
+        "consumption": "ഉപഭോഗം", "limit": "പരിധി", "exceeded": "കടന്നു",
+        # Device status
         "offline": "ഉപകരണം ഓഫ്‌ലൈനിലാണ്",
         "online": "ഉപകരണം വീണ്ടും ഓൺലൈനിലാണ്",
-        "at": "സമയം",
+        # Tank / stock level
+        "filled": "നിറഞ്ഞു",
+        "stock_upper": "ടാങ്ക് നിരപ്പ് ഉയർന്ന പരിധി എത്തി",
+        "stock_lower": "ടാങ്ക് നിരപ്പ് താഴ്ന്ന പരിധി എത്തി",
         "current_stock": "നിലവിലെ സ്റ്റോക്ക്",
-        "upper_limit": "ഉയർന്ന പരിധി",
-        "lower_limit": "താഴ്ന്ന പരിധി",
+        "upper_limit": "ഉയർന്ന പരിധി", "lower_limit": "താഴ്ന്ന പരിധി",
+        # Unit / daily threshold
+        "daily_limit": "ദൈനംദിന ഉപഭോഗ പരിധി എത്തി",
+        "daily_limit_90": "ദൈനംദിന ഉപഭോഗ പരിധിയുടെ 90% എത്തി",
+        "daily_limit_125": "ദൈനംദിന ഉപഭോഗ പരിധിയുടെ 125% കടന്നു",
+        # Hourly threshold
+        "hourly_threshold": "മണിക്കൂർ ഉപഭോഗ പരിധി കടന്നു",
+        # Monthly threshold
+        "monthly_limit_90": "മാസ ഉപഭോഗ പരിധിയുടെ 90% എത്തി",
+        "monthly_limit": "മാസ ഉപഭോഗ പരിധി എത്തി",
+        # Category monthly threshold
+        "cat_month_threshold": "വിഭാഗ മാസ ഉപഭോഗ പരിധി കടന്നു",
+        # Water quality
+        "quality_threshold": "ജല ഗുണനിലവാര നിർണ്ണായക പരിധി കടന്നു",
+        "ph_high": "pH നില ഉയർന്നിരിക്കുന്നു",
+        "ph_low": "pH നില താഴ്ന്നിരിക്കുന്നു",
+        "turbidity_high": "ജലത്തിന്റെ മലിനത ഉയർന്നിരിക്കുന്നു",
+        "tds_high": "TDS നില ഉയർന്നിരിക്കുന്നു",
+        "chlorine_high": "ക്ലോറിൻ നില ഉയർന്നിരിക്കുന്നു",
+        "chlorine_low": "ക്ലോറിൻ നില താഴ്ന്നിരിക്കുന്നു",
+        # Flow rate
+        "flow_rate_normal": "ഒഴുക്ക് നിരക്ക് സാധാരണ നിലയിലേക്ക് മടങ്ങി",
+        "flow_rate_above": "ഒഴുക്ക് നിരക്ക് ഉയർന്ന പരിധി കടന്നു",
+        "flow_rate_below": "ഒഴുക്ക് നിരക്ക് താഴ്ന്ന പരിധിക്ക് കീഴെ",
+        # Stable flow
+        "stable_flow": "സ്ഥിരമായ ഒഴുക്ക് ക്രമം കണ്ടെത്തി",
+        # Abnormal usage
+        "abnormal": "അസാധാരണ ജല ഉപയോഗം കണ്ടെത്തി",
+        # Energy
+        "energy_threshold": "ഊർജ്ജ നിർണ്ണായക പരിധി കടന്നു",
+        "voltage_high": "വോൾട്ടേജ് ഉയർന്നിരിക്കുന്നു",
+        "voltage_low": "വോൾട്ടേജ് താഴ്ന്നിരിക്കുന്നു",
+        "current_high": "വൈദ്യുത പ്രവാഹം ഉയർന്നിരിക്കുന്നു",
+        "power_factor_low": "പവർ ഫാക്ടർ താഴ്ന്നിരിക്കുന്നു",
+        "energy_daily_limit": "ദൈനംദിന വൈദ്യുത ഉപഭോഗ പരിധി എത്തി",
+        "energy_monthly_limit": "മാസ വൈദ്യുത ഉപഭോഗ പരിധി എത്തി",
     },
     "ta": {
-        "alert": "எச்சரிக்கை",
-        "of": "இல்",
-        "unread_alert": "படிக்காத எச்சரிக்கை",
-        "offline_unit": "ஆஃப்லைன் அலகு",
-        "filled": "நிரம்பியது",
-        "stock_upper": "நீர் மட்டம் மேல் வரம்பை எட்டியது",
-        "stock_lower": "நீர் மட்டம் கீழ் வரம்பை எட்டியது",
-        "daily_limit": "தினசரி வரம்பு எட்டியது",
-        "daily_limit_90": "தினசரி வரம்பின் 90 சதவீதம் எட்டியது",
-        "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
+        # General
+        "alert": "எச்சரிக்கை", "of": "இல்", "at": "நேரம்",
+        "unread_alert": "படிக்காத எச்சரிக்கை", "offline_unit": "ஆஃப்லைன் அலகு",
+        "consumption": "நுகர்வு", "limit": "வரம்பு", "exceeded": "தாண்டியது",
+        # Device status
         "offline": "சாதனம் ஆஃப்லைனில் உள்ளது",
         "online": "சாதனம் மீண்டும் ஆன்லைனில் உள்ளது",
-        "at": "நேரம்",
+        # Tank / stock level
+        "filled": "நிரம்பியது",
+        "stock_upper": "தொட்டி மட்டம் மேல் வரம்பை எட்டியது",
+        "stock_lower": "தொட்டி மட்டம் கீழ் வரம்பை எட்டியது",
         "current_stock": "தற்போதைய இருப்பு",
-        "upper_limit": "மேல் வரம்பு",
-        "lower_limit": "கீழ் வரம்பு",
+        "upper_limit": "மேல் வரம்பு", "lower_limit": "கீழ் வரம்பு",
+        # Unit / daily threshold
+        "daily_limit": "தினசரி நுகர்வு வரம்பு எட்டியது",
+        "daily_limit_90": "தினசரி நுகர்வு வரம்பின் 90% எட்டியது",
+        "daily_limit_125": "தினசரி நுகர்வு வரம்பின் 125% தாண்டியது",
+        # Hourly threshold
+        "hourly_threshold": "மணிநேர நுகர்வு வரம்பு தாண்டியது",
+        # Monthly threshold
+        "monthly_limit_90": "மாதாந்திர நுகர்வு வரம்பின் 90% எட்டியது",
+        "monthly_limit": "மாதாந்திர நுகர்வு வரம்பு எட்டியது",
+        # Category monthly threshold
+        "cat_month_threshold": "பிரிவு மாதாந்திர நுகர்வு வரம்பு தாண்டியது",
+        # Water quality
+        "quality_threshold": "நீர் தர அளவுரு வரம்பு தாண்டியது",
+        "ph_high": "pH அளவு அதிகமாக உள்ளது",
+        "ph_low": "pH அளவு குறைவாக உள்ளது",
+        "turbidity_high": "நீரின் கலக்கம் அதிகமாக உள்ளது",
+        "tds_high": "TDS அளவு அதிகமாக உள்ளது",
+        "chlorine_high": "குளோரின் அளவு அதிகமாக உள்ளது",
+        "chlorine_low": "குளோரின் அளவு குறைவாக உள்ளது",
+        # Flow rate
+        "flow_rate_normal": "ஓட்ட விகிதம் இயல்பு நிலைக்கு திரும்பியது",
+        "flow_rate_above": "ஓட்ட விகிதம் மேல் வரம்பை தாண்டியது",
+        "flow_rate_below": "ஓட்ட விகிதம் கீழ் வரம்பிற்கு கீழே உள்ளது",
+        # Stable flow
+        "stable_flow": "நிலையான ஓட்ட வடிவம் கண்டறியப்பட்டது",
+        # Abnormal usage
+        "abnormal": "அசாதாரண நீர் பயன்பாடு கண்டறியப்பட்டது",
+        # Energy
+        "energy_threshold": "ஆற்றல் அளவுரு வரம்பு தாண்டியது",
+        "voltage_high": "மின்னழுத்தம் அதிகமாக உள்ளது",
+        "voltage_low": "மின்னழுத்தம் குறைவாக உள்ளது",
+        "current_high": "மின்னோட்டம் அதிகமாக உள்ளது",
+        "power_factor_low": "திறன் காரணி குறைவாக உள்ளது",
+        "energy_daily_limit": "தினசரி மின் நுகர்வு வரம்பு எட்டியது",
+        "energy_monthly_limit": "மாதாந்திர மின் நுகர்வு வரம்பு எட்டியது",
     },
 }
 
@@ -150,45 +342,170 @@ def translate_alert_text(title, body, status, lang):
     status = str(status)
     t = TRANSLATIONS.get(lang, TRANSLATIONS["en"])
 
-    # Body translations
+    def _time_suffix(text):
+        """Extract time portion after 'at' and return formatted suffix."""
+        if " at " in text.lower():
+            idx = text.lower().rfind(" at ")
+            time_part = text[idx + 4:].strip()
+            return " " + t["at"] + " " + time_part if time_part else ""
+        return ""
+
+    def _translate_quality_status(s):
+        """Return translated quality alert from status string."""
+        sl = s.lower()
+        if "ph" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["ph_high"]
+        if "ph" in sl and ("low" in sl or "below" in sl):
+            return t["ph_low"]
+        if "turbidity" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["turbidity_high"]
+        if "tds" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["tds_high"]
+        if "chlorine" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["chlorine_high"]
+        if "chlorine" in sl and ("low" in sl or "below" in sl):
+            return t["chlorine_low"]
+        return t["quality_threshold"]
+
+    def _translate_energy_status(s):
+        """Return translated energy alert from status string."""
+        sl = s.lower()
+        if "voltage" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["voltage_high"]
+        if "voltage" in sl and ("low" in sl or "below" in sl):
+            return t["voltage_low"]
+        if "current" in sl and ("high" in sl or "above" in sl or "exceed" in sl):
+            return t["current_high"]
+        if "power factor" in sl and ("low" in sl or "below" in sl):
+            return t["power_factor_low"]
+        return t["energy_threshold"]
+
+    # ── Body translation ─────────────────────────────────────────────────────
     translated_body = body
-    if "filled" in body.lower():
-        # Extract percentage e.g. "90.84% filled"
+    bl = body.lower()
+
+    if "filled" in bl:
         parts = body.split("%")
         if len(parts) > 1:
             translated_body = parts[0] + "% " + t["filled"]
         else:
             translated_body = body.replace("filled", t["filled"])
-    elif "Daily Limit Reached" in body:
-        translated_body = t["daily_limit"]
-    elif "90% of the Daily Limit" in body:
+
+    elif "125%" in bl and ("daily" in bl or "limit" in bl):
+        translated_body = t["daily_limit_125"]
+    elif "90%" in bl and ("daily" in bl or "limit" in bl):
         translated_body = t["daily_limit_90"]
-    elif "Abnormal" in body:
+    elif ("daily" in bl and "limit" in bl) or "daily consumption limit" in bl:
+        translated_body = t["daily_limit"]
+
+    elif "hourly" in bl and ("limit" in bl or "threshold" in bl or "exceeded" in bl):
+        translated_body = t["hourly_threshold"]
+
+    elif "90%" in bl and "monthly" in bl:
+        translated_body = t["monthly_limit_90"]
+    elif "monthly" in bl and ("limit" in bl or "threshold" in bl or "consumption" in bl):
+        translated_body = t["monthly_limit"]
+
+    elif "category" in bl and "monthly" in bl:
+        translated_body = t["cat_month_threshold"]
+
+    elif "upper limit" in bl or "upper limit reached" in bl:
+        translated_body = t["stock_upper"]
+    elif "lower limit" in bl or "lower limit reached" in bl:
+        translated_body = t["stock_lower"]
+
+    elif "ph" in bl or "turbidity" in bl or "tds" in bl or "chlorine" in bl or "quality" in bl:
+        translated_body = _translate_quality_status(body)
+
+    elif "back" in bl and "range" in bl and "flow" in bl:
+        translated_body = t["flow_rate_normal"]
+    elif "flow" in bl and ("above" in bl or "exceed" in bl or "upper" in bl):
+        translated_body = t["flow_rate_above"]
+    elif "flow" in bl and ("below" in bl or "lower" in bl):
+        translated_body = t["flow_rate_below"]
+    elif "stable flow" in bl:
+        translated_body = t["stable_flow"]
+
+    elif "abnormal" in bl:
         translated_body = t["abnormal"]
-    elif body.lower() == "offline":
+
+    elif bl.strip() == "offline":
         translated_body = t["offline"]
-    elif body.lower() == "online":
+    elif bl.strip() == "online":
+        translated_body = t["online"]
+    elif "offline" in bl:
+        translated_body = t["offline"]
+    elif "online" in bl:
         translated_body = t["online"]
 
-    # Status translations
+    elif "voltage" in bl or "current" in bl or "power factor" in bl:
+        translated_body = _translate_energy_status(body)
+    elif "energy" in bl and ("daily" in bl or "kwh" in bl):
+        translated_body = t["energy_daily_limit"]
+    elif "energy" in bl and "monthly" in bl:
+        translated_body = t["energy_monthly_limit"]
+    elif "energy" in bl and ("limit" in bl or "threshold" in bl):
+        translated_body = t["energy_threshold"]
+
+    # ── Status translation ────────────────────────────────────────────────────
     translated_status = status
-    if "Upper limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_upper"] + (" " + t["at"] + " " + time_part if time_part else "")
-    elif "Lower limit reached" in status:
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["stock_lower"] + (" " + t["at"] + " " + time_part if time_part else "")
-    elif "daily consumption limit reached" in status.lower():
-        time_part = status.split("at")[-1].strip() if "at" in status else ""
-        translated_status = t["daily_limit"] + (" " + t["at"] + " " + time_part if time_part else "")
-    elif "90%" in status and "limit" in status.lower():
-        translated_status = t["daily_limit_90"]
-    elif "Abnormal" in status:
+    sl = status.lower()
+
+    if "upper limit reached" in sl or "upper limit" in sl:
+        translated_status = t["stock_upper"] + _time_suffix(status)
+    elif "lower limit reached" in sl or "lower limit" in sl:
+        translated_status = t["stock_lower"] + _time_suffix(status)
+
+    elif "125%" in sl and ("daily" in sl or "limit" in sl):
+        translated_status = t["daily_limit_125"] + _time_suffix(status)
+    elif "90%" in sl and ("daily" in sl or "limit" in sl):
+        translated_status = t["daily_limit_90"] + _time_suffix(status)
+    elif "daily consumption" in sl or ("daily" in sl and "limit" in sl):
+        translated_status = t["daily_limit"] + _time_suffix(status)
+
+    elif "hourly" in sl and ("limit" in sl or "exceeded" in sl or "threshold" in sl):
+        translated_status = t["hourly_threshold"] + _time_suffix(status)
+
+    elif "90%" in sl and "monthly" in sl:
+        translated_status = t["monthly_limit_90"] + _time_suffix(status)
+    elif "monthly" in sl and ("limit" in sl or "consumption" in sl):
+        translated_status = t["monthly_limit"] + _time_suffix(status)
+
+    elif "category" in sl and "monthly" in sl:
+        translated_status = t["cat_month_threshold"] + _time_suffix(status)
+
+    elif "ph" in sl or "turbidity" in sl or "tds" in sl or "chlorine" in sl or "quality" in sl:
+        translated_status = _translate_quality_status(status)
+
+    elif "back" in sl and "range" in sl and "flow" in sl:
+        translated_status = t["flow_rate_normal"]
+    elif "flow" in sl and ("above" in sl or "exceed" in sl or "upper" in sl):
+        translated_status = t["flow_rate_above"]
+    elif "flow" in sl and ("below" in sl or "lower" in sl):
+        translated_status = t["flow_rate_below"]
+    elif "stable flow" in sl:
+        translated_status = t["stable_flow"]
+
+    elif "abnormal" in sl:
         translated_status = t["abnormal"]
-    elif "offline" in status.lower():
+
+    elif "device is offline" in sl or sl.strip() == "offline":
         translated_status = t["offline"]
-    elif "online" in status.lower():
+    elif "device is" in sl and "online" in sl:
         translated_status = t["online"]
+    elif "offline" in sl:
+        translated_status = t["offline"]
+    elif "online" in sl:
+        translated_status = t["online"]
+
+    elif "voltage" in sl or ("current" in sl and "high" in sl) or "power factor" in sl:
+        translated_status = _translate_energy_status(status)
+    elif "energy" in sl and ("daily" in sl or "kwh" in sl) and "monthly" not in sl:
+        translated_status = t["energy_daily_limit"] + _time_suffix(status)
+    elif "energy" in sl and "monthly" in sl:
+        translated_status = t["energy_monthly_limit"] + _time_suffix(status)
+    elif "energy" in sl and ("limit" in sl or "threshold" in sl or "exceed" in sl):
+        translated_status = t["energy_threshold"] + _time_suffix(status)
 
     # Title stays in English (location name)
     return title, translated_body, translated_status
