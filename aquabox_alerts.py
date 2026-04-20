@@ -1259,7 +1259,7 @@ class LoginWindow(Gtk.Window):
         # Logo
         logo_path = "/home/aquabox/Desktop/Aquabox/Fluxgen-Logo.png"
         if os.path.exists(logo_path):
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 420, 120, True)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 300, 90, True)
             logo = Gtk.Image.new_from_pixbuf(pixbuf)
             logo.set_margin_top(8)
             card.pack_start(logo, False, False, 0)
@@ -1267,7 +1267,7 @@ class LoginWindow(Gtk.Window):
         # Tagline below logo
         tag = Gtk.Label(label="Build a Water-Positive Future")
         tag.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.3, 0.55, 0.8, 0.6))
-        tag.modify_font(Pango.FontDescription("Sans italic 16"))
+        tag.modify_font(Pango.FontDescription("Sans italic 12"))
         tag.set_margin_bottom(2)
         card.pack_start(tag, False, False, 2)
 
@@ -1284,7 +1284,7 @@ class LoginWindow(Gtk.Window):
         # Sign In label
         signin = Gtk.Label(label="Sign In")
         signin.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.05, 0.15, 0.4, 1))
-        signin.modify_font(Pango.FontDescription("Sans bold 14"))
+        signin.modify_font(Pango.FontDescription("Sans bold 11"))
         signin.set_halign(Gtk.Align.START)
         signin.set_margin_start(30)
         card.pack_start(signin, False, False, 0)
@@ -1292,7 +1292,7 @@ class LoginWindow(Gtk.Window):
         # Username
         ulabel = Gtk.Label(label="Username")
         ulabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        ulabel.modify_font(Pango.FontDescription("Sans bold 18"))
+        ulabel.modify_font(Pango.FontDescription("Sans bold 13"))
         ulabel.set_halign(Gtk.Align.START)
         ulabel.set_margin_start(30)
         ulabel.set_margin_top(4)
@@ -1300,7 +1300,7 @@ class LoginWindow(Gtk.Window):
 
         self.username_entry = Gtk.Entry()
         self.username_entry.set_placeholder_text("Enter your username")
-        self.username_entry.modify_font(Pango.FontDescription("Sans 14"))
+        self.username_entry.modify_font(Pango.FontDescription("Sans 11"))
         self.username_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.username_entry.set_margin_start(30)
         self.username_entry.set_margin_end(30)
@@ -1309,7 +1309,7 @@ class LoginWindow(Gtk.Window):
         # Password
         plabel = Gtk.Label(label="Password")
         plabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        plabel.modify_font(Pango.FontDescription("Sans bold 18"))
+        plabel.modify_font(Pango.FontDescription("Sans bold 13"))
         plabel.set_halign(Gtk.Align.START)
         plabel.set_margin_start(30)
         plabel.set_margin_top(3)
@@ -1318,7 +1318,7 @@ class LoginWindow(Gtk.Window):
         self.password_entry = Gtk.Entry()
         self.password_entry.set_placeholder_text("Enter your password")
         self.password_entry.set_visibility(False)
-        self.password_entry.modify_font(Pango.FontDescription("Sans 14"))
+        self.password_entry.modify_font(Pango.FontDescription("Sans 11"))
         self.password_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.password_entry.set_margin_start(30)
         self.password_entry.set_margin_end(30)
@@ -1333,14 +1333,14 @@ class LoginWindow(Gtk.Window):
         else:
             self.error_label = Gtk.Label(label="")
         self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 1))
-        self.error_label.modify_font(Pango.FontDescription("Sans bold 14"))
+        self.error_label.modify_font(Pango.FontDescription("Sans bold 11"))
         card.pack_start(self.error_label, False, False, 2)
 
         # Login button
         btn = Gtk.Button(label="Login  ➜")
         btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.06, 0.2, 0.6, 0.5))
         btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        btn.modify_font(Pango.FontDescription("Sans bold 18"))
+        btn.modify_font(Pango.FontDescription("Sans bold 14"))
         btn.set_margin_start(30)
         btn.set_margin_end(30)
         btn.set_margin_top(3)
@@ -2229,10 +2229,10 @@ class AlertsWindow(Gtk.Window):
         # Typing text label
         self.overlay_label = Gtk.Label(label="")
         self.overlay_label.set_line_wrap(True)
-        self.overlay_label.set_max_width_chars(80)
+        self.overlay_label.set_max_width_chars(45)
         self.overlay_label.override_color(
             Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
+        self.overlay_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
         self.overlay_label.set_margin_start(30)
         self.overlay_label.set_margin_end(30)
         self.overlay_label.set_margin_top(10)
@@ -2368,7 +2368,7 @@ class AlertsWindow(Gtk.Window):
         self.announce_bar.get_style_context().add_class("announce-bar")
         self.announce_label = Gtk.Label(label="")
         self.announce_label.get_style_context().add_class("announce-text")
-        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
+        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 14"))
         self.announce_label.set_halign(Gtk.Align.START)
         self.announce_bar.pack_start(self.announce_label, True, True, 0)
         self.announce_bar.set_no_show_all(True)
@@ -2706,9 +2706,9 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label="")
         label.set_line_wrap(True)
-        label.set_max_width_chars(60)
+        label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.START)
-        label.modify_font(Pango.FontDescription("Noto Sans 18"))
+        label.modify_font(Pango.FontDescription("Noto Sans 13"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -2769,9 +2769,9 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label=text)
         label.set_line_wrap(True)
-        label.set_max_width_chars(60)
+        label.set_max_width_chars(40)
         label.set_halign(Gtk.Align.END)
-        label.modify_font(Pango.FontDescription("Noto Sans 18"))
+        label.modify_font(Pango.FontDescription("Noto Sans 13"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
         label.set_margin_start(10)
         label.set_margin_end(10)
@@ -3214,7 +3214,7 @@ class AlertsWindow(Gtk.Window):
         loading_box.pack_start(self._loading_da, False, False, 10)
 
         self._loading_label = Gtk.Label(label="Fetching alerts")
-        self._loading_label.modify_font(Pango.FontDescription("Sans bold 18"))
+        self._loading_label.modify_font(Pango.FontDescription("Sans bold 14"))
         self._loading_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.12, 0.3, 0.6, 1))
         loading_box.pack_start(self._loading_label, False, False, 0)
 
