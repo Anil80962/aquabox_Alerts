@@ -867,7 +867,7 @@ COLORS = {
 CSS = """
 window { background-color: #ffffff; }
 
-/* Optimized for 800x480 5-inch display */
+/* Optimized for 1024x600 7-inch display */
 .header-bar {
     background: linear-gradient(to right, #1e3a5a, #1e40af);
     padding: 20px 14px;
@@ -875,12 +875,12 @@ window { background-color: #ffffff; }
 }
 .header-title {
     color: white;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
 }
 .header-sub {
     color: #93c5fd;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .stats-bar {
@@ -897,12 +897,12 @@ window { background-color: #ffffff; }
 }
 .stat-num {
     color: #1565c0;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
 }
 .stat-label {
     color: #555555;
-    font-size: 28px;
+    font-size: 24px;
 }
 .stat-num-unread { color: #f87171; }
 .stat-num-read { color: #4ade80; }
@@ -920,27 +920,27 @@ window { background-color: #ffffff; }
     border-left-style: solid;
 }
 .alert-title {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
 }
 .alert-body {
-    font-size: 28px;
+    font-size: 24px;
     margin-top: 2px;
 }
 .alert-time {
-    font-size: 28px;
+    font-size: 24px;
     color: #64748b;
     margin-top: 2px;
 }
 .alert-detail {
-    font-size: 28px;
+    font-size: 24px;
     margin-top: 3px;
     padding: 4px 6px;
     border-radius: 4px;
     background-color: rgba(0,0,0,0.05);
 }
 .alert-badge {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 2px 8px;
     border-radius: 9px;
@@ -950,11 +950,11 @@ window { background-color: #ffffff; }
 
 .unread-dot {
     color: #ef4444;
-    font-size: 28px;
+    font-size: 24px;
 }
 .read-check {
     color: #22c55e;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .alert-actions {
@@ -967,7 +967,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -978,7 +978,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 6px 14px;
     min-height: 31px;
@@ -989,7 +989,7 @@ window { background-color: #ffffff; }
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 28px;
+    font-size: 24px;
     padding: 4px 12px;
     min-height: 29px;
 }
@@ -997,12 +997,12 @@ window { background-color: #ffffff; }
 
 .alert-expander {
     color: #64748b;
-    font-size: 28px;
+    font-size: 24px;
     padding-top: 4px;
 }
 .alert-expander title {
     color: #64748b;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .offline-card {
@@ -1014,17 +1014,17 @@ window { background-color: #ffffff; }
 }
 .offline-title {
     color: #c62828;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
 }
 .offline-body {
     color: #555555;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .section-header {
     color: #333333;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 8px 12px 4px;
 }
@@ -1036,7 +1036,7 @@ window { background-color: #ffffff; }
 }
 .refresh-text {
     color: #ffffff;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .announce-bar {
@@ -1046,7 +1046,7 @@ window { background-color: #ffffff; }
 }
 .announce-text {
     color: #60a5fa;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     font-family: monospace;
 }
@@ -1059,18 +1059,18 @@ window { background-color: #ffffff; }
 }
 .announce-overlay-icon {
     color: #60a5fa;
-    font-size: 28px;
+    font-size: 24px;
 }
 .announce-overlay-text {
     color: #ffffff;
-    font-size: 28px;
+    font-size: 24px;
     font-family: monospace;
     font-weight: bold;
     min-height: 66px;
 }
 .announce-overlay-title {
     color: #94a3b8;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -1082,7 +1082,7 @@ window { background-color: #ffffff; }
     border: 1px solid #1e40af;
     border-radius: 6px;
     padding: 2px 6px;
-    font-size: 28px;
+    font-size: 24px;
     min-height: 24px;
 }
 
@@ -1103,17 +1103,17 @@ window { background-color: #ffffff; }
 
 .header-clock {
     color: white;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
 }
 .header-date {
     color: #93c5fd;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .no-alerts {
     color: #2e7d32;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 44px;
 }
@@ -1138,7 +1138,7 @@ window { background-color: #ffffff; }
 }
 .wifi-ssid {
     color: #ffffff;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
 }
 .wifi-signal {
@@ -1223,7 +1223,7 @@ window { background-color: #ffffff; }
 class LoginWindow(Gtk.Window):
     def __init__(self):
         super().__init__(title="AquaBox Login")
-        self.set_default_size(800, 480)
+        self.set_default_size(1024, 600)
         self.fullscreen()
         self.set_app_paintable(True)
         self._kb_visible = False
@@ -1484,7 +1484,7 @@ class LoginWindow(Gtk.Window):
     def _open_admin(self, button):
         """Open admin login - fullscreen with animation."""
         self._admin_win = Gtk.Window(title="Admin")
-        self._admin_win.set_default_size(800, 480)
+        self._admin_win.set_default_size(1024, 600)
         self._admin_win.fullscreen()
         self._admin_win.set_app_paintable(True)
 
@@ -1731,7 +1731,7 @@ class LoginWindow(Gtk.Window):
     def _show_admin_settings(self):
         """Show admin settings page to configure API credentials."""
         dialog = Gtk.Window(title="Admin Settings")
-        dialog.set_default_size(800, 480)
+        dialog.set_default_size(1024, 600)
         dialog.fullscreen()
         dialog.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.95, 0.96, 0.98, 1))
 
@@ -2188,7 +2188,7 @@ class LoginWindow(Gtk.Window):
 class AlertsWindow(Gtk.Window):
     def __init__(self):
         super().__init__(title="AquaBox Alerts")
-        self.set_default_size(800, 480)
+        self.set_default_size(1024, 600)
         self.fullscreen()
 
         # Apply CSS
@@ -2368,7 +2368,7 @@ class AlertsWindow(Gtk.Window):
         self.announce_bar.get_style_context().add_class("announce-bar")
         self.announce_label = Gtk.Label(label="")
         self.announce_label.get_style_context().add_class("announce-text")
-        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 16"))
+        self.announce_label.modify_font(Pango.FontDescription("Noto Sans bold 18"))
         self.announce_label.set_halign(Gtk.Align.START)
         self.announce_bar.pack_start(self.announce_label, True, True, 0)
         self.announce_bar.set_no_show_all(True)
@@ -2590,7 +2590,7 @@ class AlertsWindow(Gtk.Window):
             return
 
         self._chat_window = Gtk.Window(title="AquaGPT")
-        self._chat_window.set_default_size(800, 480)
+        self._chat_window.set_default_size(1024, 600)
         self._chat_window.fullscreen()
 
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -2706,7 +2706,7 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label="")
         label.set_line_wrap(True)
-        label.set_max_width_chars(50)
+        label.set_max_width_chars(60)
         label.set_halign(Gtk.Align.START)
         label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.15, 0.3, 1))
@@ -2769,7 +2769,7 @@ class AlertsWindow(Gtk.Window):
 
         label = Gtk.Label(label=text)
         label.set_line_wrap(True)
-        label.set_max_width_chars(40)
+        label.set_max_width_chars(60)
         label.set_halign(Gtk.Align.END)
         label.modify_font(Pango.FontDescription("Noto Sans 18"))
         label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
