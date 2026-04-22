@@ -912,6 +912,57 @@ window { background-color: #ffffff; }
     background-color: #ffffff;
 }
 
+scrollbar {
+    background-color: #e5e7eb;
+    border-radius: 8px;
+    min-width: 12px;
+}
+
+scrollbar slider {
+    background-color: #3b82f6;
+    border-radius: 8px;
+    min-width: 10px;
+    min-height: 40px;
+    margin: 2px;
+}
+
+scrollbar slider:hover, scrollbar slider:active {
+    background-color: #2563eb;
+}
+
+scrollbar trough {
+    background-color: #f1f5f9;
+    border-radius: 8px;
+    min-width: 12px;
+}
+
+menu, .menu, popover {
+    background-color: #ffffff;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+}
+
+menuitem, .menuitem, menu > menuitem {
+    min-height: 40px;
+    padding: 8px 16px;
+    font-size: 16px;
+}
+
+menuitem:hover, menu > menuitem:hover {
+    background-color: #3b82f6;
+    color: white;
+}
+
+combobox window.popup scrollbar {
+    min-width: 12px;
+}
+
+combobox window.popup scrollbar slider {
+    background-color: #3b82f6;
+    min-width: 10px;
+    min-height: 40px;
+}
+
 .alert-card {
     border-radius: 9px;
     padding: 12px;
@@ -1259,15 +1310,15 @@ class LoginWindow(Gtk.Window):
         # Logo
         logo_path = "/home/aquabox/Desktop/Aquabox/Fluxgen-Logo.png"
         if os.path.exists(logo_path):
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 300, 90, True)
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(logo_path, 180, 50, True)
             logo = Gtk.Image.new_from_pixbuf(pixbuf)
-            logo.set_margin_top(8)
+            logo.set_margin_top(2)
             card.pack_start(logo, False, False, 0)
 
         # Tagline below logo
         tag = Gtk.Label(label="Build a Water-Positive Future")
         tag.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.3, 0.55, 0.8, 0.6))
-        tag.modify_font(Pango.FontDescription("Sans italic 12"))
+        tag.modify_font(Pango.FontDescription("Sans italic 8"))
         tag.set_margin_bottom(2)
         card.pack_start(tag, False, False, 2)
 
@@ -1284,7 +1335,7 @@ class LoginWindow(Gtk.Window):
         # Sign In label
         signin = Gtk.Label(label="Sign In")
         signin.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.05, 0.15, 0.4, 1))
-        signin.modify_font(Pango.FontDescription("Sans bold 11"))
+        signin.modify_font(Pango.FontDescription("Sans bold 7"))
         signin.set_halign(Gtk.Align.START)
         signin.set_margin_start(30)
         card.pack_start(signin, False, False, 0)
@@ -1292,7 +1343,7 @@ class LoginWindow(Gtk.Window):
         # Username
         ulabel = Gtk.Label(label="Username")
         ulabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        ulabel.modify_font(Pango.FontDescription("Sans bold 13"))
+        ulabel.modify_font(Pango.FontDescription("Sans bold 8"))
         ulabel.set_halign(Gtk.Align.START)
         ulabel.set_margin_start(30)
         ulabel.set_margin_top(4)
@@ -1300,7 +1351,7 @@ class LoginWindow(Gtk.Window):
 
         self.username_entry = Gtk.Entry()
         self.username_entry.set_placeholder_text("Enter your username")
-        self.username_entry.modify_font(Pango.FontDescription("Sans 11"))
+        self.username_entry.modify_font(Pango.FontDescription("Sans 7"))
         self.username_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.username_entry.set_margin_start(30)
         self.username_entry.set_margin_end(30)
@@ -1309,7 +1360,7 @@ class LoginWindow(Gtk.Window):
         # Password
         plabel = Gtk.Label(label="Password")
         plabel.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.25, 0.45, 1))
-        plabel.modify_font(Pango.FontDescription("Sans bold 13"))
+        plabel.modify_font(Pango.FontDescription("Sans bold 8"))
         plabel.set_halign(Gtk.Align.START)
         plabel.set_margin_start(30)
         plabel.set_margin_top(3)
@@ -1318,10 +1369,16 @@ class LoginWindow(Gtk.Window):
         self.password_entry = Gtk.Entry()
         self.password_entry.set_placeholder_text("Enter your password")
         self.password_entry.set_visibility(False)
-        self.password_entry.modify_font(Pango.FontDescription("Sans 11"))
+        self.password_entry.modify_font(Pango.FontDescription("Sans 7"))
         self.password_entry.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 0))
         self.password_entry.set_margin_start(30)
         self.password_entry.set_margin_end(30)
+        self.password_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+        def _toggle_login_pass(entry, icon_pos, event):
+            vis = not entry.get_visibility()
+            entry.set_visibility(vis)
+            entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-reveal-symbolic" if vis else "view-conceal-symbolic")
+        self.password_entry.connect("icon-press", _toggle_login_pass)
         self.password_entry.connect("activate", self.on_login)
         card.pack_start(self.password_entry, False, False, 4)
 
@@ -1333,27 +1390,27 @@ class LoginWindow(Gtk.Window):
         else:
             self.error_label = Gtk.Label(label="")
         self.error_label.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.85, 0.15, 0.15, 1))
-        self.error_label.modify_font(Pango.FontDescription("Sans bold 11"))
+        self.error_label.modify_font(Pango.FontDescription("Sans bold 7"))
         card.pack_start(self.error_label, False, False, 2)
 
         # Login button
         btn = Gtk.Button(label="Login  ➜")
         btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.06, 0.2, 0.6, 0.5))
         btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        btn.modify_font(Pango.FontDescription("Sans bold 9"))
         btn.set_margin_start(30)
         btn.set_margin_end(30)
         btn.set_margin_top(3)
         btn.connect("clicked", self.on_login)
         card.pack_start(btn, False, False, 0)
 
-        admin_btn = Gtk.Button(label="⚙ Admin")
-        admin_btn.modify_font(Pango.FontDescription("Sans 12"))
-        admin_btn.set_margin_start(30)
-        admin_btn.set_margin_end(30)
-        admin_btn.set_margin_bottom(6)
-        admin_btn.connect("clicked", self._open_admin)
-        card.pack_start(admin_btn, False, False, 0)
+        self._admin_btn_login = Gtk.Button(label="⚙ Admin")
+        self._admin_btn_login.modify_font(Pango.FontDescription("Sans 8"))
+        self._admin_btn_login.set_margin_start(30)
+        self._admin_btn_login.set_margin_end(30)
+        self._admin_btn_login.set_margin_bottom(2)
+        self._admin_btn_login.connect("clicked", self._open_admin)
+        card.pack_start(self._admin_btn_login, False, False, 0)
 
         outer.pack_start(card, False, False, 0)
         overlay.add_overlay(outer)
@@ -1361,16 +1418,22 @@ class LoginWindow(Gtk.Window):
         self._login_main.pack_start(overlay, True, True, 0)
         self.add(self._login_main)
 
-        # Auto-show keyboard when entries focused
+        # Keyboard opens only on tap/click (not auto-focus)
         self._login_kb_visible = False
         self._login_kb_shift = False
         self._login_kb_letter_btns = []
         self._active_entry = self.username_entry
-        def _on_entry_focus(w, e):
+        def _on_entry_tap(w, e):
             self._active_entry = w
             self._show_login_kb()
-        self.username_entry.connect("focus-in-event", _on_entry_focus)
-        self.password_entry.connect("focus-in-event", _on_entry_focus)
+            return False
+        self.username_entry.connect("button-press-event", _on_entry_tap)
+        self.password_entry.connect("button-press-event", _on_entry_tap)
+        def _on_entry_focus_only(w, e):
+            self._active_entry = w
+            return False
+        self.username_entry.connect("focus-in-event", _on_entry_focus_only)
+        self.password_entry.connect("focus-in-event", _on_entry_focus_only)
 
         GLib.timeout_add(40, self._animate)
 
@@ -1505,13 +1568,13 @@ class LoginWindow(Gtk.Window):
 
         title = Gtk.Label(label="Admin Settings")
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
-        title.modify_font(Pango.FontDescription("Sans bold 18"))
+        title.modify_font(Pango.FontDescription("Sans bold 12"))
         title.set_margin_top(15)
         card.pack_start(title, False, False, 0)
 
         sub = Gtk.Label(label="Enter admin credentials")
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
-        sub.modify_font(Pango.FontDescription("Sans 12"))
+        sub.modify_font(Pango.FontDescription("Sans 8"))
         card.pack_start(sub, False, False, 0)
 
         sep = Gtk.Separator()
@@ -1521,20 +1584,20 @@ class LoginWindow(Gtk.Window):
         card.pack_start(sep, False, False, 0)
 
         ul = Gtk.Label(label="Admin Username")
-        ul.modify_font(Pango.FontDescription("Sans bold 18"))
+        ul.modify_font(Pango.FontDescription("Sans bold 12"))
         ul.set_halign(Gtk.Align.START)
         ul.set_margin_start(25)
         ul.set_margin_top(6)
         card.pack_start(ul, False, False, 0)
         admin_user = Gtk.Entry()
         admin_user.set_placeholder_text("Enter admin username")
-        admin_user.modify_font(Pango.FontDescription("Sans 14"))
+        admin_user.modify_font(Pango.FontDescription("Sans 9"))
         admin_user.set_margin_start(25)
         admin_user.set_margin_end(25)
         card.pack_start(admin_user, False, False, 0)
 
         pl = Gtk.Label(label="Admin Password")
-        pl.modify_font(Pango.FontDescription("Sans bold 18"))
+        pl.modify_font(Pango.FontDescription("Sans bold 12"))
         pl.set_halign(Gtk.Align.START)
         pl.set_margin_start(25)
         pl.set_margin_top(4)
@@ -1542,14 +1605,20 @@ class LoginWindow(Gtk.Window):
         admin_pass = Gtk.Entry()
         admin_pass.set_placeholder_text("Enter admin password")
         admin_pass.set_visibility(False)
-        admin_pass.modify_font(Pango.FontDescription("Sans 14"))
+        admin_pass.modify_font(Pango.FontDescription("Sans 9"))
         admin_pass.set_margin_start(25)
         admin_pass.set_margin_end(25)
+        admin_pass.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
+        def _toggle_admin_pass(entry, icon_pos, event):
+            vis = not entry.get_visibility()
+            entry.set_visibility(vis)
+            entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-reveal-symbolic" if vis else "view-conceal-symbolic")
+        admin_pass.connect("icon-press", _toggle_admin_pass)
         card.pack_start(admin_pass, False, False, 0)
 
         err = Gtk.Label(label="")
         err.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.8, 0.1, 0.1, 1))
-        err.modify_font(Pango.FontDescription("Sans bold 15"))
+        err.modify_font(Pango.FontDescription("Sans bold 10"))
         card.pack_start(err, False, False, 0)
 
         btn_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
@@ -1560,10 +1629,10 @@ class LoginWindow(Gtk.Window):
         login_btn = Gtk.Button(label="Login")
         login_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.08, 0.25, 0.69, 1))
         login_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        login_btn.modify_font(Pango.FontDescription("Sans bold 15"))
+        login_btn.modify_font(Pango.FontDescription("Sans bold 10"))
 
         back_btn = Gtk.Button(label="Back")
-        back_btn.modify_font(Pango.FontDescription("Sans 15"))
+        back_btn.modify_font(Pango.FontDescription("Sans 10"))
         back_btn.connect("clicked", lambda b: self._admin_win.destroy())
 
         def on_admin_login(btn):
@@ -1689,9 +1758,15 @@ class LoginWindow(Gtk.Window):
 
         def on_adm_focus(w, e):
             adm_active[0] = w
+            return False
+        def on_adm_tap(w, e):
+            adm_active[0] = w
             show_adm_kb()
+            return False
         admin_user.connect("focus-in-event", on_adm_focus)
         admin_pass.connect("focus-in-event", on_adm_focus)
+        admin_user.connect("button-press-event", on_adm_tap)
+        admin_pass.connect("button-press-event", on_adm_tap)
 
         self._admin_win.show_all()
 
@@ -1754,12 +1829,12 @@ class LoginWindow(Gtk.Window):
         box.set_margin_top(10)
 
         title = Gtk.Label(label="AquaGen Configuration")
-        title.modify_font(Pango.FontDescription("Sans bold 24"))
+        title.modify_font(Pango.FontDescription("Sans bold 16"))
         title.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.07, 0.15, 0.35, 1))
         box.pack_start(title, False, False, 4)
 
         sub = Gtk.Label(label="Configure your AquaGen login credentials")
-        sub.modify_font(Pango.FontDescription("Sans 16"))
+        sub.modify_font(Pango.FontDescription("Sans 10"))
         sub.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.4, 0.45, 0.55, 1))
         box.pack_start(sub, False, False, 4)
 
@@ -1768,23 +1843,23 @@ class LoginWindow(Gtk.Window):
 
         # Username
         ul = Gtk.Label(label="Username")
-        ul.modify_font(Pango.FontDescription("Sans bold 20"))
+        ul.modify_font(Pango.FontDescription("Sans bold 13"))
         ul.set_halign(Gtk.Align.START)
         box.pack_start(ul, False, False, 0)
         api_user_entry = Gtk.Entry()
         api_user_entry.set_text(USERNAME)
-        api_user_entry.modify_font(Pango.FontDescription("Sans 18"))
+        api_user_entry.modify_font(Pango.FontDescription("Sans 12"))
         box.pack_start(api_user_entry, False, False, 4)
 
         # Password
         ppl = Gtk.Label(label="Password")
-        ppl.modify_font(Pango.FontDescription("Sans bold 20"))
+        ppl.modify_font(Pango.FontDescription("Sans bold 13"))
         ppl.set_halign(Gtk.Align.START)
         box.pack_start(ppl, False, False, 0)
         api_pass_entry = Gtk.Entry()
         api_pass_entry.set_text(PASSWORD)
         api_pass_entry.set_visibility(False)
-        api_pass_entry.modify_font(Pango.FontDescription("Sans 18"))
+        api_pass_entry.modify_font(Pango.FontDescription("Sans 12"))
         api_pass_entry.set_icon_from_icon_name(Gtk.EntryIconPosition.SECONDARY, "view-conceal-symbolic")
         def _toggle_pass(entry, icon_pos, event):
             vis = not entry.get_visibility()
@@ -1795,7 +1870,7 @@ class LoginWindow(Gtk.Window):
 
         # Login Type
         ltl = Gtk.Label(label="Login Type")
-        ltl.modify_font(Pango.FontDescription("Sans bold 20"))
+        ltl.modify_font(Pango.FontDescription("Sans bold 13"))
         ltl.set_halign(Gtk.Align.START)
         box.pack_start(ltl, False, False, 0)
         lt_combo = Gtk.ComboBoxText()
@@ -1807,7 +1882,7 @@ class LoginWindow(Gtk.Window):
         # Language selection moved to header bar dropdown
 
         status = Gtk.Label(label="")
-        status.modify_font(Pango.FontDescription("Sans bold 18"))
+        status.modify_font(Pango.FontDescription("Sans bold 12"))
         box.pack_start(status, False, False, 4)
 
         def on_save(btn):
@@ -1855,21 +1930,21 @@ class LoginWindow(Gtk.Window):
         test_btn = Gtk.Button(label="Test Connection")
         test_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.5, 0.8, 1))
         test_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        test_btn.modify_font(Pango.FontDescription("Sans bold 18"))
+        test_btn.modify_font(Pango.FontDescription("Sans bold 12"))
         test_btn.connect("clicked", on_test)
         btn_box.pack_start(test_btn, True, True, 0)
 
         save_btn = Gtk.Button(label="Save")
         save_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.1, 0.6, 0.2, 1))
         save_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
-        save_btn.modify_font(Pango.FontDescription("Sans bold 18"))
+        save_btn.modify_font(Pango.FontDescription("Sans bold 12"))
         save_btn.connect("clicked", on_save)
         btn_box.pack_start(save_btn, True, True, 0)
 
         box.pack_start(btn_box, False, False, 5)
 
         close_btn = Gtk.Button(label="Close")
-        close_btn.modify_font(Pango.FontDescription("Sans 18"))
+        close_btn.modify_font(Pango.FontDescription("Sans 12"))
         box.pack_start(close_btn, False, False, 0)
 
         # GTK keyboard for admin settings
@@ -1945,7 +2020,7 @@ class LoginWindow(Gtk.Window):
             sb.set_size_request(80, 55)
             sb.connect("clicked", admin_kb_shift_cb)
             ar.pack_start(sb, False, False, 0)
-            for sym in ["#","$","-","+"]:
+            for sym in ["#","$","-","+","/"]:
                 xb = Gtk.Button(label=sym)
                 xb.modify_font(Pango.FontDescription("Sans bold 14"))
                 xb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
@@ -1982,10 +2057,16 @@ class LoginWindow(Gtk.Window):
 
         def on_admin_entry_focus(w, e):
             admin_active[0] = w
+            return False
+        def on_admin_entry_tap(w, e):
+            admin_active[0] = w
             show_admin_kb()
+            return False
 
         api_user_entry.connect("focus-in-event", on_admin_entry_focus)
         api_pass_entry.connect("focus-in-event", on_admin_entry_focus)
+        api_user_entry.connect("button-press-event", on_admin_entry_tap)
+        api_pass_entry.connect("button-press-event", on_admin_entry_tap)
 
         def close_admin_dialog(b):
             hide_admin_kb()
@@ -2001,6 +2082,8 @@ class LoginWindow(Gtk.Window):
         self._login_kb_shift = False
         self._login_kb_letter_btns = []
         self._build_login_gtk_kb()
+        if hasattr(self, '_admin_btn_login') and self._admin_btn_login:
+            self._admin_btn_login.hide()
 
     def _hide_login_kb(self):
         if not self._login_kb_visible:
@@ -2009,6 +2092,8 @@ class LoginWindow(Gtk.Window):
             self._login_kb_box.destroy()
             self._login_kb_box = None
         self._login_kb_visible = False
+        if hasattr(self, '_admin_btn_login') and self._admin_btn_login:
+            self._admin_btn_login.show()
 
     def _build_login_gtk_kb(self):
         """Build GTK keyboard at bottom of login page."""
@@ -2061,7 +2146,15 @@ class LoginWindow(Gtk.Window):
         shift_btn.connect("clicked", self._login_kb_shift_cb)
         action_row.pack_start(shift_btn, False, False, 0)
 
-        for sym in ["#", "$", "-", "+"]:
+        tab_btn = Gtk.Button(label="Tab")
+        tab_btn.modify_font(Pango.FontDescription("Sans bold 14"))
+        tab_btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
+        tab_btn.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(1, 1, 1, 1))
+        tab_btn.set_size_request(60, 55)
+        tab_btn.connect("clicked", self._login_kb_tab)
+        action_row.pack_start(tab_btn, False, False, 0)
+
+        for sym in ["#", "$", "-", "+", "/"]:
             sbtn = Gtk.Button(label=sym)
             sbtn.modify_font(Pango.FontDescription("Sans bold 14"))
             sbtn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
@@ -2131,6 +2224,14 @@ class LoginWindow(Gtk.Window):
         else:
             self._hide_login_kb()
             self.on_login(None)
+
+    def _login_kb_tab(self, button):
+        if self._active_entry == self.username_entry:
+            self.password_entry.grab_focus()
+            self._active_entry = self.password_entry
+        else:
+            self.username_entry.grab_focus()
+            self._active_entry = self.username_entry
 
     def on_login(self, widget):
         global USERNAME, PASSWORD, LOGGED_IN, LOGIN_TYPE
@@ -2272,25 +2373,63 @@ class AlertsWindow(Gtk.Window):
         self.refresh_btn.get_style_context().add_class("refresh-btn")
         right_box.pack_start(self.refresh_btn, False, False, 0)
 
-        # Language dropdown
+        # Language dropdown (custom popover with scrollable list)
         self._lang_list = ["en", "te", "kn", "ta", "hi", "ml"]
-        self.lang_combo = Gtk.ComboBoxText()
-        self.lang_combo.append_text("ENG")
-        self.lang_combo.append_text("TEL")
-        self.lang_combo.append_text("KAN")
-        self.lang_combo.append_text("TAM")
-        self.lang_combo.append_text("HIN")
-        self.lang_combo.append_text("MAL")
+        self._lang_labels = ["ENG", "TEL", "KAN", "TAM", "HIN", "MAL"]
         lang_idx = 0
         for i, l in enumerate(self._lang_list):
             if l == TTS_LANG:
                 lang_idx = i
                 break
-        self.lang_combo.set_active(lang_idx)
-        self.lang_combo.get_style_context().add_class("header-lang")
-        self.lang_combo.set_size_request(-1, -1)
-        self.lang_combo.connect("changed", self._on_lang_changed)
-        right_box.pack_start(self.lang_combo, False, False, 0)
+
+        class _LangComboShim:
+            def __init__(self, parent):
+                self._parent = parent
+            def get_active(self):
+                return self._parent._lang_active_idx
+        self._lang_active_idx = lang_idx
+
+        self.lang_btn = Gtk.Button(label=f"{self._lang_labels[lang_idx]} ▾")
+        self.lang_btn.get_style_context().add_class("header-lang")
+        self.lang_btn.modify_font(Pango.FontDescription("Sans bold 13"))
+        self.lang_btn.set_size_request(80, 36)
+        self.lang_combo = _LangComboShim(self)
+
+        self._lang_popover = Gtk.Popover.new(self.lang_btn)
+        self._lang_popover.set_position(Gtk.PositionType.BOTTOM)
+        pop_scroll = Gtk.ScrolledWindow()
+        pop_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
+        pop_scroll.set_size_request(110, 160)
+        pop_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        pop_box.set_margin_start(4)
+        pop_box.set_margin_end(4)
+        pop_box.set_margin_top(4)
+        pop_box.set_margin_bottom(4)
+        def _make_lang_click(idx):
+            def _click(btn):
+                self._lang_active_idx = idx
+                self.lang_btn.set_label(f"{self._lang_labels[idx]} ▾")
+                self._lang_popover.popdown()
+                self._on_lang_changed(self.lang_combo)
+            return _click
+        for i, lbl in enumerate(self._lang_labels):
+            b = Gtk.Button(label=lbl)
+            b.modify_font(Pango.FontDescription("Sans bold 13"))
+            b.set_size_request(100, 38)
+            b.set_relief(Gtk.ReliefStyle.NONE)
+            b.connect("clicked", _make_lang_click(i))
+            pop_box.pack_start(b, False, False, 0)
+        pop_scroll.add(pop_box)
+        self._lang_popover.add(pop_scroll)
+        pop_scroll.show_all()
+
+        def _toggle_lang(btn):
+            if self._lang_popover.get_visible():
+                self._lang_popover.popdown()
+            else:
+                self._lang_popover.popup()
+        self.lang_btn.connect("clicked", _toggle_lang)
+        right_box.pack_start(self.lang_btn, False, False, 0)
 
 
 
@@ -2355,10 +2494,31 @@ class AlertsWindow(Gtk.Window):
         # Scrollable alerts area
         scroll = Gtk.ScrolledWindow()
         scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scroll.set_kinetic_scrolling(True)
+        scroll.add_events(Gdk.EventMask.TOUCH_MASK | Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_RELEASE_MASK | Gdk.EventMask.POINTER_MOTION_MASK)
         scroll.get_style_context().add_class("alerts-scroll")
         self.alerts_container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         scroll.add(self.alerts_container)
         self.main_box.pack_start(scroll, True, True, 0)
+
+        # Store ref for wifi keyboard to hide/show
+        self._alerts_scroll = scroll
+        # Drag-to-scroll gesture (for touch swipe support on DSI display)
+        self._drag_start_adj = 0
+        drag = Gtk.GestureDrag.new(self.alerts_container)
+        drag.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+        drag.set_touch_only(True)
+        def _on_drag_begin(g, x, y):
+            adj = scroll.get_vadjustment()
+            self._drag_start_adj = adj.get_value()
+        def _on_drag_update(g, ox, oy):
+            adj = scroll.get_vadjustment()
+            new_val = self._drag_start_adj - oy
+            new_val = max(adj.get_lower(), min(new_val, adj.get_upper() - adj.get_page_size()))
+            adj.set_value(new_val)
+        drag.connect("drag-begin", _on_drag_begin)
+        drag.connect("drag-update", _on_drag_update)
+        self._alerts_drag_gesture = drag
 
         # Bottom section (fixed at bottom)
         bottom_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
@@ -2441,7 +2601,7 @@ class AlertsWindow(Gtk.Window):
         self._panda_event.set_valign(Gtk.Align.END)
         self._panda_event.set_size_request(250, 180)
         self._panda_event.set_margin_end(10)
-        self._panda_event.set_margin_bottom(30)
+        self._panda_event.set_margin_bottom(5)
         self._panda_event.connect("button-press-event", self._open_chat)
         # WiFi overlay panel (hidden by default) - added BEFORE panda so it renders below panda initially
         self._wifi_overlay = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
@@ -2660,7 +2820,7 @@ class AlertsWindow(Gtk.Window):
         self._chat_entry.set_placeholder_text("Type your question...")
         self._chat_entry.modify_font(Pango.FontDescription("Sans 18"))
         self._chat_entry.connect("activate", self._send_chat)
-        self._chat_entry.connect("focus-in-event", lambda w, e: self._show_chat_kb())
+        self._chat_entry.connect("button-press-event", lambda w, e: (self._show_chat_kb(), False)[1])
         input_box.pack_start(self._chat_entry, True, True, 0)
 
         # Mic button with image
@@ -2986,8 +3146,8 @@ class AlertsWindow(Gtk.Window):
         rows = [
             ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
             ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "?"],
-            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "@"],
+            ["a", "s", "d", "f", "g", "h", "j", "k", "l", "@"],
+            ["z", "x", "c", "v", "b", "n", "m", "!", ".", "_"],
         ]
         for row in rows:
             row_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=1, homogeneous=True)
@@ -3892,11 +4052,21 @@ class AlertsWindow(Gtk.Window):
                 return
             self._wifi_kb_visible = True
             self._wifi_kb_letter_btns.clear()
-            # Move wifi panel to top
+            # Hide main content so it does not show behind/around the wifi panel
+            try:
+                if hasattr(self, 'stats_box'):
+                    self.stats_box.hide()
+                if hasattr(self, '_alerts_scroll') and self._alerts_scroll:
+                    self._alerts_scroll.hide()
+            except Exception:
+                pass
+            # Expand wifi panel to cover area above keyboard
             self._wifi_overlay.set_valign(Gtk.Align.START)
-            self._wifi_overlay.set_margin_top(5)
+            self._wifi_overlay.set_margin_top(2)
             self._wifi_overlay.set_margin_bottom(0)
-            self._wifi_overlay.set_size_request(300, 200)
+            self._wifi_overlay.set_size_request(780, 120)
+            self._wifi_overlay.set_vexpand(False)
+            self._wifi_overlay.queue_resize()
 
             kb = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=1)
             kb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.15, 0.15, 0.18, 1))
@@ -3943,7 +4113,7 @@ class AlertsWindow(Gtk.Window):
             sb.set_can_focus(False)
             sb.connect("clicked", wifi_kb_shift_cb)
             ar.pack_start(sb, False, False, 0)
-            for sym in ["#","$","-","+"]:
+            for sym in ["#","$","-","+","/"]:
                 xb = Gtk.Button(label=sym)
                 xb.modify_font(Pango.FontDescription("Sans bold 14"))
                 xb.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(0.28, 0.28, 0.32, 1))
@@ -3984,11 +4154,18 @@ class AlertsWindow(Gtk.Window):
             self._wifi_overlay.set_margin_bottom(40)
             self._wifi_overlay.set_size_request(300, 350)
             self._wifi_kb_visible = False
+            try:
+                if hasattr(self, 'stats_box'):
+                    self.stats_box.show()
+                if hasattr(self, '_alerts_scroll') and self._alerts_scroll:
+                    self._alerts_scroll.show()
+            except Exception:
+                pass
 
         self._hide_wifi_kb_func = hide_wifi_kb
 
         # Auto-show keyboard when password field tapped
-        self._wifi_pass_entry.connect("focus-in-event", lambda w, e: show_wifi_kb())
+        self._wifi_pass_entry.connect("button-press-event", lambda w, e: (show_wifi_kb(), False)[1])
 
         # Save button
         save_btn = Gtk.Button(label="\u2714  Save & Connect")
@@ -4111,7 +4288,11 @@ class AlertsWindow(Gtk.Window):
 
         # Show list page first
         stack.set_visible_child_name("list")
-        self._wifi_overlay.pack_start(stack, True, True, 0)
+        wifi_scroll = Gtk.ScrolledWindow()
+        wifi_scroll.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        wifi_scroll.set_kinetic_scrolling(True)
+        wifi_scroll.add(stack)
+        self._wifi_overlay.pack_start(wifi_scroll, True, True, 0)
 
         # Auto-scan on open
         on_scan(scan_btn)
@@ -4224,7 +4405,7 @@ class AlertsWindow(Gtk.Window):
         scale.connect("value-changed", on_volume_changed)
         popup.add(box)
 
-        popup.move(5, 500)
+        popup.move(190, 150)
         popup.show_all()
         self._volume_popup = popup
 
